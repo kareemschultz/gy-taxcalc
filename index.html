@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guyana Salary & Gratuity Calculator | 2026 Tax Year</title>
-    <meta name="description" content="Calculate your salary, gratuity, and tax implications using the latest 2026 Guyana tax regulations. Includes new qualification allowances and reduced tax rates.">
+    <title>GY TaxCalc | Guyana Tax Calculator — Income, Salary & Vehicle Import</title>
+    <meta name="description" content="Guyana's Tax Toolkit — Calculate income tax, salary, gratuity, and vehicle import duties using the latest 2026 tax regulations. GRA-based formulas.">
+    <meta name="keywords" content="Guyana tax calculator, vehicle import tax, GRA, salary calculator, customs duty, excise tax, 2026 budget">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -30,13 +31,27 @@
     <div class="app-header">
         <div class="container">
             <div class="text-center">
-                <h1 class="mb-1"><i class="fas fa-calculator me-2"></i>Guyana Salary Calculator</h1>
-                <p class="mb-2 header-subtitle">2026 Tax Year &bull; Instant Results &bull; All Payment Frequencies</p>
+                <h1 class="mb-1"><i class="fas fa-calculator me-2"></i>GY TaxCalc</h1>
+                <p class="mb-2 header-subtitle">Guyana's Tax Toolkit &bull; 2026 Rates &bull; Instant Results</p>
                 <div class="d-flex flex-wrap gap-2 justify-content-center">
-                    <span class="badge bg-light text-dark"><i class="fas fa-percent me-1"></i>25%/35% Tax</span>
-                    <span class="badge bg-light text-dark"><i class="fas fa-graduation-cap me-1"></i>Qualification Allowances</span>
-                    <span class="badge bg-light text-dark"><i class="fas fa-shield-alt me-1"></i>NIS & Insurance</span>
+                    <span class="badge bg-light text-dark"><i class="fas fa-percent me-1"></i>Income Tax</span>
+                    <span class="badge bg-light text-dark"><i class="fas fa-car me-1"></i>Vehicle Import</span>
+                    <span class="badge bg-light text-dark"><i class="fas fa-shield-alt me-1"></i>GRA Formulas</span>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mode Toggle Pills -->
+    <div class="mode-toggle-bar">
+        <div class="container">
+            <div class="mode-toggle-pills">
+                <button class="mode-pill active" id="pill-salary">
+                    <i class="fas fa-money-bill-wave me-1"></i> Income &amp; Salary
+                </button>
+                <button class="mode-pill" id="pill-vehicle">
+                    <i class="fas fa-car me-1"></i> Vehicle Import
+                </button>
             </div>
         </div>
     </div>
@@ -67,6 +82,9 @@
 
     <!-- MAIN CONTENT -->
     <div class="container pb-5 main-content">
+
+    <!-- ========== SALARY CALCULATOR ========== -->
+    <div id="salary-calculator">
 
         <!-- ===== STEP 1: QUICK START (Always visible) ===== -->
         <div class="calc-section" id="section-quick-start">
@@ -1029,9 +1047,328 @@
             </div>
         </div>
 
+    </div><!-- /salary-calculator -->
+
+    <!-- ========== VEHICLE IMPORT CALCULATOR ========== -->
+    <div id="vehicle-calculator" style="display: none;">
+
+        <!-- Vehicle Sticky Results (Desktop) -->
+        <div class="sticky-results vehicle-sticky" id="vehicle-sticky-results" style="display:none;">
+            <div class="container">
+                <div class="sticky-results-grid">
+                    <div class="sticky-result-item primary">
+                        <span class="sticky-result-value" id="v-sticky-cost">GY$0</span>
+                        <span class="sticky-result-label">Total Cost</span>
+                    </div>
+                    <div class="sticky-result-item">
+                        <span class="sticky-result-value" id="v-sticky-tax">GY$0</span>
+                        <span class="sticky-result-label">Total Tax</span>
+                    </div>
+                    <div class="sticky-result-item d-none d-md-block">
+                        <span class="sticky-result-value" id="v-sticky-cif">US$0</span>
+                        <span class="sticky-result-label">CIF Value</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle Input Section -->
+        <div class="calc-section" id="section-vehicle-input">
+            <div class="section-header always-open">
+                <div class="section-icon section-icon-primary">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div>
+                    <h5 class="section-heading">Vehicle Details</h5>
+                    <small class="section-subtitle">Enter vehicle information to calculate import taxes</small>
+                </div>
+            </div>
+            <div class="section-body">
+                <form id="vehicle-calc-form" onsubmit="return false;">
+                    <div class="row g-3">
+                        <!-- CIF Value -->
+                        <div class="col-md-6">
+                            <label for="v-cif" class="form-label">
+                                <i class="fas fa-dollar-sign me-1"></i> CIF Value (USD)
+                                <i class="fas fa-question-circle info-tooltip" data-bs-toggle="tooltip"
+                                   title="Cost, Insurance and Freight — the declared value of the vehicle in US Dollars."></i>
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text">US$</span>
+                                <input type="number" class="form-control v-calc-input" id="v-cif" placeholder="e.g., 5000" min="0" step="100">
+                            </div>
+                        </div>
+
+                        <!-- Exchange Rate -->
+                        <div class="col-md-6">
+                            <label for="v-exchange-rate" class="form-label">
+                                <i class="fas fa-exchange-alt me-1"></i> Exchange Rate (GY$ per US$1)
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text">GY$</span>
+                                <input type="number" class="form-control v-calc-input" id="v-exchange-rate" value="218" min="1" step="0.5">
+                            </div>
+                            <div class="form-text">Default: GY$218 per US$1</div>
+                        </div>
+
+                        <!-- Vehicle Type -->
+                        <div class="col-md-6">
+                            <label for="v-vehicle-type" class="form-label">
+                                <i class="fas fa-truck me-1"></i> Vehicle Type
+                            </label>
+                            <select id="v-vehicle-type" class="form-select v-calc-input">
+                                <option value="car">Car</option>
+                                <option value="suv">SUV</option>
+                                <option value="van">Van</option>
+                                <option value="bus">Bus</option>
+                                <option value="single_cab">Single Cab Pickup</option>
+                                <option value="double_cab">Double Cab Pickup</option>
+                                <option value="motorcycle">Motorcycle</option>
+                                <option value="atv">ATV</option>
+                                <option value="electric">Electric Vehicle</option>
+                            </select>
+                        </div>
+
+                        <!-- Fuel Type -->
+                        <div class="col-md-6" id="v-fuel-group">
+                            <label for="v-fuel-type" class="form-label">
+                                <i class="fas fa-gas-pump me-1"></i> Fuel Type
+                            </label>
+                            <select id="v-fuel-type" class="form-select v-calc-input">
+                                <option value="gasoline">Gasoline</option>
+                                <option value="diesel">Diesel</option>
+                                <option value="electric">Electric</option>
+                                <option value="hybrid">Hybrid</option>
+                            </select>
+                        </div>
+
+                        <!-- Vehicle Age -->
+                        <div class="col-md-6" id="v-age-group">
+                            <label for="v-vehicle-age" class="form-label">
+                                <i class="fas fa-calendar-alt me-1"></i> Vehicle Age
+                            </label>
+                            <select id="v-vehicle-age" class="form-select v-calc-input">
+                                <option value="under4">Under 4 years</option>
+                                <option value="4plus">4 years and older</option>
+                            </select>
+                        </div>
+
+                        <!-- Engine CC -->
+                        <div class="col-md-6" id="v-cc-group">
+                            <label for="v-engine-cc" class="form-label">
+                                <i class="fas fa-tachometer-alt me-1"></i> Engine Size (CC)
+                            </label>
+                            <div class="input-group">
+                                <input type="number" class="form-control v-calc-input" id="v-engine-cc" placeholder="e.g., 1500" min="0" step="50">
+                                <span class="input-group-text">cc</span>
+                            </div>
+                        </div>
+
+                        <!-- Plate Type -->
+                        <div class="col-md-6" id="v-plate-group">
+                            <label for="v-plate-type" class="form-label">
+                                <i class="fas fa-id-card me-1"></i> Plate Type
+                            </label>
+                            <select id="v-plate-type" class="form-select v-calc-input">
+                                <option value="private">Private (P plate)</option>
+                                <option value="government">Government (G plate)</option>
+                            </select>
+                        </div>
+
+                        <!-- Dealer Toggle -->
+                        <div class="col-md-6">
+                            <label class="form-label d-block">
+                                <i class="fas fa-store me-1"></i> Options
+                            </label>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input v-calc-input" type="checkbox" id="v-dealer">
+                                <label class="form-check-label" for="v-dealer">
+                                    Dealer Import
+                                    <i class="fas fa-question-circle info-tooltip" data-bs-toggle="tooltip"
+                                       title="For dealers: excise is calculated on 1.5× CIF + Duty"></i>
+                                </label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input v-calc-input" type="checkbox" id="v-2026-rates">
+                                <label class="form-check-label" for="v-2026-rates">
+                                    <span class="badge bg-success me-1">New</span> 2026 Budget Rates
+                                    <i class="fas fa-question-circle info-tooltip" data-bs-toggle="tooltip"
+                                       title="Applies 2026 Budget changes: Double-cab flat rates, VAT removal on sub-1500cc and hybrid under 2000cc, ATV tax exemption"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Vehicle Results Area -->
+        <div id="vehicle-results-area" style="display: none;">
+
+            <!-- Summary Cards -->
+            <div class="vehicle-results-summary">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="v-summary-card v-card-tax">
+                            <div class="v-summary-label">Total Import Tax</div>
+                            <div class="v-summary-value" id="v-result-total-tax">GY$0</div>
+                            <div class="v-summary-sub" id="v-result-total-tax-usd">US$0.00</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="v-summary-card v-card-cost">
+                            <div class="v-summary-label">Total Landed Cost</div>
+                            <div class="v-summary-value" id="v-result-total-cost">GY$0</div>
+                            <div class="v-summary-sub" id="v-result-total-cost-usd">US$0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Breakdown -->
+            <div class="calc-section" id="section-vehicle-breakdown">
+                <div class="section-header" data-toggle-section="section-vehicle-breakdown">
+                    <div class="section-icon section-icon-blue">
+                        <i class="fas fa-list-alt"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="section-heading">Tax Breakdown</h5>
+                        <small class="section-subtitle">Detailed duty, excise and VAT calculations</small>
+                    </div>
+                    <div class="section-chevron">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="section-body">
+                    <!-- Formula Used -->
+                    <div class="vehicle-formula-box mb-3">
+                        <small class="text-uppercase fw-bold"><i class="fas fa-calculator me-1"></i> Formula Used</small>
+                        <div id="v-result-formula" class="mt-1">—</div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table vehicle-breakdown-table">
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th class="text-end">USD</th>
+                                    <th class="text-end">GYD</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><i class="fas fa-ship me-1 text-info"></i> CIF Value</td>
+                                    <td class="text-end" id="v-result-cif-usd">US$0.00</td>
+                                    <td class="text-end" id="v-result-cif-gyd">GY$0</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-percentage me-1 text-warning"></i> Import Duty <span class="badge bg-secondary ms-1" id="v-result-duty-rate">0%</span></td>
+                                    <td class="text-end" id="v-result-duty-usd">US$0.00</td>
+                                    <td class="text-end" id="v-result-duty-gyd">GY$0</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-receipt me-1 text-danger"></i> Excise Tax <span class="badge bg-secondary ms-1" id="v-result-excise-rate">0%</span></td>
+                                    <td class="text-end" id="v-result-excise-usd">US$0.00</td>
+                                    <td class="text-end" id="v-result-excise-gyd">GY$0</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-file-invoice-dollar me-1 text-primary"></i> VAT <span class="badge bg-secondary ms-1" id="v-result-vat-rate">0%</span></td>
+                                    <td class="text-end" id="v-result-vat-usd">US$0.00</td>
+                                    <td class="text-end" id="v-result-vat-gyd">GY$0</td>
+                                </tr>
+                                <tr class="vehicle-total-row">
+                                    <td><strong><i class="fas fa-coins me-1"></i> Total Tax</strong></td>
+                                    <td class="text-end"><strong id="v-result-totaltax-usd">US$0.00</strong></td>
+                                    <td class="text-end"><strong id="v-result-totaltax-gyd">GY$0</strong></td>
+                                </tr>
+                                <tr class="vehicle-grand-total-row">
+                                    <td><strong><i class="fas fa-wallet me-1"></i> Total Landed Cost</strong></td>
+                                    <td class="text-end"><strong id="v-result-totalcost-usd">US$0.00</strong></td>
+                                    <td class="text-end"><strong id="v-result-totalcost-gyd">GY$0</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Notes -->
+                    <div id="v-result-notes" class="vehicle-notes mt-3" style="display:none;"></div>
+                </div>
+            </div>
+
+            <!-- Vehicle Tax Info Reference -->
+            <div class="calc-section collapsed" id="section-vehicle-info">
+                <div class="section-header" data-toggle-section="section-vehicle-info">
+                    <div class="section-icon section-icon-orange">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="section-heading">Rate Reference Guide</h5>
+                        <small class="section-subtitle">GRA tax brackets for gasoline, diesel & special categories</small>
+                    </div>
+                    <div class="section-chevron">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="section-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-mini-card">
+                                <h6><i class="fas fa-gas-pump me-1"></i> Gasoline (Under 4 yrs)</h6>
+                                <ul class="info-list">
+                                    <li>0-1500cc: <strong>35%</strong> duty, 0% excise</li>
+                                    <li>1501-2000cc: <strong>45%</strong> duty, 10% excise</li>
+                                    <li>2001-3000cc: <strong>45%</strong> duty, 110% excise</li>
+                                    <li>3000cc+: <strong>45%</strong> duty, 140% excise</li>
+                                    <li>All: <strong>14%</strong> VAT</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-mini-card">
+                                <h6><i class="fas fa-oil-can me-1"></i> Diesel (Under 4 yrs)</h6>
+                                <ul class="info-list">
+                                    <li>Under 1500cc: <strong>35%</strong> duty, 0% excise</li>
+                                    <li>1501-2000cc: <strong>45%</strong> duty, 10% excise</li>
+                                    <li>2001cc+: <strong>45%</strong> duty, 110% excise</li>
+                                    <li>All: <strong>14%</strong> VAT</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-mini-card">
+                                <h6><i class="fas fa-motorcycle me-1"></i> Motorcycles</h6>
+                                <ul class="info-list">
+                                    <li>≤175cc: <strong>20%</strong> duty, 0% excise, 14% VAT</li>
+                                    <li>>175cc: <strong>20%</strong> duty, 10% excise, 14% VAT</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-mini-card">
+                                <h6><i class="fas fa-bolt me-1"></i> Special Categories</h6>
+                                <ul class="info-list">
+                                    <li>Electric: <strong>0%</strong> all taxes</li>
+                                    <li>G-Plate: <strong>US$2,000</strong> flat excise</li>
+                                    <li>Dealer: Excise on <strong>1.5× CIF</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle Disclaimer -->
+        <div class="vehicle-disclaimer">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span>Based on GRA published formulas. Not affiliated with GRA. Consult a licensed customs broker for official valuations.</span>
+        </div>
+
+    </div><!-- /vehicle-calculator -->
+
         <!-- Footer -->
         <div class="footer">
-            <p class="mb-1"><i class="fas fa-gavel me-1"></i> Based on 2026 Guyana Tax Regulations. Consult a tax professional for official advice.</p>
+            <p class="mb-1"><i class="fas fa-gavel me-1"></i> Based on 2026 Guyana Tax Regulations. Not affiliated with GRA. Consult a tax professional for official advice.</p>
             <small>
                 Built with ❤️ by <strong>Kareem Schultz</strong> |
                 <a href="https://github.com/kareemschultz/guyana-salary-calculator" target="_blank" rel="noopener noreferrer" class="github-link">
@@ -1064,6 +1401,8 @@
     <script src="js/ui-handlers.js"></script>
     <script src="js/calculator.js"></script>
     <script src="js/salary-increase.js"></script>
+    <script src="js/vehicle-calculator.js"></script>
+    <script src="js/app-toggle.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
