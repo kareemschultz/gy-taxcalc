@@ -4,6 +4,23 @@ All notable changes to GY TaxCalc are documented here.
 
 ---
 
+## [2.0.1] — 2026-01-27
+
+### 🧹 Usability
+- Added "Clear Form" button to both Income & Salary and Vehicle Import calculators
+- Salary clear resets all inputs, dropdowns, and checkboxes to defaults
+- Vehicle clear resets CIF, CC, exchange rate (218), dropdowns, and hides results
+
+### 🔧 Fixes
+- Fixed vehicle import info section not visible (was nested inside hidden results area)
+- Moved version/changelog link below header badges
+
+### 🔄 CI/CD
+- Added GitHub Actions deploy workflow to replace legacy Pages build
+- Reduced build notification emails
+
+---
+
 ## [2.0.0] — 2026-01-27
 
 ### 🚗 Vehicle Import Tax Calculator (NEW)
