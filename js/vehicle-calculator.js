@@ -449,7 +449,8 @@ function runVehicleCalculation() {
     const engineCC = parseInt(document.getElementById('v-engine-cc')?.value) || 0;
     const plateType = document.getElementById('v-plate-type')?.value || 'private';
     const isDealer = document.getElementById('v-dealer')?.checked || false;
-    const use2026Rates = document.getElementById('v-2026-rates')?.checked || false;
+    const ratesEl = document.getElementById('v-2026-rates');
+    const use2026Rates = ratesEl ? (ratesEl.type === 'hidden' ? true : ratesEl.checked) : true;
 
     const params = {
         cifUSD,
