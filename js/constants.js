@@ -45,7 +45,7 @@ const POSITION_PRESETS = {
     },
     'ict-tech-1': {
         title: 'ICT Technician I',
-        baseSalary: 308540, // Updated from payslip data
+        baseSalary: 222804, // Updated for 2026
         taxableAllowances: {
             duty: 0,
             uniform: 5000
