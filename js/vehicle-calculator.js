@@ -578,6 +578,41 @@ function clearVehicleForm() {
     if (fuelGroup) fuelGroup.style.display = '';
     const ageGroup = document.getElementById('v-age-group');
     if (ageGroup) ageGroup.style.display = '';
-    // Hide results
+    // Hide results area completely
     hideVehicleResults();
+
+    // Reset all result text to zeros
+    ['v-result-cif-usd', 'v-result-cif-gyd', 'v-result-duty-usd', 'v-result-duty-gyd',
+     'v-result-excise-usd', 'v-result-excise-gyd', 'v-result-vat-usd', 'v-result-vat-gyd',
+     'v-result-totaltax-usd', 'v-result-totaltax-gyd', 'v-result-totalcost-usd', 'v-result-totalcost-gyd'
+    ].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = id.includes('usd') ? 'US$0.00' : 'GY$0';
+    });
+
+    // Reset rate badges
+    ['v-result-duty-rate', 'v-result-excise-rate', 'v-result-vat-rate'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '0%';
+    });
+
+    // Reset formula display
+    const formula = document.getElementById('v-result-formula');
+    if (formula) formula.textContent = '—';
+
+    // Reset summary cards
+    ['v-summary-tax', 'v-summary-cost', 'v-summary-cif'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '$0';
+    });
+
+    // Reset sticky values
+    ['v-sticky-cost', 'v-sticky-tax', 'v-sticky-cif'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = id.includes('cif') ? 'US$0' : 'GY$0';
+    });
+
+    // Hide notes
+    const notes = document.getElementById('v-result-notes');
+    if (notes) { notes.style.display = 'none'; notes.innerHTML = ''; }
 }
