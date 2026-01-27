@@ -101,7 +101,7 @@ const POSITION_PRESETS = {
     },
     'assist-ict-eng-3': {
         title: 'Assistant ICT Engineer III',
-        baseSalary: 285685,
+        baseSalary: 308540,
         taxableAllowances: {
             duty: 0,
             uniform: 5000

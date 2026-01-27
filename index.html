@@ -17,26 +17,13 @@
 <body>
     <script>
     (function() {
-        const savedTheme = localStorage.getItem('theme');
-        const shouldBeDark = savedTheme === null ? true : savedTheme === 'dark';
-        document.documentElement.setAttribute('data-theme', shouldBeDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
     })();
     </script>
 
     <div class="loading-overlay" id="loading-overlay">
         <div class="spinner"></div>
-    </div>
-
-    <!-- Theme Toggle -->
-    <div class="theme-toggle-container">
-        <div class="theme-toggle">
-            <input type="checkbox" id="theme-toggle" checked />
-            <label for="theme-toggle" class="toggle-label">
-                <i class="fas fa-sun"></i>
-                <i class="fas fa-moon"></i>
-                <span class="toggle-ball"></span>
-            </label>
-        </div>
     </div>
 
     <!-- Compact Header -->
