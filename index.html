@@ -1281,14 +1281,15 @@
             </div>
 
             <!-- Vehicle Tax Info Reference -->
+            <!-- 2026 Vehicle Import Information -->
             <div class="calc-section collapsed" id="section-vehicle-info">
                 <div class="section-header" data-toggle-section="section-vehicle-info">
-                    <div class="section-icon section-icon-orange">
+                    <div class="section-icon section-icon-blue">
                         <i class="fas fa-info-circle"></i>
                     </div>
                     <div class="flex-grow-1">
-                        <h5 class="section-heading">Rate Reference Guide</h5>
-                        <small class="section-subtitle">GRA tax brackets for gasoline, diesel & special categories</small>
+                        <h5 class="section-heading">2026 Vehicle Import Tax Information</h5>
+                        <small class="section-subtitle">Tax rates, formulas, Budget 2026 changes, and dealer rules</small>
                     </div>
                     <div class="section-chevron">
                         <i class="fas fa-chevron-down"></i>
@@ -1296,45 +1297,109 @@
                 </div>
                 <div class="section-body">
                     <div class="row g-3">
-                        <div class="col-md-6">
+                        <!-- Gasoline Under 4 -->
+                        <div class="col-md-6 col-lg-3">
                             <div class="info-mini-card">
-                                <h6><i class="fas fa-gas-pump me-1"></i> Gasoline (Under 4 yrs)</h6>
+                                <h6><i class="fas fa-gas-pump me-1"></i> Gasoline (&lt;4 yrs)</h6>
                                 <ul class="info-list">
-                                    <li>0-1500cc: <strong>35%</strong> duty, 0% excise</li>
-                                    <li>1501-2000cc: <strong>45%</strong> duty, 10% excise</li>
+                                    <li>0-1000cc: <strong>35%</strong> duty, 0% excise</li>
+                                    <li>1001-1500cc: <strong>35%</strong> duty, 0% excise</li>
+                                    <li>1501-1800cc: <strong>45%</strong> duty, 10% excise</li>
+                                    <li>1801-2000cc: <strong>45%</strong> duty, 10% excise</li>
                                     <li>2001-3000cc: <strong>45%</strong> duty, 110% excise</li>
                                     <li>3000cc+: <strong>45%</strong> duty, 140% excise</li>
-                                    <li>All: <strong>14%</strong> VAT</li>
+                                    <li>VAT: <strong>14%</strong> on all</li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <!-- Gasoline 4+ years -->
+                        <div class="col-md-6 col-lg-3">
                             <div class="info-mini-card">
-                                <h6><i class="fas fa-oil-can me-1"></i> Diesel (Under 4 yrs)</h6>
+                                <h6><i class="fas fa-gas-pump me-1"></i> Gasoline (4+ yrs)</h6>
+                                <ul class="info-list">
+                                    <li>0-1500cc: <strong>GY$800K</strong> flat</li>
+                                    <li>1501-1800cc: (CIF+$6K)×30%+$6K</li>
+                                    <li>1801-2000cc: (CIF+$6.5K)×30%+$6.5K</li>
+                                    <li>2001-3000cc: (CIF+$13.5K)×70%+$13.5K</li>
+                                    <li>3000cc+: (CIF+$14.5K)×100%+$14.5K</li>
+                                    <li>No duty. No VAT.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Diesel Under 4 -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="info-mini-card">
+                                <h6><i class="fas fa-oil-can me-1"></i> Diesel (&lt;4 yrs)</h6>
                                 <ul class="info-list">
                                     <li>Under 1500cc: <strong>35%</strong> duty, 0% excise</li>
                                     <li>1501-2000cc: <strong>45%</strong> duty, 10% excise</li>
-                                    <li>2001cc+: <strong>45%</strong> duty, 110% excise</li>
-                                    <li>All: <strong>14%</strong> VAT</li>
+                                    <li>2001-2500cc: <strong>45%</strong> duty, 110% excise</li>
+                                    <li>2500cc+: <strong>45%</strong> duty, 110% excise</li>
+                                    <li>VAT: <strong>14%</strong> on all</li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <!-- Diesel 4+ years -->
+                        <div class="col-md-6 col-lg-3">
                             <div class="info-mini-card">
-                                <h6><i class="fas fa-motorcycle me-1"></i> Motorcycles</h6>
+                                <h6><i class="fas fa-oil-can me-1"></i> Diesel (4+ yrs)</h6>
                                 <ul class="info-list">
-                                    <li>≤175cc: <strong>20%</strong> duty, 0% excise, 14% VAT</li>
-                                    <li>>175cc: <strong>20%</strong> duty, 10% excise, 14% VAT</li>
+                                    <li>Under 1500cc: <strong>GY$800K</strong> flat</li>
+                                    <li>1501-2000cc: (CIF+$15.4K)×30%+$15.4K</li>
+                                    <li>2001-2500cc: (CIF+$15.4K)×70%+$15.4K</li>
+                                    <li>2501-3000cc: (CIF+$15.5K)×70%+$15.5K</li>
+                                    <li>3000cc+: (CIF+$17.2K)×100%+$17.2K</li>
+                                    <li>No duty. No VAT.</li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <!-- Budget 2026 Changes -->
+                        <div class="col-md-6 col-lg-3">
                             <div class="info-mini-card">
-                                <h6><i class="fas fa-bolt me-1"></i> Special Categories</h6>
+                                <h6><i class="fas fa-star me-1"></i> Budget 2026</h6>
+                                <ul class="info-list">
+                                    <li>Double-cab &lt;2000cc: <strong>GY$2M</strong> flat</li>
+                                    <li>Double-cab 2000-2500cc: <strong>GY$3M</strong> flat</li>
+                                    <li>&lt;1500cc under 4 yrs: <strong>VAT removed</strong></li>
+                                    <li>Hybrid &lt;2000cc: <strong>VAT removed</strong></li>
+                                    <li>ATVs: <strong>All taxes removed</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Special Categories -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="info-mini-card">
+                                <h6><i class="fas fa-bolt me-1"></i> Electric & Special</h6>
                                 <ul class="info-list">
                                     <li>Electric: <strong>0%</strong> all taxes</li>
-                                    <li>G-Plate: <strong>US$2,000</strong> flat excise</li>
-                                    <li>Dealer: Excise on <strong>1.5× CIF</strong></li>
+                                    <li>G-Plate: <strong>US$2,000</strong> flat excise only</li>
+                                    <li>Motorcycles ≤175cc: <strong>20%</strong> duty, 14% VAT</li>
+                                    <li>Motorcycles &gt;175cc: <strong>20%</strong> duty, 10% excise, 14% VAT</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Dealer Info -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="info-mini-card">
+                                <h6><i class="fas fa-store me-1"></i> Dealer Imports</h6>
+                                <ul class="info-list">
+                                    <li>Excise on <strong>1.5× CIF + Duty</strong></li>
+                                    <li>Applies to vehicles under 4 years</li>
+                                    <li>Recognised new vehicle traders may have different calculation</li>
+                                    <li>Per GRA Excise Tax Regulations</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- How It's Calculated -->
+                        <div class="col-md-6 col-lg-3">
+                            <div class="info-mini-card">
+                                <h6><i class="fas fa-calculator me-1"></i> Formula (Under 4)</h6>
+                                <ul class="info-list">
+                                    <li><strong>1.</strong> Duty = Rate × CIF</li>
+                                    <li><strong>2.</strong> Excise = Rate × (CIF + Duty)</li>
+                                    <li><strong>3.</strong> VAT = 14% × (CIF + Duty + Excise)</li>
+                                    <li><strong>Total</strong> = Duty + Excise + VAT</li>
+                                    <li>Convert to GYD at exchange rate</li>
                                 </ul>
                             </div>
                         </div>
