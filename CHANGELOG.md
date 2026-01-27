@@ -8,8 +8,10 @@ All notable changes to GY TaxCalc are documented here.
 
 ### 🧹 Usability
 - Added "Clear Form" button to both Income & Salary and Vehicle Import calculators
-- Salary clear resets all inputs, dropdowns, and checkboxes to defaults
-- Vehicle clear resets CIF, CC, exchange rate (218), dropdowns, and hides results
+- Styled as red rounded pill buttons with hover glow effect
+- Salary clear fully resets all inputs, dropdowns, checkboxes, result values, charts, sticky bars, and salary increase section
+- Vehicle clear fully resets CIF, CC, exchange rate (218), dropdowns, result breakdown, formula display, rate badges, notes, and sticky bars
+- Complete fresh slate on both calculators
 
 ### 🔧 Fixes
 - Fixed vehicle import info section not visible (was nested inside hidden results area)
