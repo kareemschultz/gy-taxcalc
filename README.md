@@ -15,7 +15,7 @@ A comprehensive, modern web-based calculator designed specifically for Guyanese 
 ### 💰 **Comprehensive Tax Calculations**
 - **2026 Tax Rates**: Updated lower tax brackets (25% up to $280,000, 35% above)
 - **Payment Frequency Support**: Daily, Weekly, Fortnightly, Monthly, and Yearly calculations
-- **Personal Allowance**: $140,000 monthly or 1/3 of gross income (whichever is greater)
+- **Income Tax Threshold**: $140,000 monthly or 1/3 of gross income (whichever is greater)
 - **NIS Contributions**: 5.6% up to $280,000 monthly ceiling
 - **Child Allowances**: $10,000 per child per month
 
@@ -146,7 +146,7 @@ guyana-salary-calculator/
 
 ### **Tax Calculation Method**
 1. **Gross Income**: Basic salary + taxable allowances + additional income
-2. **Deductions Applied**: Personal allowance, NIS, child allowances, insurance
+2. **Deductions Applied**: Income tax threshold, NIS, child allowances, insurance
 3. **Taxable Income**: Gross income minus all applicable deductions
 4. **Tax Calculation**: 25% up to $280,000, then 35% on the remainder
 5. **Net Salary**: Gross income minus NIS, tax, and other deductions
@@ -159,7 +159,7 @@ guyana-salary-calculator/
 
 ### **Frequency Adjustments**
 All tax thresholds, allowances, and deductions are automatically converted based on payment frequency:
-- **Personal Allowance**: $140,000 monthly → $30,000 weekly → $4,274 daily
+- **Income Tax Threshold**: $140,000 monthly → $32,333 weekly → $6,460 daily
 - **Tax Thresholds**: Proportionally adjusted for each frequency
 - **NIS Ceilings**: Scaled appropriately for payment periods
 
@@ -245,7 +245,7 @@ We welcome contributions! Here's how you can help:
 - ✨ **NEW**: Dark mode as default with enhanced styling
 - ✨ **NEW**: Salary increase simulator with retroactive calculations
 - 🔄 **UPDATED**: Tax rates (25%/35% vs previous 28%/40%)
-- 🔄 **UPDATED**: Personal allowance increased to $140,000
+- 🔄 **UPDATED**: Income tax threshold increased to $140,000
 - 🔄 **UPDATED**: Modern UI with improved accessibility
 - 🔄 **UPDATED**: Enhanced mobile experience
 - 🔄 **UPDATED**: Comprehensive chart visualizations

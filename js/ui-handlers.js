@@ -688,7 +688,7 @@ function updateResultLabelsForFrequency(frequencyConfig) {
         'result-non-taxable-allowances': `<i class="fas fa-hand-holding-usd me-1"></i> Non-Taxable Allowances (${frequencyConfig.periodLabel}):`,
         'result-qualification-allowance': `<i class="fas fa-graduation-cap me-1"></i> Qualification Allowance (${frequencyConfig.periodLabel}):`,
         'result-gross': `<i class="fas fa-money-bill-wave me-1"></i> Total Gross Income (${frequencyConfig.periodLabel}):`,
-        'result-personal-allowance': `<i class="fas fa-shield-alt me-1"></i> Personal Allowance (${frequencyConfig.periodLabel}):`,
+        'result-personal-allowance': `<i class="fas fa-shield-alt me-1"></i> Income Tax Threshold (${frequencyConfig.periodLabel}):`,
         'result-nis': `<i class="fas fa-university me-1"></i> NIS Contribution (${frequencyConfig.periodLabel}):`,
         'result-child': `<i class="fas fa-child me-1"></i> Child Allowance (${frequencyConfig.periodLabel}):`,
         'result-overtime': `<i class="fas fa-clock me-1"></i> Overtime Allowance (${frequencyConfig.periodLabel}):`,

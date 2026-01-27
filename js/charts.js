@@ -279,7 +279,7 @@ function createTaxSavingsChart(results) {
         type: 'pie',
         data: {
             labels: [
-                'Personal Allowance Savings', 
+                'Income Tax Threshold Savings', 
                 'Child Allowance Savings',
                 'Insurance Premium Savings',
                 'NIS Contribution Savings',

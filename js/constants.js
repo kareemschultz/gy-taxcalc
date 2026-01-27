@@ -8,7 +8,8 @@ const TAX_RATE_2 = 0.35; // 35% on income above $260,000 monthly
 const TAX_THRESHOLD = 280000; // Monthly threshold
 
 // Allowances and deductions
-const PERSONAL_ALLOWANCE = 140000; // Monthly personal allowance
+const INCOME_TAX_THRESHOLD = 140000; // Monthly income tax threshold
+const PERSONAL_ALLOWANCE = INCOME_TAX_THRESHOLD; // Backward compatibility alias
 const CHILD_ALLOWANCE = 10000; // Per child
 const OVERTIME_ALLOWANCE_MAX = 50000; // Maximum overtime allowance
 const SECOND_JOB_ALLOWANCE_MAX = 50000; // Maximum second job allowance
