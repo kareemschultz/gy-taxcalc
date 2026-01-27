@@ -13,7 +13,7 @@ A comprehensive, modern web-based calculator designed specifically for Guyanese 
 ## ✨ Key Features
 
 ### 💰 **Comprehensive Tax Calculations**
-- **2026 Tax Rates**: Updated lower tax brackets (25% up to $280,000, 35% above)
+- **2026 Tax Rates**: Updated lower tax brackets (25% up to $260,000, 35% above)
 - **Payment Frequency Support**: Daily, Weekly, Fortnightly, Monthly, and Yearly calculations
 - **Income Tax Threshold**: $140,000 monthly or 1/3 of gross income (whichever is greater)
 - **NIS Contributions**: 5.6% up to $280,000 monthly ceiling
@@ -148,7 +148,7 @@ guyana-salary-calculator/
 1. **Gross Income**: Basic salary + taxable allowances + additional income
 2. **Deductions Applied**: Income tax threshold, NIS, child allowances, insurance
 3. **Taxable Income**: Gross income minus all applicable deductions
-4. **Tax Calculation**: 25% up to $280,000, then 35% on the remainder
+4. **Tax Calculation**: 25% up to $260,000, then 35% on the remainder
 5. **Net Salary**: Gross income minus NIS, tax, and other deductions
 
 ### **Gratuity Calculation**
@@ -183,7 +183,7 @@ Update tax constants in `js/constants.js`:
 ```javascript
 const TAX_RATE_1 = 0.25; // 25%
 const TAX_RATE_2 = 0.35; // 35%
-const TAX_THRESHOLD = 280000; // Monthly threshold
+const TAX_THRESHOLD = 260000; // Monthly threshold
 ```
 
 ### **Theme Customization**
