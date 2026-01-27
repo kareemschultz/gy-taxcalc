@@ -538,3 +538,38 @@ function hideVehicleResults() {
     const vehicleSticky = document.getElementById('vehicle-sticky-results');
     if (vehicleSticky) vehicleSticky.classList.remove('visible');
 }
+
+/**
+ * Clear vehicle calculator form
+ */
+function clearVehicleForm() {
+    // Clear CIF and CC inputs
+    const cif = document.getElementById('v-cif');
+    if (cif) cif.value = '';
+    const cc = document.getElementById('v-engine-cc');
+    if (cc) cc.value = '';
+    // Reset exchange rate to default
+    const rate = document.getElementById('v-exchange-rate');
+    if (rate) rate.value = '218';
+    // Reset dropdowns
+    const age = document.getElementById('v-vehicle-age');
+    if (age) age.value = 'under4';
+    const type = document.getElementById('v-vehicle-type');
+    if (type) type.value = 'car';
+    const fuel = document.getElementById('v-fuel-type');
+    if (fuel) fuel.value = 'gasoline';
+    const plate = document.getElementById('v-plate-type');
+    if (plate) plate.value = 'private';
+    // Uncheck dealer
+    const dealer = document.getElementById('v-dealer');
+    if (dealer) dealer.checked = false;
+    // Show all conditional fields
+    const ccGroup = document.getElementById('v-cc-group');
+    if (ccGroup) ccGroup.style.display = '';
+    const fuelGroup = document.getElementById('v-fuel-group');
+    if (fuelGroup) fuelGroup.style.display = '';
+    const ageGroup = document.getElementById('v-age-group');
+    if (ageGroup) ageGroup.style.display = '';
+    // Hide results
+    hideVehicleResults();
+}
