@@ -1,347 +1,413 @@
-# Guyana Salary & Gratuity Calculator
+<div align="center">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Last Updated](https://img.shields.io/badge/Last%20Updated-2025%20Fiscal%20Year-brightgreen.svg)](https://github.com/kareemschultz/guyana-salary-calculator)
-[![GitHub Stars](https://img.shields.io/github/stars/kareemschultz/guyana-salary-calculator?style=social)](https://github.com/kareemschultz/guyana-salary-calculator/stargazers)
+<img src="https://img.shields.io/badge/🇬🇾-Guyana%20Salary%20Calculator-1e40af?style=for-the-badge&labelColor=009739" alt="Guyana Salary Calculator" />
 
-A comprehensive, modern web-based calculator designed specifically for Guyanese employees to calculate their salary, gratuity, and annual package based on the latest 2026 tax regulations. Built with ❤️ by **Kareem Schultz** for the Guyanese workforce.
+# 💰 Guyana Salary & Gratuity Calculator
 
-## 🌟 Live Demo
+**Accurate salary, gratuity, and tax calculations based on 2026 Guyanese fiscal regulations**
 
-**[Try the Calculator](https://kareemschultz.github.io/guyana-salary-calculator/)**
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Try_Now-009739?style=for-the-badge)](https://kareemschultz.github.io/guyana-salary-calculator/)
 
-## ✨ Key Features
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![GitHub Stars](https://img.shields.io/github/stars/kareemschultz/guyana-salary-calculator?style=flat-square&color=gold)](https://github.com/kareemschultz/guyana-salary-calculator/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/kareemschultz/guyana-salary-calculator?style=flat-square&color=blue)](https://github.com/kareemschultz/guyana-salary-calculator/network)
+[![GitHub Issues](https://img.shields.io/github/issues/kareemschultz/guyana-salary-calculator?style=flat-square&color=red)](https://github.com/kareemschultz/guyana-salary-calculator/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/kareemschultz/guyana-salary-calculator?style=flat-square&color=brightgreen)](https://github.com/kareemschultz/guyana-salary-calculator/commits/main)
+[![Made in Guyana](https://img.shields.io/badge/Made_in-Guyana_🇬🇾-009739?style=flat-square)](https://github.com/kareemschultz)
 
-### 💰 **Comprehensive Tax Calculations**
-- **2026 Tax Rates**: Updated lower tax brackets (25% up to $260,000, 35% above)
-- **Payment Frequency Support**: Daily, Weekly, Fortnightly, Monthly, and Yearly calculations
-- **Income Tax Threshold**: $140,000 monthly or 1/3 of gross income (whichever is greater)
-- **NIS Contributions**: 5.6% up to $280,000 monthly ceiling
-- **Child Allowances**: $10,000 per child per month
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![Bootstrap](https://img.shields.io/badge/Bootstrap_5-7952B3?style=flat-square&logo=bootstrap&logoColor=white)
+![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=flat-square&logo=chartdotjs&logoColor=white)
 
-### 🎓 **2026 Qualification Allowances** *(New!)*
-- **ACCA Qualification**: $15,000 monthly (non-taxable)
-- **Master's Degree**: $22,000 monthly (non-taxable)
-- **Doctoral Degree**: $32,000 monthly (non-taxable)
-- *Effective January 2026 as announced by President Dr. Irfaan Ali*
+---
 
-### 📊 **Advanced Calculations**
-- **Gratuity Management**: 22.5% basic salary accrual with configurable payment periods
-- **Special Payment Months**: Month 6 (Net + Gratuity) and Month 12 (Net + Gratuity + Vacation)
-- **Annual Package**: Complete yearly breakdown including all components
-- **Salary Increase Simulator**: Model potential raises with retroactive pay calculations
+*Built with ❤️ by [Kareem Schultz](https://github.com/kareemschultz) for the Guyanese workforce*
 
-### 🏢 **Smart Features**
-- **Position Presets**: Pre-configured ICT job positions with standard allowances
-- **Allowance Management**: Comprehensive taxable and non-taxable allowance categories
-- **Insurance Integration**: Assuria and custom insurance premium calculations
-- **Loan Deductions**: Support for personal loans and credit union deductions
+</div>
 
-### 🎨 **Modern User Experience**
-- **Dark Mode by Default**: Optimized for comfortable viewing with light mode toggle
-- **Responsive Design**: Perfect experience on desktop, tablet, and mobile devices
-- **Interactive Charts**: Visual breakdown of income, taxes, and cash flow
-- **Real-time Updates**: Instant calculations as you type
-- **Comprehensive Tooltips**: Built-in help for every field and calculation
+---
+
+## 📑 Table of Contents
+
+- [✨ Features](#-features)
+- [🚀 Live Demo](#-live-demo)
+- [📊 Position Presets](#-position-presets)
+- [🧮 Tax Calculation Details](#-tax-calculation-details)
+- [📱 Screenshots](#-screenshots)
+- [🏗️ Project Structure](#️-project-structure)
+- [⚡ Getting Started](#-getting-started)
+- [🔧 Customization](#-customization)
+- [📈 Charts & Visualizations](#-charts--visualizations)
+- [🔒 Privacy & Security](#-privacy--security)
+- [🤝 Contributing](#-contributing)
+- [📅 Changelog](#-changelog)
+- [🗺️ Roadmap](#️-roadmap)
+- [📄 License](#-license)
+
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%">
+
+### 💰 Comprehensive Tax Calculations
+- **2026 Tax Rates** — 25% up to $260,000, 35% above
+- **Payment Frequency** — Daily, Weekly, Fortnightly, Monthly, Yearly
+- **Income Tax Threshold** — $140,000/month or 1/3 gross (whichever is greater)
+- **NIS Contributions** — 5.6% up to $280,000 ceiling
+- **Child Allowances** — $10,000 per child per month
+
+</td>
+<td width="50%">
+
+### 🎓 2026 Qualification Allowances
+- **ACCA Qualification** — $15,000/month (non-taxable)
+- **Master's Degree** — $22,000/month (non-taxable)
+- **Doctoral Degree** — $32,000/month (non-taxable)
+
+> *Effective January 2026 as announced by President Dr. Irfaan Ali*
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 📊 Advanced Calculations
+- **Gratuity Management** — 22.5% basic salary accrual
+- **Special Payment Months** — Month 6 & 12 bonuses
+- **Annual Package** — Complete yearly breakdown
+- **Salary Increase Simulator** — Model raises with retroactive pay
+
+</td>
+<td width="50%">
+
+### 🏢 Smart Features
+- **Position Presets** — Pre-configured government ICT positions
+- **Allowance Management** — Taxable & non-taxable categories
+- **Insurance Integration** — Assuria & custom premium calculations
+- **Loan Deductions** — Personal loans & credit union support
+
+</td>
+</tr>
+<tr>
+<td colspan="2">
+
+### 🎨 Modern User Experience
+| Feature | Description |
+|---------|------------|
+| 🌙 **Dark Mode** | Default dark theme with light mode toggle |
+| 📱 **Responsive** | Perfect on desktop, tablet, and mobile |
+| 📊 **Interactive Charts** | Visual breakdown of income, taxes, and cash flow |
+| ⚡ **Real-time** | Instant calculations as you type |
+| 💡 **Tooltips** | Built-in help for every field |
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Live Demo
+
+<div align="center">
+
+### **[🌐 Launch Calculator](https://kareemschultz.github.io/guyana-salary-calculator/)**
+
+</div>
+
+---
+
+## 📊 Position Presets
+
+Pre-configured positions with standard government allowances:
+
+| Position | Code | Basic Salary (G$) | Duty | Uniform |
+|----------|------|-------------------:|-----:|--------:|
+| ICT Technician I | ICT-T1 | 222,804 | — | 5,000 |
+| ICT Technician II | ICT-T2 | 204,942 | — | 5,000 |
+| ICT Technician III | ICT-T3 | 193,701 | — | 5,000 |
+| IT Officer II | ITO-II | 247,451 | 15,000 | 5,000 |
+| IT Officer III | ITO-III | 266,000 | 15,000 | 5,000 |
+| Assistant ICT Engineer III | AICE-III | 266,362 | 15,000 | 5,000 |
+| ICT Engineer III | ICE-III | 304,025 | 15,000 | 5,000 |
+| Administrative Officer II | AO-II | 222,804 | — | 5,000 |
+| Accounts Clerk I | AC-I | 133,854 | — | 5,000 |
+| Primary School Teacher | PST | 180,000 | — | — |
+| Staff Nurse | SN | 200,000 | — | 5,000 |
+
+> 💡 Select a position preset in the calculator to auto-fill salary and allowance fields.
+
+---
+
+## 🧮 Tax Calculation Details
+
+### How It Works
+
+```
+┌─────────────────────────────────────────────┐
+│  Gross Income                               │
+│  = Basic Salary + Taxable Allowances        │
+├─────────────────────────────────────────────┤
+│  Deductions Applied                         │
+│  - Income Tax Threshold ($140,000/month)    │
+│  - NIS (5.6% up to $280,000 ceiling)       │
+│  - Child Allowances ($10,000/child)         │
+│  - Insurance Premiums                       │
+├─────────────────────────────────────────────┤
+│  Taxable Income                             │
+│  = Gross Income - All Deductions            │
+├─────────────────────────────────────────────┤
+│  Tax Calculation                            │
+│  • First $260,000 → 25%                    │
+│  • Above $260,000 → 35%                    │
+├─────────────────────────────────────────────┤
+│  Net Salary                                 │
+│  = Gross - NIS - Tax - Other Deductions     │
+└─────────────────────────────────────────────┘
+```
+
+### Gratuity Calculation
+
+| Component | Value |
+|-----------|-------|
+| Accrual Rate | 22.5% of basic salary/month |
+| Payment Schedule | Every 6 months |
+| Tax Status | Non-taxable |
+| Annual Total | ~2.7 months of basic salary |
+
+### Payment Frequency Adjustments
+
+All thresholds automatically scale based on payment frequency:
+
+| Threshold | Monthly | Fortnightly | Weekly | Daily |
+|-----------|--------:|------------:|-------:|------:|
+| Income Tax | $140,000 | $64,615 | $32,308 | $6,462 |
+| Tax Bracket | $260,000 | $120,000 | $60,000 | $12,000 |
+| NIS Ceiling | $280,000 | $129,231 | $64,615 | $12,923 |
+
+---
 
 ## 📱 Screenshots
 
-### Dark Mode (Default)
-![Dark Mode Calculator](https://via.placeholder.com/800x600/0f172a/f1f5f9?text=Dark+Mode+Calculator)
+<div align="center">
 
-### Light Mode
-![Light Mode Calculator](https://via.placeholder.com/800x600/f9fafb/1f2937?text=Light+Mode+Calculator)
+| Dark Mode (Default) | Light Mode | Mobile |
+|:---:|:---:|:---:|
+| ![Dark Mode](https://via.placeholder.com/300x200/0f172a/f1f5f9?text=Dark+Mode) | ![Light Mode](https://via.placeholder.com/300x200/f9fafb/1f2937?text=Light+Mode) | ![Mobile](https://via.placeholder.com/150x300/1e293b/cbd5e1?text=Mobile) |
 
-### Mobile Experience
-![Mobile View](https://via.placeholder.com/400x800/1e293b/cbd5e1?text=Mobile+Responsive)
+</div>
 
-## 🚀 Getting Started
+---
 
-### Quick Start
-1. **Visit**: [https://kareemschultz.github.io/guyana-salary-calculator/](https://kareemschultz.github.io/guyana-salary-calculator/)
-2. **Enter**: Your employment details and salary information
-3. **Calculate**: Get instant, accurate results based on 2026 tax regulations
+## 🏗️ Project Structure
 
-### Local Development
+```
+guyana-salary-calculator/
+│
+├── 📄 index.html               # Main application
+├── 📄 README.md                # Documentation
+├── 📄 LICENSE                  # MIT License
+│
+├── 🎨 css/
+│   └── styles.css              # Themes, responsive design, dark mode
+│
+└── ⚙️ js/
+    ├── constants.js            # Tax rates, position presets, configs
+    ├── utils.js                # Utilities & theme management
+    ├── calculator.js           # Core calculation engine
+    ├── ui-handlers.js          # DOM events & interactions
+    ├── salary-increase.js      # Raise & retroactive pay simulator
+    ├── charts.js               # Chart.js visualizations
+    └── main.js                 # App initialization
+```
+
+---
+
+## ⚡ Getting Started
+
+### Option 1: Use Online (Recommended)
+
+Simply visit **[the live calculator](https://kareemschultz.github.io/guyana-salary-calculator/)** — no installation required.
+
+### Option 2: Run Locally
+
 ```bash
 # Clone the repository
 git clone https://github.com/kareemschultz/guyana-salary-calculator.git
 
-# Navigate to the project directory
+# Open in your browser
 cd guyana-salary-calculator
-
-# Open index.html in your browser
-# No build process required - it's a pure client-side application
+open index.html    # macOS
+xdg-open index.html  # Linux
+start index.html   # Windows
 ```
 
-## 📋 Usage Guide
+> **No build process required** — pure client-side HTML/CSS/JS application.
 
-### Basic Calculation
-1. **Personal Information**: Enter your name, position, and employment dates
-2. **Payment Frequency**: Select how often you're paid (daily to yearly)
-3. **Basic Salary**: Enter your base salary amount
-4. **Allowances**: Add both taxable and non-taxable allowances
-5. **Qualifications**: Select any applicable degree qualifications
-6. **Deductions**: Include children, insurance, and loan information
-7. **Calculate**: View your comprehensive salary breakdown
-
-### Advanced Features
-
-#### **Salary Increase Simulator**
-- Model percentage-based salary increases
-- Choose between taxable and non-taxable increases
-- Calculate retroactive payments for multiple months
-- See impact on monthly take-home, gratuity, and annual income
-
-#### **Position Presets**
-Pre-configured positions with standard allowances:
-- ICT Technician I, II, III
-- Assistant ICT Engineer III
-- ICT Engineer III
-
-#### **Payment Frequencies**
-All calculations automatically adjust for:
-- **Daily**: 260 working days per year
-- **Weekly**: 52 payments per year
-- **Fortnightly**: 26 payments per year
-- **Monthly**: 12 payments per year
-- **Yearly**: Single annual payment
-
-## 🏗️ Technical Architecture
-
-### **Frontend Technologies**
-- **HTML5**: Semantic markup with accessibility features
-- **CSS3**: Modern styling with CSS custom properties and grid/flexbox
-- **JavaScript ES6+**: Modular architecture with separated concerns
-- **Bootstrap 5**: Responsive framework with custom theme integration
-- **Chart.js**: Interactive data visualizations
-- **Font Awesome**: Comprehensive icon library
-
-### **File Structure**
-```
-guyana-salary-calculator/
-├── index.html              # Main application file
-├── css/
-│   └── styles.css          # Comprehensive styling with dark mode
-├── js/
-│   ├── constants.js        # Tax rates, allowances, and frequency configs
-│   ├── utils.js           # Utility functions and theme management
-│   ├── calculator.js      # Core calculation engine
-│   ├── ui-handlers.js     # DOM manipulation and event handling
-│   ├── salary-increase.js # Salary increase simulation logic
-│   ├── charts.js          # Chart generation and management
-│   └── main.js            # Application initialization
-├── README.md              # This documentation
-└── LICENSE               # MIT License
-```
-
-### **Key Technical Features**
-- **Client-side Only**: No server required, works entirely in the browser
-- **Progressive Enhancement**: Works without JavaScript for basic functionality
-- **Local Storage**: Theme preferences persisted across sessions
-- **Modular Design**: Separated JavaScript modules for maintainability
-- **Performance Optimized**: Minimal dependencies, fast loading
-
-## 📊 Calculation Details
-
-### **Tax Calculation Method**
-1. **Gross Income**: Basic salary + taxable allowances + additional income
-2. **Deductions Applied**: Income tax threshold, NIS, child allowances, insurance
-3. **Taxable Income**: Gross income minus all applicable deductions
-4. **Tax Calculation**: 25% up to $260,000, then 35% on the remainder
-5. **Net Salary**: Gross income minus NIS, tax, and other deductions
-
-### **Gratuity Calculation**
-- **Accrual Rate**: 22.5% of basic salary per month
-- **Payment Schedule**: Typically every 6 months
-- **Tax Status**: Non-taxable income
-- **Annual Total**: Usually equals 2.7 months of basic salary (22.5% × 12 months)
-
-### **Frequency Adjustments**
-All tax thresholds, allowances, and deductions are automatically converted based on payment frequency:
-- **Income Tax Threshold**: $140,000 monthly → $32,333 weekly → $6,460 daily
-- **Tax Thresholds**: Proportionally adjusted for each frequency
-- **NIS Ceilings**: Scaled appropriately for payment periods
+---
 
 ## 🔧 Customization
 
-### **Adding New Position Presets**
-Edit `js/constants.js` to add new positions:
+### Adding Position Presets
+
+Edit `js/constants.js`:
+
 ```javascript
 const POSITION_PRESETS = {
-    'your-position-id': {
+    'your-position': {
         title: 'Your Position Title',
         baseSalary: 250000,
-        taxableAllowances: { /* ... */ },
-        nonTaxableAllowances: { /* ... */ }
+        taxableAllowances: {
+            duty: 15000,
+            uniform: 5000
+        },
+        nonTaxableAllowances: {
+            travel: 5000,
+            telecom: 5000
+        },
+        totalTaxableAllowances: 20000,
+        totalNonTaxableAllowances: 10000
     }
 };
 ```
 
-### **Modifying Tax Rates**
-Update tax constants in `js/constants.js`:
+### Modifying Tax Rates
+
 ```javascript
-const TAX_RATE_1 = 0.25; // 25%
-const TAX_RATE_2 = 0.35; // 35%
-const TAX_THRESHOLD = 260000; // Monthly threshold
+// js/constants.js
+const TAX_RATE_1 = 0.25;        // 25% — lower bracket
+const TAX_RATE_2 = 0.35;        // 35% — upper bracket
+const TAX_THRESHOLD = 260000;    // Monthly bracket threshold
 ```
 
-### **Theme Customization**
-Modify CSS custom properties in `css/styles.css`:
+### Theme Colors
+
 ```css
+/* css/styles.css */
 :root {
     --primary: #1e40af;
     --background: #f9fafb;
-    /* ... other variables */
 }
 ```
 
-## 📈 Charts and Visualizations
+---
 
-The calculator includes four interactive charts:
+## 📈 Charts & Visualizations
 
-1. **Income Breakdown**: Pie chart showing salary components
-2. **Tax Bracket Analysis**: Bar chart comparing tax obligations
-3. **Annual Cash Flow**: Line chart showing monthly income with gratuity spikes
-4. **Net vs. Gross**: Comparison chart for different payment periods
+Four interactive Chart.js visualizations, all theme-aware and real-time:
 
-All charts automatically adapt to the current theme and update in real-time.
+| Chart | Type | Shows |
+|-------|------|-------|
+| 🥧 **Income Breakdown** | Pie | Salary component proportions |
+| 📊 **Tax Bracket Analysis** | Bar | Tax obligations by bracket |
+| 📈 **Annual Cash Flow** | Line | Monthly income with gratuity spikes |
+| ⚖️ **Net vs. Gross** | Comparison | Take-home vs. total compensation |
 
-## 🔒 Privacy and Security
+---
 
-- **No Data Collection**: All calculations performed locally in your browser
-- **No Server Communication**: Complete client-side application
-- **No Personal Data Storage**: Only theme preferences saved locally
-- **Open Source**: Full transparency with public source code
+## 🔒 Privacy & Security
+
+| | |
+|---|---|
+| 🚫 **No Data Collection** | All calculations run locally in your browser |
+| 🔌 **No Server Calls** | Complete client-side application |
+| 💾 **No Personal Storage** | Only theme preference saved (localStorage) |
+| 🔓 **Open Source** | Full transparency — audit the code yourself |
+
+---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how you can help:
+Contributions are welcome! Here's how:
 
-### **Types of Contributions**
-- 🐛 **Bug Reports**: Found an issue? Let us know!
-- 💡 **Feature Requests**: Have an idea? We'd love to hear it!
-- 📝 **Documentation**: Help improve our docs
-- 🔧 **Code Contributions**: Submit pull requests
-
-### **Development Process**
 1. **Fork** the repository
 2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
 3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
 4. **Push** to the branch (`git push origin feature/amazing-feature`)
 5. **Open** a Pull Request
 
-### **Contribution Guidelines**
-- Follow existing code style and conventions
-- Add comments for complex logic
-- Test across different browsers and devices
-- Update documentation for new features
+### Ways to Contribute
+
+| Type | Description |
+|------|-------------|
+| 🐛 Bug Reports | Found an issue? Open a GitHub issue |
+| 💡 Feature Requests | Ideas for improvements |
+| 📝 Documentation | Help improve the docs |
+| 🔧 Code | Submit pull requests |
+| 🧪 Testing | Test across browsers and devices |
+
+---
 
 ## 📅 Changelog
 
-### **Version 3.0.0** *(Current - 2026 Fiscal Year)*
-- ✨ **NEW**: Payment frequency support (daily to yearly)
-- ✨ **NEW**: 2026 qualification allowances (ACCA, Master's, PhD)
-- ✨ **NEW**: Dark mode as default with enhanced styling
-- ✨ **NEW**: Salary increase simulator with retroactive calculations
-- 🔄 **UPDATED**: Tax rates (25%/35% vs previous 28%/40%)
-- 🔄 **UPDATED**: Income tax threshold increased to $140,000
-- 🔄 **UPDATED**: Modern UI with improved accessibility
-- 🔄 **UPDATED**: Enhanced mobile experience
-- 🔄 **UPDATED**: Comprehensive chart visualizations
+### v3.0.0 — *2026 Fiscal Year* (Current)
+| | Change |
+|---|--------|
+| ✨ | Payment frequency support (daily to yearly) |
+| ✨ | 2026 qualification allowances (ACCA, Master's, PhD) |
+| ✨ | Dark mode as default |
+| ✨ | Salary increase simulator with retroactive calculations |
+| ✨ | IT Officer III position preset added |
+| 🔄 | Tax rates updated (25%/35% vs previous 28%/40%) |
+| 🔄 | Income tax threshold raised to $140,000 |
+| 🔄 | Enhanced mobile experience |
+| 🔄 | Comprehensive chart visualizations |
 
-### **Version 1.0.0** *(Initial Release)*
-- 🎉 Basic salary and gratuity calculations
-- 📊 Tax bracket analysis
-- 🏢 Position presets for ICT roles
-- 📱 Responsive design
-- 🎨 Light theme interface
+### v1.0.0 — *Initial Release*
+| | Change |
+|---|--------|
+| 🎉 | Basic salary and gratuity calculations |
+| 📊 | Tax bracket analysis |
+| 🏢 | Position presets for ICT roles |
+| 📱 | Responsive design |
 
-## 🆘 Support and FAQ
+---
 
-### **Common Questions**
+## 🗺️ Roadmap
 
-**Q: How accurate are the calculations?**
-A: The calculator uses official 2025 Guyana tax regulations and is regularly updated. However, always consult a tax professional for official advice.
+| Priority | Feature | Status |
+|----------|---------|--------|
+| 🔥 | Save/Load calculation scenarios | Planned |
+| 🔥 | Side-by-side salary comparison | Planned |
+| 🟡 | Progressive Web App (installable) | Planned |
+| 🟡 | Auto-update on regulation changes | Planned |
+| 🟢 | Multi-language support | Future |
+| 🟢 | Historical salary analysis | Future |
+| 🟢 | Caribbean tax system integration | Future |
+| 🟢 | Business payroll features | Future |
 
-**Q: Can I use this for previous tax years?**
-A: This calculator is specifically designed for 2026 tax regulations. Tax rates and allowances differ for previous years.
+---
 
-**Q: Does it work offline?**
-A: Yes! Once loaded, the calculator works completely offline.
+## 📄 License
 
-**Q: Can I save my calculations?**
-A: Currently, calculations are not saved between sessions. We recommend taking screenshots or notes of important results.
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
-### **Getting Help**
-- 📧 **Issues**: [GitHub Issues](https://github.com/kareemschultz/guyana-salary-calculator/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/kareemschultz/guyana-salary-calculator/discussions)
-- 🐛 **Bug Reports**: Use our issue template for fastest response
+### ⚠️ Disclaimer
 
-## 📄 Legal and Compliance
+This calculator provides estimates based on 2026 Guyana tax regulations. While every effort has been made to ensure accuracy, please consult a qualified tax professional for official advice regarding your specific situation.
 
-### **Disclaimer**
-This calculator is designed to provide estimates based on 2025 Guyana tax regulations. While every effort has been made to ensure accuracy, please consult with a qualified tax professional for official advice regarding your specific situation. The developers are not responsible for any financial decisions made based on these calculations.
-
-### **Data Sources**
-- Guyana Revenue Authority (GRA) 2026 tax guidelines
-- National Insurance Scheme (NIS) contribution rates
-- Official government announcements regarding qualification allowances
-- Standard Assuria insurance premium rates
-
-### **License**
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🎯 Roadmap
-
-### **Upcoming Features**
-- 💾 **Save/Load Calculations**: Ability to save and reload calculation scenarios
-- 📊 **Comparison Mode**: Side-by-side comparison of different salary scenarios
-- 📱 **Progressive Web App**: Install as a mobile app
-- 🔄 **Auto-Update**: Automatic updates when tax regulations change
-- 🌍 **Multi-Language**: Support for additional languages
-- 📈 **Historical Analysis**: Track salary changes over time
-- 🔗 **API Integration**: Real-time exchange rates and economic indicators
-
-### **Long-term Goals**
-- Integration with other Caribbean tax systems
-- Advanced financial planning tools
-- Business payroll calculation features
-- Tax optimization recommendations
-
-## 👨‍💻 Author
-
-**Kareem Schultz**
-- 🌐 **Website**: [Portfolio Coming Soon]
-- 💼 **LinkedIn**: [Connect with Kareem]
-- 📧 **Email**: [Contact for collaborations]
-- 🐦 **Twitter**: [@kareemschultz]
-
-## 🙏 Acknowledgments
-
-- **Guyana Revenue Authority** for comprehensive tax documentation
-- **Government of Guyana** for the 2026 fiscal policy updates
-- **Open Source Community** for the excellent tools and libraries
-- **Guyanese Workforce** for feedback and feature requests
-- **Beta Testers** who helped refine the user experience
-
-## 💝 Support the Project
-
-If this calculator has helped you, consider:
-- ⭐ **Starring** the repository
-- 🐛 **Reporting** bugs or issues
-- 💡 **Suggesting** new features
-- 🔄 **Sharing** with colleagues and friends
-- 🤝 **Contributing** code or documentation
+**Data Sources:** Guyana Revenue Authority (GRA), National Insurance Scheme (NIS), official government announcements.
 
 ---
 
 <div align="center">
 
-**Built with ❤️ for the Guyanese workforce**
+## 👨‍💻 Author
 
-🇬🇾 **Making tax calculations simple and accessible** 🇬🇾
+**Kareem Schultz**
 
-[**Try the Calculator**](https://kareemschultz.github.io/guyana-salary-calculator/) | [**Report Issues**](https://github.com/kareemschultz/guyana-salary-calculator/issues) | [**Contribute**](https://github.com/kareemschultz/guyana-salary-calculator/pulls)
+[![GitHub](https://img.shields.io/badge/GitHub-kareemschultz-181717?style=flat-square&logo=github)](https://github.com/kareemschultz)
+
+---
+
+**🇬🇾 Making tax calculations simple and accessible for every Guyanese worker 🇬🇾**
+
+⭐ **Star this repo** if you find it helpful!
+
+[**Launch Calculator**](https://kareemschultz.github.io/guyana-salary-calculator/) · [**Report Bug**](https://github.com/kareemschultz/guyana-salary-calculator/issues) · [**Request Feature**](https://github.com/kareemschultz/guyana-salary-calculator/issues)
 
 </div>
