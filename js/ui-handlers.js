@@ -1,34 +1,63 @@
 /**
- * UI event handlers and DOM manipulation - Updated with Payment Frequency Support
+ * UI event handlers and DOM manipulation - REDESIGNED
+ * Progressive disclosure, auto-calculate, sticky results
  */
+
+// Debounce timer for auto-calculate
+let autoCalcTimer = null;
+const AUTO_CALC_DELAY = 300; // ms
 
 /**
  * Helper function to safely update element text content
- * @param {string} elementId - The ID of the element to update
- * @param {string} value - The value to set
  */
 function safeUpdateElement(elementId, value) {
     const element = document.getElementById(elementId);
     if (element) {
         element.textContent = value;
         return true;
-    } else {
-        // Only log warnings for critical elements, not optional ones
-        const optionalElements = [
-            'result-qualification-allowance', 
-            'result-annual-nis',
-            'result-month-six-net',
-            'result-month-six-gratuity', 
-            'result-month-twelve-net',
-            'result-month-twelve-gratuity',
-            'result-month-twelve-vacation'
-        ];
-        
-        if (!optionalElements.includes(elementId)) {
-            console.warn(`Element with ID '${elementId}' not found in DOM`);
-        }
-        return false;
     }
+    const optionalElements = [
+        'result-qualification-allowance', 'result-annual-nis',
+        'result-month-six-net', 'result-month-six-gratuity',
+        'result-month-twelve-net', 'result-month-twelve-gratuity',
+        'result-month-twelve-vacation'
+    ];
+    if (!optionalElements.includes(elementId)) {
+        console.warn(`Element '${elementId}' not found`);
+    }
+    return false;
+}
+
+/**
+ * Trigger auto-calculate with debounce
+ */
+function triggerAutoCalculate() {
+    const basicSalary = parseFloat(document.getElementById('basic-salary')?.value) || 0;
+    if (basicSalary <= 0) return; // Don't calculate without salary
+
+    clearTimeout(autoCalcTimer);
+    autoCalcTimer = setTimeout(function() {
+        try {
+            calculateSalary();
+        } catch (e) {
+            console.error('Auto-calculate error:', e);
+        }
+    }, AUTO_CALC_DELAY);
+}
+
+/**
+ * Initialize accordion (collapsible sections)
+ */
+function setupAccordion() {
+    document.querySelectorAll('[data-toggle-section]').forEach(function(header) {
+        header.addEventListener('click', function() {
+            const sectionId = this.getAttribute('data-toggle-section');
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.toggle('collapsed');
+            }
+        });
+    });
 }
 
 /**
@@ -36,25 +65,26 @@ function safeUpdateElement(elementId, value) {
  */
 function setupEventListeners() {
     debug('Setting up event listeners');
-    
+
+    // Setup accordion
+    setupAccordion();
+
     // Setup position dropdown
     setupPositionDropdown();
-    
+
     // Setup qualification allowance listeners
     setupQualificationListeners();
-    
-    // Calculate button
+
+    // Calculate button (fallback)
     const calculateBtn = document.getElementById('calculate-btn');
     if (calculateBtn) {
         calculateBtn.addEventListener('click', function() {
             debug('Calculate button clicked');
             calculateSalary();
-            
-            // Show the salary increase section after calculation
             showSalaryIncreaseSection();
         });
     }
-    
+
     // Calculate with increase button
     const calculateIncreaseBtn = document.getElementById('calculate-increase-btn');
     if (calculateIncreaseBtn) {
@@ -63,7 +93,7 @@ function setupEventListeners() {
             calculateWithIncrease();
         });
     }
-    
+
     // Toggle taxable allowances
     const toggleTaxableAllowances = document.getElementById('toggle-taxable-allowances');
     if (toggleTaxableAllowances) {
@@ -81,13 +111,11 @@ function setupEventListeners() {
             if (multipleSection.classList.contains('d-none')) {
                 icon.classList.remove('fa-minus-circle');
                 icon.classList.add('fa-plus-circle');
-                text.textContent = 'Enter Detailed Taxable Allowances';
+                text.textContent = 'Show Details';
             } else {
                 icon.classList.remove('fa-plus-circle');
                 icon.classList.add('fa-minus-circle');
-                text.textContent = 'Enter Total Taxable Allowances';
-                
-                // Calculate total when switching to multiple
+                text.textContent = 'Show Total';
                 calculateTaxableAllowancesTotal();
             }
         });
@@ -110,42 +138,16 @@ function setupEventListeners() {
             if (multipleSection.classList.contains('d-none')) {
                 icon.classList.remove('fa-minus-circle');
                 icon.classList.add('fa-plus-circle');
-                text.textContent = 'Enter Detailed Non-Taxable Allowances';
+                text.textContent = 'Show Details';
             } else {
                 icon.classList.remove('fa-plus-circle');
                 icon.classList.add('fa-minus-circle');
-                text.textContent = 'Enter Total Non-Taxable Allowances';
-                
-                // Calculate total when switching to multiple
+                text.textContent = 'Show Total';
                 calculateNonTaxableAllowancesTotal();
             }
         });
     }
 
-    // Toggle second job
-    const toggleSecondJob = document.getElementById('toggle-second-job');
-    if (toggleSecondJob) {
-        toggleSecondJob.addEventListener('click', function(e) {
-            e.preventDefault();
-            const secondJobSection = document.getElementById('second-job-section');
-            secondJobSection.classList.toggle('d-none');
-
-            const icon = this.querySelector('i');
-            const text = this.querySelector('span');
-
-            if (secondJobSection.classList.contains('d-none')) {
-                icon.classList.remove('fa-minus-circle');
-                icon.classList.add('fa-plus-circle');
-                text.textContent = 'Add Second Job Income';
-                document.getElementById('second-job').value = '';
-            } else {
-                icon.classList.remove('fa-plus-circle');
-                icon.classList.add('fa-minus-circle');
-                text.textContent = 'Remove Second Job Income';
-            }
-        });
-    }
-    
     // Toggle retroactive section
     const toggleRetroactive = document.getElementById('toggle-retroactive');
     if (toggleRetroactive) {
@@ -156,9 +158,7 @@ function setupEventListeners() {
                 retroactiveSection.classList.remove('d-none');
             } else {
                 retroactiveSection.classList.add('d-none');
-                if (retroactiveResultsDisplay) {
-                    retroactiveResultsDisplay.classList.add('d-none');
-                }
+                if (retroactiveResultsDisplay) retroactiveResultsDisplay.classList.add('d-none');
             }
         });
     }
@@ -168,28 +168,26 @@ function setupEventListeners() {
     if (insuranceDropdown) {
         insuranceDropdown.addEventListener('change', function() {
             const customPremiumSection = document.getElementById('custom-premium-section');
-
             if (this.value === 'custom') {
                 customPremiumSection.classList.remove('d-none');
             } else {
                 customPremiumSection.classList.add('d-none');
                 document.getElementById('custom-premium').value = '';
             }
+            triggerAutoCalculate();
         });
     }
 
     // Taxable allowances calculation
-    const taxableAllowances = document.querySelectorAll('.taxable-allowance');
-    taxableAllowances.forEach(function(input) {
+    document.querySelectorAll('.taxable-allowance').forEach(function(input) {
         input.addEventListener('input', calculateTaxableAllowancesTotal);
     });
 
     // Non-taxable allowances calculation
-    const nonTaxableAllowances = document.querySelectorAll('.non-taxable-allowance');
-    nonTaxableAllowances.forEach(function(input) {
+    document.querySelectorAll('.non-taxable-allowance').forEach(function(input) {
         input.addEventListener('input', calculateNonTaxableAllowancesTotal);
     });
-    
+
     // Theme toggle
     const themeToggle = document.getElementById('theme-toggle');
     if (themeToggle) {
@@ -197,12 +195,39 @@ function setupEventListeners() {
             toggleDarkMode(this.checked);
         });
     }
-    
+
+    // Auto-calculate on ANY input change
+    setupAutoCalculate();
+
     // Setup payment frequency listeners
     setupPaymentFrequencyListeners();
-    
+
     // Initialize tooltips
     initializeTooltips();
+}
+
+/**
+ * Setup auto-calculate on all input changes
+ */
+function setupAutoCalculate() {
+    // Listen to all calc-input elements
+    document.querySelectorAll('.calc-input').forEach(function(input) {
+        const eventType = (input.tagName === 'SELECT' || input.type === 'radio' || input.type === 'checkbox') ? 'change' : 'input';
+        input.addEventListener(eventType, function() {
+            triggerAutoCalculate();
+        });
+    });
+
+    // Also listen to qualification radio buttons
+    document.querySelectorAll('.qualification-check').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            updateQualificationAllowance();
+            triggerAutoCalculate();
+        });
+    });
+
+    // Mark body as auto-calc active (hides manual calc button when results showing)
+    document.body.classList.add('auto-calc-active');
 }
 
 /**
@@ -210,112 +235,71 @@ function setupEventListeners() {
  */
 function updateFrequencyLabels() {
     const frequencyConfig = getFrequencyConfig();
-    const frequency = getCurrentFrequency();
-    
-    // Update basic salary label
+
     const basicSalaryLabel = document.getElementById('basic-salary-label');
     if (basicSalaryLabel) {
         basicSalaryLabel.textContent = `Basic ${frequencyConfig.label} Salary`;
     }
-    
-    // Update salary frequency label in input group
+
     const salaryFrequencyLabel = document.getElementById('salary-frequency-label');
     if (salaryFrequencyLabel) {
         salaryFrequencyLabel.textContent = frequencyConfig.periodLabel;
     }
-    
-    // Update tax calculation preview
+
     updateTaxCalculationPreview();
-    
-    // Update allowance field labels and placeholders
     updateAllowanceLabels();
-    
-    // Update qualification allowance display
     updateQualificationAllowance();
 }
 
 /**
- * Update the tax calculation preview based on selected frequency
+ * Update the tax calculation preview
  */
 function updateTaxCalculationPreview() {
     const frequencyConfig = getFrequencyConfig();
-    
-    // Update preview values
-    const previewPersonalAllowance = document.getElementById('preview-personal-allowance');
-    if (previewPersonalAllowance) {
-        previewPersonalAllowance.textContent = formatCurrency(frequencyConfig.personalAllowance);
-    }
-    
-    const previewTaxThreshold = document.getElementById('preview-tax-threshold');
-    if (previewTaxThreshold) {
-        previewTaxThreshold.textContent = formatCurrency(frequencyConfig.taxThreshold);
-    }
-    
-    const previewNisCeiling = document.getElementById('preview-nis-ceiling');
-    if (previewNisCeiling) {
-        previewNisCeiling.textContent = formatCurrency(frequencyConfig.nisCeiling);
-    }
+
+    const previewPA = document.getElementById('preview-personal-allowance');
+    if (previewPA) previewPA.textContent = formatCurrency(frequencyConfig.personalAllowance);
+
+    const previewTax = document.getElementById('preview-tax-threshold');
+    if (previewTax) previewTax.textContent = formatCurrency(frequencyConfig.taxThreshold);
+
+    const previewNIS = document.getElementById('preview-nis-ceiling');
+    if (previewNIS) previewNIS.textContent = formatCurrency(frequencyConfig.nisCeiling);
 }
 
 /**
- * Update allowance field labels based on frequency
+ * Update allowance field labels
  */
 function updateAllowanceLabels() {
-    const frequencyConfig = getFrequencyConfig();
-    
-    // Update overtime help text
-    const overtimeFormText = document.querySelector('#overtime + .form-text');
-    if (overtimeFormText) {
-        overtimeFormText.innerHTML = `
-            <i class="fas fa-shield-alt me-1 text-success"></i> 
-            First ${formatCurrency(frequencyConfig.overtimeMax)} is non-taxable
-        `;
-    }
-    
-    // Update child allowance help text
-    const childrenFormText = document.querySelector('#children + .form-text');
-    if (childrenFormText) {
-        childrenFormText.innerHTML = `
-            <i class="fas fa-money-bill-wave me-1 text-success"></i> 
-            ${formatCurrency(frequencyConfig.childAllowance)} deduction per child ${frequencyConfig.periodLabel}
-        `;
-    }
-    
-    // Update insurance help text
-    const insuranceFormText = document.querySelector('#insurance + .form-text');
-    if (insuranceFormText) {
-        insuranceFormText.innerHTML = `
-            <i class="fas fa-percentage me-1 text-info"></i> 
-            Deductible up to 10% of gross income or ${formatCurrency(frequencyConfig.insuranceMaxMonthly)}
-        `;
-    }
+    // Labels update handled by frequency config - kept for backward compatibility
 }
 
 /**
- * Update the qualification allowance based on selection with frequency support
+ * Update qualification allowance display
  */
 function updateQualificationAllowance() {
-    const selectedQualification = document.querySelector('input[name="qualification-type"]:checked').value;
+    const selectedQualification = document.querySelector('input[name="qualification-type"]:checked')?.value || 'none';
     const allowanceAmount = getQualificationAllowanceForFrequency(selectedQualification);
     const frequencyConfig = getFrequencyConfig();
-    
+
     const qualificationAlert = document.querySelector('.qualification-alert');
     const allowanceAmountElement = document.getElementById('qualification-allowance-amount');
-    
+
     if (selectedQualification === 'none') {
-        qualificationAlert.classList.add('d-none');
+        if (qualificationAlert) qualificationAlert.classList.add('d-none');
     } else {
-        qualificationAlert.classList.remove('d-none');
-        allowanceAmountElement.textContent = `${formatCurrency(allowanceAmount)} ${frequencyConfig.periodLabel}`;
+        if (qualificationAlert) qualificationAlert.classList.remove('d-none');
+        if (allowanceAmountElement) {
+            allowanceAmountElement.textContent = `${formatCurrency(allowanceAmount)} ${frequencyConfig.periodLabel}`;
+        }
     }
 }
 
 /**
- * Set up event listeners for qualification checkboxes
+ * Setup qualification listeners
  */
 function setupQualificationListeners() {
-    const qualificationChecks = document.querySelectorAll('.qualification-check');
-    qualificationChecks.forEach(check => {
+    document.querySelectorAll('.qualification-check').forEach(function(check) {
         check.addEventListener('change', updateQualificationAllowance);
     });
 }
@@ -328,77 +312,9 @@ function setupPaymentFrequencyListeners() {
     if (paymentFrequencySelect) {
         paymentFrequencySelect.addEventListener('change', function() {
             debug('Payment frequency changed to: ' + this.value);
-            
-            // Update all frequency-dependent labels and previews
             updateFrequencyLabels();
-            
-            // Clear previous calculation results since frequency has changed
-            hideResultsSections();
-            
-            // Show a message that calculation needs to be redone
-            showFrequencyChangeMessage();
+            triggerAutoCalculate();
         });
-    }
-}
-
-/**
- * Hide results sections when frequency changes
- */
-function hideResultsSections() {
-    const sections = [
-        'results-summary',
-        'quick-stats', 
-        'detailed-results',
-        'simulator-divider',
-        'salary-increase-section',
-        'charts-divider',
-        'charts-section'
-    ];
-    
-    sections.forEach(sectionId => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-            element.style.display = 'none';
-        }
-    });
-}
-
-/**
- * Show a message when frequency changes requiring recalculation
- */
-function showFrequencyChangeMessage() {
-    // Create or update a temporary alert
-    let existingAlert = document.getElementById('frequency-change-alert');
-    if (existingAlert) {
-        existingAlert.remove();
-    }
-    
-    const frequencyConfig = getFrequencyConfig();
-    const alert = document.createElement('div');
-    alert.id = 'frequency-change-alert';
-    alert.className = 'alert alert-info alert-dismissible fade show mt-3';
-    alert.innerHTML = `
-        <div class="d-flex align-items-center">
-            <i class="fas fa-info-circle me-2"></i>
-            <div>
-                <strong>Payment frequency changed to ${frequencyConfig.label.toLowerCase()}!</strong> 
-                Please recalculate to see results for ${frequencyConfig.periodLabel} payments.
-            </div>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    // Insert after the frequency selector
-    const frequencyContainer = document.getElementById('payment-frequency').closest('.card-body');
-    if (frequencyContainer) {
-        frequencyContainer.appendChild(alert);
-        
-        // Auto-dismiss after 5 seconds
-        setTimeout(() => {
-            if (alert && alert.parentNode) {
-                alert.remove();
-            }
-        }, 5000);
     }
 }
 
@@ -406,16 +322,14 @@ function showFrequencyChangeMessage() {
  * Initialize Bootstrap tooltips
  */
 function initializeTooltips() {
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl, {
-            html: true
-        });
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl, { html: true });
     });
 }
 
 /**
- * Calculate and display the total of taxable allowances
+ * Calculate taxable allowances total
  */
 function calculateTaxableAllowancesTotal() {
     let total = 0;
@@ -424,96 +338,115 @@ function calculateTaxableAllowancesTotal() {
     });
 
     const totalElement = document.getElementById('taxable-allowances-total');
-    if (totalElement) {
-        totalElement.textContent = 'GYD $' + total.toFixed(2);
-    }
+    if (totalElement) totalElement.textContent = 'GYD $' + total.toFixed(2);
 
-    // Update the single input field too
-    if (document.getElementById('single-taxable-allowance') && 
+    if (document.getElementById('single-taxable-allowance') &&
         !document.getElementById('single-taxable-allowance').classList.contains('d-none')) {
         document.getElementById('taxable-allowances').value = total;
     }
 }
 
 /**
- * Calculate and display the total of non-taxable allowances
+ * Calculate non-taxable allowances total
  */
 function calculateNonTaxableAllowancesTotal() {
     let total = 0;
-    // Exclude vacation-allowance from this sum because it's handled as an annual lump sum separately.
     document.querySelectorAll('.non-taxable-allowance').forEach(function(input) {
-        if (input.id !== 'vacation-allowance') { // Explicitly exclude vacation-allowance
+        if (input.id !== 'vacation-allowance') {
             total += parseFloat(input.value) || 0;
         }
     });
 
     const totalElement = document.getElementById('non-taxable-allowances-total');
-    if (totalElement) {
-        totalElement.textContent = 'GYD $' + total.toFixed(2);
-    }
+    if (totalElement) totalElement.textContent = 'GYD $' + total.toFixed(2);
 
-    // Update the single input field too
-    if (document.getElementById('single-non-taxable-allowance') && 
+    if (document.getElementById('single-non-taxable-allowance') &&
         !document.getElementById('single-non-taxable-allowance').classList.contains('d-none')) {
         document.getElementById('non-taxable-allowances').value = total;
     }
 }
 
 /**
- * Show results sections safely
+ * Show results sections - REDESIGNED for new layout
  */
 function showResultsSections() {
-    const sections = [
-        'results-summary',
-        'quick-stats', 
-        'detailed-results',
-        'simulator-divider',
-        'salary-increase-section',
-        'charts-divider',
-        'charts-section'
-    ];
-    
-    sections.forEach(sectionId => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-            element.style.display = 'block';
-        }
-    });
+    const resultsArea = document.getElementById('results-area');
+    if (resultsArea) resultsArea.style.display = 'block';
+
+    // Show sticky results
+    const stickyResults = document.getElementById('sticky-results');
+    if (stickyResults) stickyResults.classList.add('visible');
+
+    // Show mobile sticky bar
+    const mobileBar = document.getElementById('mobile-sticky-bar');
+    if (mobileBar && window.innerWidth < 768) mobileBar.classList.add('visible');
+
+    // Show simulator section inside its accordion
+    const simulatorSection = document.getElementById('section-simulator');
+    if (simulatorSection) simulatorSection.style.display = '';
 }
 
 /**
- * Update summary display with frequency-aware formatting
+ * Hide results sections
+ */
+function hideResultsSections() {
+    const resultsArea = document.getElementById('results-area');
+    if (resultsArea) resultsArea.style.display = 'none';
+
+    const stickyResults = document.getElementById('sticky-results');
+    if (stickyResults) stickyResults.classList.remove('visible');
+
+    const mobileBar = document.getElementById('mobile-sticky-bar');
+    if (mobileBar) mobileBar.classList.remove('visible');
+}
+
+/**
+ * Show frequency change message - simplified for auto-calc
+ */
+function showFrequencyChangeMessage() {
+    // No longer needed with auto-calculate - results update automatically
+}
+
+/**
+ * Update summary display
  */
 function updateSummaryDisplay(results) {
-    if (!results) {
-        console.error('No results provided to updateSummaryDisplay');
-        return;
-    }
+    if (!results) return;
 
     try {
         const frequencyConfig = results.frequencyConfig;
-        
-        // Update summary cards with frequency-specific values
+
+        // Main summary
         safeUpdateElement('summary-net-monthly', formatCurrency(results.netSalaryForFrequency || results.monthlyNetSalary));
         safeUpdateElement('summary-annual-net', formatCurrency(results.annualTotal));
         safeUpdateElement('summary-month-six', formatCurrency(results.monthSixTotal));
         safeUpdateElement('summary-month-twelve', formatCurrency(results.monthTwelveTotal));
 
-        // Update quick stats with frequency awareness
+        // Quick stats
         const effectiveTaxRate = ((results.incomeTax / (results.regularMonthlyGrossIncome || results.monthlyGrossIncome)) * 100) || 0;
         const retentionRate = (((results.netSalaryForFrequency || results.monthlyNetSalary) / (results.regularMonthlyGrossIncome || results.monthlyGrossIncome)) * 100) || 0;
-        
+
         safeUpdateElement('stat-tax-rate', effectiveTaxRate.toFixed(1) + '%');
         safeUpdateElement('stat-retention', retentionRate.toFixed(1) + '%');
         safeUpdateElement('stat-gratuity', formatCurrency(results.monthlyGratuityAccrual));
         safeUpdateElement('stat-nis', formatCurrency(results.nisContribution));
 
-        // Update summary labels to reflect frequency if available
+        // Sticky results (desktop)
+        safeUpdateElement('sticky-net', formatCurrency(results.netSalaryForFrequency || results.monthlyNetSalary));
+        safeUpdateElement('sticky-gross', formatCurrency(results.regularMonthlyGrossIncome || results.monthlyGrossIncome));
+        safeUpdateElement('sticky-tax', formatCurrency(results.incomeTax));
+        safeUpdateElement('sticky-nis', formatCurrency(results.nisContribution));
+
+        // Mobile sticky bar
+        safeUpdateElement('mobile-net', formatCurrency(results.netSalaryForFrequency || results.monthlyNetSalary));
+        safeUpdateElement('mobile-gross', formatCurrency(results.regularMonthlyGrossIncome || results.monthlyGrossIncome));
+        safeUpdateElement('mobile-tax', formatCurrency(results.incomeTax));
+
+        // Update labels for frequency
         if (frequencyConfig) {
             updateSummaryLabelsForFrequency(frequencyConfig);
         }
 
-        // Show all results sections
         showResultsSections();
     } catch (error) {
         console.error('Error in updateSummaryDisplay:', error);
@@ -521,68 +454,68 @@ function updateSummaryDisplay(results) {
 }
 
 /**
- * Update summary section labels to reflect the selected frequency
+ * Update summary labels for frequency
  */
 function updateSummaryLabelsForFrequency(frequencyConfig) {
-    // Update the main summary title
+    // Summary title
     const summaryTitle = document.querySelector('.results-summary h3');
     if (summaryTitle) {
         summaryTitle.innerHTML = `<i class="fas fa-chart-line me-2"></i>Your ${frequencyConfig.label} Salary Summary`;
     }
-    
-    // Update summary item labels
+
+    // Sticky labels
+    const stickyNetLabel = document.getElementById('sticky-net-label');
+    if (stickyNetLabel) stickyNetLabel.textContent = `${frequencyConfig.label} Take-Home`;
+
+    const mobileNetLabel = document.getElementById('mobile-net-label');
+    if (mobileNetLabel) mobileNetLabel.textContent = `${frequencyConfig.label} Take-Home`;
+
+    // Summary item labels
     const summaryLabels = {
         'summary-net-monthly': `${frequencyConfig.label} Take-Home`,
         'summary-annual-net': 'Annual Package',
         'summary-month-six': 'Month 6 Total',
         'summary-month-twelve': 'Month 12 Total'
     };
-    
-    Object.entries(summaryLabels).forEach(([elementId, label]) => {
-        const element = document.getElementById(elementId);
+
+    Object.entries(summaryLabels).forEach(function([elementId, label]) {
+        var element = document.getElementById(elementId);
         if (element) {
-            const summaryItem = element.closest('.summary-item');
+            var summaryItem = element.closest('.summary-item');
             if (summaryItem) {
-                const labelElement = summaryItem.querySelector('.summary-label');
-                if (labelElement) {
-                    labelElement.textContent = label;
-                }
+                var labelElement = summaryItem.querySelector('.summary-label');
+                if (labelElement) labelElement.textContent = label;
             }
         }
     });
-    
-    // Update quick stats labels
+
+    // Quick stat labels
     const quickStatLabels = {
         'stat-tax-rate': 'Effective Tax Rate',
         'stat-retention': 'Income Retention',
         'stat-gratuity': 'Monthly Gratuity',
         'stat-nis': `${frequencyConfig.label} NIS`
     };
-    
-    Object.entries(quickStatLabels).forEach(([elementId, label]) => {
-        const element = document.getElementById(elementId);
+
+    Object.entries(quickStatLabels).forEach(function([elementId, label]) {
+        var element = document.getElementById(elementId);
         if (element) {
-            const quickStat = element.closest('.quick-stat');
+            var quickStat = element.closest('.quick-stat');
             if (quickStat) {
-                const labelElement = quickStat.querySelector('.quick-stat-label');
-                if (labelElement) {
-                    labelElement.textContent = label;
-                }
+                var labelElement = quickStat.querySelector('.quick-stat-label');
+                if (labelElement) labelElement.textContent = label;
             }
         }
     });
 }
 
 /**
- * Update all result fields with calculation values
- * @param {Object} results - The calculation results
+ * Update all result fields
  */
 function updateResultsDisplay(results) {
     try {
-        // Check if we have frequency config for enhanced display
-        const hasFrequencyConfig = results.frequencyConfig;
-        
-        // Regular values - use safe update for all elements
+        var hasFrequencyConfig = results.frequencyConfig;
+
         safeUpdateElement('result-basic', formatCurrency(results.basicSalary));
         safeUpdateElement('result-taxable-allowances', formatCurrency(results.taxableAllowances));
         safeUpdateElement('result-non-taxable-allowances', formatCurrency(results.nonTaxableAllowances));
@@ -601,7 +534,6 @@ function updateResultsDisplay(results) {
         safeUpdateElement('result-monthly-gratuity', formatCurrency(results.monthlyGratuityAccrual));
         safeUpdateElement('result-net', formatCurrency(results.netSalaryForFrequency || results.monthlyNetSalary));
 
-        // Update result labels to reflect frequency if available
         if (hasFrequencyConfig) {
             updateResultLabelsForFrequency(results.frequencyConfig);
         }
@@ -617,153 +549,132 @@ function updateResultsDisplay(results) {
         safeUpdateElement('result-month-six-net', formatCurrency(results.monthlyNetSalary));
         safeUpdateElement('result-month-six-gratuity', formatCurrency(results.sixMonthGratuity));
         safeUpdateElement('result-month-six-total', formatCurrency(results.monthSixTotal));
-        
+
         safeUpdateElement('result-month-twelve-net', formatCurrency(results.monthlyNetSalary));
         safeUpdateElement('result-month-twelve-gratuity', formatCurrency(results.sixMonthGratuity));
         safeUpdateElement('result-month-twelve-vacation', formatCurrency(results.vacationAllowance || 0));
         safeUpdateElement('result-month-twelve-total', formatCurrency(results.monthTwelveTotal));
 
-        // Show/hide second job row
-        const secondJobResultRow = document.getElementById('second-job-result-row');
-        if (secondJobResultRow) {
-            if (results.secondJobIncome > 0 || 
-                (document.getElementById('second-job-section') && 
-                 !document.getElementById('second-job-section').classList.contains('d-none'))) {
-                secondJobResultRow.classList.remove('d-none');
+        // Second job visibility
+        var secondJobRow = document.getElementById('second-job-result-row');
+        if (secondJobRow) {
+            var secondJobVal = parseFloat(document.getElementById('second-job')?.value) || 0;
+            if (secondJobVal > 0) {
+                secondJobRow.classList.remove('d-none');
             } else {
-                secondJobResultRow.classList.add('d-none');
+                secondJobRow.classList.add('d-none');
             }
         }
 
-        // Update summary display
         updateSummaryDisplay(results);
 
-        // Create charts
-        createIncomeChart(
-            results.basicSalary, 
-            results.taxableAllowances, 
-            results.nonTaxableAllowances, 
-            results.monthlyGratuityAccrual
-        );
-        
+        // Charts
+        createIncomeChart(results.basicSalary, results.taxableAllowances, results.nonTaxableAllowances, results.monthlyGratuityAccrual);
         createTaxChart(results.taxableIncome, results.incomeTax);
-        
-        // New visualizations
-        createCashFlowChart(
-            results.monthlyNetSalary,
-            results.sixMonthGratuity,
-            results.vacationAllowance
-        );
-        
+        createCashFlowChart(results.monthlyNetSalary, results.sixMonthGratuity, results.vacationAllowance);
         createTaxSavingsChart(results);
-        
         createNetVsGrossChart(results);
-        
-        // Scroll to results on mobile
-        if (window.innerWidth < 992) {
-            const resultsSection = document.querySelector('.results-section');
-            if (resultsSection) {
-                resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+        // Scroll to results on first calculation on mobile
+        if (window.innerWidth < 768 && !window._hasScrolledToResults) {
+            var resultsArea = document.getElementById('results-area');
+            if (resultsArea) {
+                setTimeout(function() {
+                    resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+                window._hasScrolledToResults = true;
             }
         }
     } catch (error) {
         console.error('Error in updateResultsDisplay:', error);
-        // Still try to show basic summary even if detailed update fails
-        try {
-            updateSummaryDisplay(results);
-        } catch (summaryError) {
-            console.error('Error in updateSummaryDisplay fallback:', summaryError);
-        }
+        try { updateSummaryDisplay(results); } catch (e) { console.error(e); }
     }
 }
 
 /**
- * Update result row labels to reflect the selected frequency
+ * Update result labels for frequency
  */
 function updateResultLabelsForFrequency(frequencyConfig) {
-    // Map of result elements to their frequency-sensitive labels
-    const frequencyLabels = {
+    var frequencyLabels = {
         'result-basic': `<i class="fas fa-dollar-sign me-1"></i> Basic Salary (${frequencyConfig.periodLabel}):`,
         'result-taxable-allowances': `<i class="fas fa-coins me-1"></i> Taxable Allowances (${frequencyConfig.periodLabel}):`,
-        'result-non-taxable-allowances': `<i class="fas fa-hand-holding-usd me-1"></i> Non-Taxable Allowances (${frequencyConfig.periodLabel}):`,
-        'result-qualification-allowance': `<i class="fas fa-graduation-cap me-1"></i> Qualification Allowance (${frequencyConfig.periodLabel}):`,
-        'result-gross': `<i class="fas fa-money-bill-wave me-1"></i> Total Gross Income (${frequencyConfig.periodLabel}):`,
-        'result-personal-allowance': `<i class="fas fa-shield-alt me-1"></i> Income Tax Threshold (${frequencyConfig.periodLabel}):`,
-        'result-nis': `<i class="fas fa-university me-1"></i> NIS Contribution (${frequencyConfig.periodLabel}):`,
+        'result-non-taxable-allowances': `<i class="fas fa-hand-holding-usd me-1"></i> Non-Taxable (${frequencyConfig.periodLabel}):`,
+        'result-qualification-allowance': `<i class="fas fa-graduation-cap me-1"></i> Qualification (${frequencyConfig.periodLabel}):`,
+        'result-gross': `<i class="fas fa-money-bill-wave me-1"></i> Total Gross (${frequencyConfig.periodLabel}):`,
+        'result-personal-allowance': `<i class="fas fa-shield-alt me-1"></i> Tax Threshold (${frequencyConfig.periodLabel}):`,
+        'result-nis': `<i class="fas fa-university me-1"></i> NIS (${frequencyConfig.periodLabel}):`,
         'result-child': `<i class="fas fa-child me-1"></i> Child Allowance (${frequencyConfig.periodLabel}):`,
         'result-overtime': `<i class="fas fa-clock me-1"></i> Overtime Allowance (${frequencyConfig.periodLabel}):`,
         'result-second-job': `<i class="fas fa-briefcase me-1"></i> Second Job Allowance (${frequencyConfig.periodLabel}):`,
-        'result-insurance': `<i class="fas fa-shield-alt me-1"></i> Insurance Premium Deduction (${frequencyConfig.periodLabel}):`,
-        'result-loan-deductions': `<i class="fas fa-credit-card me-1"></i> Loan Deductions (${frequencyConfig.periodLabel}):`,
-        'result-credit-union-deduction': `<i class="fas fa-university me-1"></i> Credit Union Deduction (${frequencyConfig.periodLabel}):`,
+        'result-insurance': `<i class="fas fa-shield-alt me-1"></i> Insurance (${frequencyConfig.periodLabel}):`,
+        'result-loan-deductions': `<i class="fas fa-credit-card me-1"></i> Loans (${frequencyConfig.periodLabel}):`,
+        'result-credit-union-deduction': `<i class="fas fa-university me-1"></i> Credit Union (${frequencyConfig.periodLabel}):`,
         'result-taxable-income': `<i class="fas fa-calculator me-1"></i> Taxable Income (${frequencyConfig.periodLabel}):`,
         'result-tax': `<i class="fas fa-percentage me-1"></i> Income Tax (${frequencyConfig.periodLabel}):`,
-        'result-net': `<i class="fas fa-wallet me-1"></i> NET TAKE-HOME SALARY (${frequencyConfig.periodLabel}):`
+        'result-net': `<i class="fas fa-wallet me-1"></i> NET TAKE-HOME (${frequencyConfig.periodLabel}):`
     };
-    
-    // Update each label
-    Object.entries(frequencyLabels).forEach(([elementId, labelHtml]) => {
-        const element = document.getElementById(elementId);
+
+    Object.entries(frequencyLabels).forEach(function([elementId, labelHtml]) {
+        var element = document.getElementById(elementId);
         if (element) {
-            const resultRow = element.closest('.result-row');
+            var resultRow = element.closest('.result-row');
             if (resultRow) {
-                const labelElement = resultRow.querySelector('.result-label');
-                if (labelElement) {
-                    labelElement.innerHTML = labelHtml;
-                }
+                var labelElement = resultRow.querySelector('.result-label');
+                if (labelElement) labelElement.innerHTML = labelHtml;
             }
         }
     });
 }
 
 /**
- * Handle position dropdown selection
+ * Setup position dropdown
  */
 function setupPositionDropdown() {
-    const positionSelect = document.getElementById('position-select');
-    const positionCustom = document.getElementById('position-custom');
-    
-    // Initial state - if "Other" is selected, show custom input
+    var positionSelect = document.getElementById('position-select');
+    var positionCustom = document.getElementById('position-custom');
+
     if (positionSelect && positionCustom) {
-        if (positionSelect.value === 'other') {
-            positionCustom.style.display = 'block';
-        } else {
-            positionCustom.style.display = 'none';
-        }
-        
-        // Add event listener for dropdown changes
+        // Initial state
+        positionCustom.style.display = positionSelect.value === 'other' ? 'block' : 'none';
+
         positionSelect.addEventListener('change', function() {
             if (this.value === 'other') {
-                // Show custom input field
                 positionCustom.style.display = 'block';
                 positionCustom.focus();
             } else {
-                // Hide custom input and apply position preset
                 positionCustom.style.display = 'none';
                 applyPositionPreset(this.value);
+                // Auto-calculate immediately after applying preset
+                setTimeout(function() {
+                    calculateSalary();
+                    showSalaryIncreaseSection();
+                    // Scroll to results
+                    var resultsArea = document.getElementById('results-area');
+                    if (resultsArea) {
+                        setTimeout(function() {
+                            resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                    }
+                }, 50);
             }
         });
     }
 }
 
 /**
- * Update the position function to work with the dropdown
- * This function gets the displayed position text (either custom or selected)
+ * Get selected position text
  */
 function getSelectedPosition() {
-    const positionSelect = document.getElementById('position-select');
-    const positionCustom = document.getElementById('position-custom');
-    
+    var positionSelect = document.getElementById('position-select');
+    var positionCustom = document.getElementById('position-custom');
+
     if (!positionSelect || !positionCustom) {
-        // Fallback to old position field if the dropdown isn't found
-        const oldPositionField = document.getElementById('position');
-        return oldPositionField ? oldPositionField.value : '';
+        var oldField = document.getElementById('position');
+        return oldField ? oldField.value : '';
     }
-    
+
     if (positionSelect.value === 'other') {
         return positionCustom.value;
-    } else {
-        // Get the text of the selected option
-        return positionSelect.options[positionSelect.selectedIndex].text;
     }
+    return positionSelect.options[positionSelect.selectedIndex].text;
 }

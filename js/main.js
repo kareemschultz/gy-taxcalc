@@ -1,28 +1,24 @@
 /**
- * Main initialization script - Updated with Payment Frequency Support
+ * Main initialization script - REDESIGNED
  */
 
-// Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    debug('DOM fully loaded - initializing calculator with frequency support');
-    
+    debug('DOM loaded - initializing redesigned calculator');
+
     // Initialize theme
     initializeTheme();
-    
+
     // Set default dates
     setDefaultDates();
-    
-    // Setup event listeners
+
+    // Setup event listeners (includes accordion, auto-calculate, etc.)
     setupEventListeners();
-    
-    // Setup payment frequency listeners
-    setupPaymentFrequencyListeners();
-    
-    // Initialize frequency-dependent labels and previews
+
+    // Initialize frequency labels
     updateFrequencyLabels();
-    
+
     // Initialize tooltips
     initializeTooltips();
-    
-    debug('Calculator initialization complete with frequency support');
+
+    debug('Calculator initialization complete');
 });
