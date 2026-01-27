@@ -43,6 +43,20 @@ const POSITION_PRESETS = {
         totalTaxableAllowances: 20000,
         totalNonTaxableAllowances: 0
     },
+    'it-officer-3': {
+        title: 'IT Officer III',
+        baseSalary: 266000,
+        taxableAllowances: {
+            duty: 15000,
+            uniform: 5000
+        },
+        nonTaxableAllowances: {
+            travel: 0,
+            telecom: 0
+        },
+        totalTaxableAllowances: 20000,
+        totalNonTaxableAllowances: 0
+    },
     'ict-tech-1': {
         title: 'ICT Technician I',
         baseSalary: 222804, // Updated for 2026
