@@ -542,6 +542,14 @@ function hideVehicleResults() {
 /**
  * Clear vehicle calculator form
  */
+// Wire clear button on load
+document.addEventListener('DOMContentLoaded', function() {
+    var clearVehicleBtn = document.getElementById('clear-vehicle-form');
+    if (clearVehicleBtn) {
+        clearVehicleBtn.addEventListener('click', clearVehicleForm);
+    }
+});
+
 function clearVehicleForm() {
     // Clear CIF and CC inputs
     const cif = document.getElementById('v-cif');

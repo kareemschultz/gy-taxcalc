@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize tooltips
     initializeTooltips();
 
+    // Wire clear buttons
+    var clearSalaryBtn = document.getElementById('clear-salary-form');
+    if (clearSalaryBtn) {
+        clearSalaryBtn.addEventListener('click', clearSalaryForm);
+    }
+
     debug('Calculator initialization complete');
 });
 
