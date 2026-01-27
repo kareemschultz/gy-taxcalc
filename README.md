@@ -4,7 +4,7 @@
 [![Last Updated](https://img.shields.io/badge/Last%20Updated-2025%20Fiscal%20Year-brightgreen.svg)](https://github.com/kareemschultz/guyana-salary-calculator)
 [![GitHub Stars](https://img.shields.io/github/stars/kareemschultz/guyana-salary-calculator?style=social)](https://github.com/kareemschultz/guyana-salary-calculator/stargazers)
 
-A comprehensive, modern web-based calculator designed specifically for Guyanese employees to calculate their salary, gratuity, and annual package based on the latest 2025 tax regulations. Built with ❤️ by **Kareem Schultz** for the Guyanese workforce.
+A comprehensive, modern web-based calculator designed specifically for Guyanese employees to calculate their salary, gratuity, and annual package based on the latest 2026 tax regulations. Built with ❤️ by **Kareem Schultz** for the Guyanese workforce.
 
 ## 🌟 Live Demo
 
@@ -13,17 +13,17 @@ A comprehensive, modern web-based calculator designed specifically for Guyanese 
 ## ✨ Key Features
 
 ### 💰 **Comprehensive Tax Calculations**
-- **2025 Tax Rates**: Updated lower tax brackets (25% up to $260,000, 35% above)
+- **2026 Tax Rates**: Updated lower tax brackets (25% up to $280,000, 35% above)
 - **Payment Frequency Support**: Daily, Weekly, Fortnightly, Monthly, and Yearly calculations
-- **Personal Allowance**: $130,000 monthly or 1/3 of gross income (whichever is greater)
+- **Personal Allowance**: $140,000 monthly or 1/3 of gross income (whichever is greater)
 - **NIS Contributions**: 5.6% up to $280,000 monthly ceiling
 - **Child Allowances**: $10,000 per child per month
 
-### 🎓 **2025 Qualification Allowances** *(New!)*
+### 🎓 **2026 Qualification Allowances** *(New!)*
 - **ACCA Qualification**: $15,000 monthly (non-taxable)
 - **Master's Degree**: $22,000 monthly (non-taxable)
 - **Doctoral Degree**: $32,000 monthly (non-taxable)
-- *Effective January 2025 as announced by President Dr. Irfaan Ali*
+- *Effective January 2026 as announced by President Dr. Irfaan Ali*
 
 ### 📊 **Advanced Calculations**
 - **Gratuity Management**: 22.5% basic salary accrual with configurable payment periods
@@ -60,7 +60,7 @@ A comprehensive, modern web-based calculator designed specifically for Guyanese 
 ### Quick Start
 1. **Visit**: [https://kareemschultz.github.io/guyana-salary-calculator/](https://kareemschultz.github.io/guyana-salary-calculator/)
 2. **Enter**: Your employment details and salary information
-3. **Calculate**: Get instant, accurate results based on 2025 tax regulations
+3. **Calculate**: Get instant, accurate results based on 2026 tax regulations
 
 ### Local Development
 ```bash
@@ -148,7 +148,7 @@ guyana-salary-calculator/
 1. **Gross Income**: Basic salary + taxable allowances + additional income
 2. **Deductions Applied**: Personal allowance, NIS, child allowances, insurance
 3. **Taxable Income**: Gross income minus all applicable deductions
-4. **Tax Calculation**: 25% up to $260,000, then 35% on the remainder
+4. **Tax Calculation**: 25% up to $280,000, then 35% on the remainder
 5. **Net Salary**: Gross income minus NIS, tax, and other deductions
 
 ### **Gratuity Calculation**
@@ -159,7 +159,7 @@ guyana-salary-calculator/
 
 ### **Frequency Adjustments**
 All tax thresholds, allowances, and deductions are automatically converted based on payment frequency:
-- **Personal Allowance**: $130,000 monthly → $30,000 weekly → $4,274 daily
+- **Personal Allowance**: $140,000 monthly → $30,000 weekly → $4,274 daily
 - **Tax Thresholds**: Proportionally adjusted for each frequency
 - **NIS Ceilings**: Scaled appropriately for payment periods
 
@@ -183,7 +183,7 @@ Update tax constants in `js/constants.js`:
 ```javascript
 const TAX_RATE_1 = 0.25; // 25%
 const TAX_RATE_2 = 0.35; // 35%
-const TAX_THRESHOLD = 260000; // Monthly threshold
+const TAX_THRESHOLD = 280000; // Monthly threshold
 ```
 
 ### **Theme Customization**
@@ -239,13 +239,13 @@ We welcome contributions! Here's how you can help:
 
 ## 📅 Changelog
 
-### **Version 2.0.0** *(Current - 2025 Fiscal Year)*
+### **Version 3.0.0** *(Current - 2026 Fiscal Year)*
 - ✨ **NEW**: Payment frequency support (daily to yearly)
-- ✨ **NEW**: 2025 qualification allowances (ACCA, Master's, PhD)
+- ✨ **NEW**: 2026 qualification allowances (ACCA, Master's, PhD)
 - ✨ **NEW**: Dark mode as default with enhanced styling
 - ✨ **NEW**: Salary increase simulator with retroactive calculations
 - 🔄 **UPDATED**: Tax rates (25%/35% vs previous 28%/40%)
-- 🔄 **UPDATED**: Personal allowance increased to $130,000
+- 🔄 **UPDATED**: Personal allowance increased to $140,000
 - 🔄 **UPDATED**: Modern UI with improved accessibility
 - 🔄 **UPDATED**: Enhanced mobile experience
 - 🔄 **UPDATED**: Comprehensive chart visualizations
@@ -265,7 +265,7 @@ We welcome contributions! Here's how you can help:
 A: The calculator uses official 2025 Guyana tax regulations and is regularly updated. However, always consult a tax professional for official advice.
 
 **Q: Can I use this for previous tax years?**
-A: This calculator is specifically designed for 2025 tax regulations. Tax rates and allowances differ for previous years.
+A: This calculator is specifically designed for 2026 tax regulations. Tax rates and allowances differ for previous years.
 
 **Q: Does it work offline?**
 A: Yes! Once loaded, the calculator works completely offline.
@@ -284,7 +284,7 @@ A: Currently, calculations are not saved between sessions. We recommend taking s
 This calculator is designed to provide estimates based on 2025 Guyana tax regulations. While every effort has been made to ensure accuracy, please consult with a qualified tax professional for official advice regarding your specific situation. The developers are not responsible for any financial decisions made based on these calculations.
 
 ### **Data Sources**
-- Guyana Revenue Authority (GRA) 2025 tax guidelines
+- Guyana Revenue Authority (GRA) 2026 tax guidelines
 - National Insurance Scheme (NIS) contribution rates
 - Official government announcements regarding qualification allowances
 - Standard Assuria insurance premium rates
@@ -320,7 +320,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **Guyana Revenue Authority** for comprehensive tax documentation
-- **Government of Guyana** for the 2025 fiscal policy updates
+- **Government of Guyana** for the 2026 fiscal policy updates
 - **Open Source Community** for the excellent tools and libraries
 - **Guyanese Workforce** for feedback and feature requests
 - **Beta Testers** who helped refine the user experience

@@ -1,14 +1,14 @@
 /**
- * Tax and benefit constants for Guyana 2025 - Updated with Payment Frequency Support & New Positions
+ * Tax and benefit constants for Guyana 2026 - Updated with Payment Frequency Support & New Positions
  */
 
 // Tax rates
 const TAX_RATE_1 = 0.25; // 25% on income up to $260,000 monthly
 const TAX_RATE_2 = 0.35; // 35% on income above $260,000 monthly
-const TAX_THRESHOLD = 260000; // Monthly threshold
+const TAX_THRESHOLD = 280000; // Monthly threshold
 
 // Allowances and deductions
-const PERSONAL_ALLOWANCE = 130000; // Monthly personal allowance
+const PERSONAL_ALLOWANCE = 140000; // Monthly personal allowance
 const CHILD_ALLOWANCE = 10000; // Per child
 const OVERTIME_ALLOWANCE_MAX = 50000; // Maximum overtime allowance
 const SECOND_JOB_ALLOWANCE_MAX = 50000; // Maximum second job allowance
@@ -174,8 +174,8 @@ const PAYMENT_FREQUENCIES = {
     'daily': {
         label: 'Daily',
         factor: 1/21.67, // Approximate working days per month
-        personalAllowance: 4274,
-        taxThreshold: 8548,
+        personalAllowance: 6460,
+        taxThreshold: 12921,
         nisRate: 0.056,
         nisCeiling: 12923,
         childAllowance: 462,
@@ -188,8 +188,8 @@ const PAYMENT_FREQUENCIES = {
     'weekly': {
         label: 'Weekly',
         factor: 1/4.33,
-        personalAllowance: 30000,
-        taxThreshold: 60000,
+        personalAllowance: 32333,
+        taxThreshold: 64665,
         nisRate: 0.056,
         nisCeiling: 64615,
         childAllowance: 2308,
@@ -202,8 +202,8 @@ const PAYMENT_FREQUENCIES = {
     'fortnightly': {
         label: 'Fortnightly',
         factor: 1/2.17,
-        personalAllowance: 60000,
-        taxThreshold: 120000,
+        personalAllowance: 64516,
+        taxThreshold: 129032,
         nisRate: 0.056,
         nisCeiling: 129231,
         childAllowance: 4615,
@@ -216,8 +216,8 @@ const PAYMENT_FREQUENCIES = {
     'monthly': {
         label: 'Monthly',
         factor: 1,
-        personalAllowance: 130000,
-        taxThreshold: 260000,
+        personalAllowance: 140000,
+        taxThreshold: 280000,
         nisRate: 0.056,
         nisCeiling: 280000,
         childAllowance: 10000,
@@ -230,8 +230,8 @@ const PAYMENT_FREQUENCIES = {
     'yearly': {
         label: 'Yearly',
         factor: 12,
-        personalAllowance: 1560000,
-        taxThreshold: 3120000,
+        personalAllowance: 1680000,
+        taxThreshold: 3360000,
         nisRate: 0.056,
         nisCeiling: 3360000,
         childAllowance: 120000,
@@ -246,7 +246,7 @@ const PAYMENT_FREQUENCIES = {
 // Default frequency
 const DEFAULT_FREQUENCY = 'monthly';
 
-// Qualification allowances by frequency (starting January 2025)
+// Qualification allowances by frequency (starting January 2026)
 const QUALIFICATION_ALLOWANCES_BY_FREQUENCY = {
     'daily': {
         'none': 0,
@@ -291,7 +291,7 @@ const QUALIFICATION_ALLOWANCES = {
 // Common salary increase percentages (for quick selection)
 const COMMON_SALARY_INCREASES = [
     { value: 6, label: '6% (Standard Government)' },
-    { value: 8, label: '8% (July 2025 Increase)' },
+    { value: 8, label: '8% (July 2026 Increase)' },
     { value: 10, label: '10% (Performance Based)' },
     { value: 12, label: '12% (Promotion)' },
     { value: 15, label: '15% (Significant Promotion)' }
