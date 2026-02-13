@@ -4,6 +4,18 @@ All notable changes to GY TaxCalc are documented here.
 
 ---
 
+## [2.0.2] — 2026-02-13
+
+### ✨ New Positions
+- Added **Senior ICT Engineer** position preset
+  - Base Salary: GYD 613,000
+  - Uniform Allowance: GYD 10,000 (taxable)
+  - Telephone Allowance: GYD 5,000 (non-taxable)
+  - Traveling Allowance: GYD 15,000 (non-taxable)
+  - Total Package: GYD 643,000
+
+---
+
 ## [2.0.1] — 2026-01-27
 
 ### 🧹 Usability

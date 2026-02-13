@@ -126,6 +126,19 @@ const POSITION_PRESETS = {
         totalTaxableAllowances: 5000,
         totalNonTaxableAllowances: 15000
     },
+    'senior-ict-eng': {
+        title: 'Senior ICT Engineer',
+        baseSalary: 613000,
+        taxableAllowances: {
+            uniform: 10000
+        },
+        nonTaxableAllowances: {
+            travel: 15000,
+            telecom: 5000
+        },
+        totalTaxableAllowances: 10000,
+        totalNonTaxableAllowances: 20000
+    },
     'admin-officer-2': {
         title: 'Administrative Officer II',
         baseSalary: 180000,
