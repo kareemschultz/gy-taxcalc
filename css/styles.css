@@ -329,8 +329,8 @@ body {
     overflow: visible;
 }
 #section-charts:not(.collapsed) .section-body {
-    max-height: none !important;
-    overflow: visible !important;
+    max-height: 20000px;
+    overflow: visible;
     transition: opacity 0.3s ease;
 }
 

@@ -55,28 +55,9 @@ function setupAccordion() {
             const section = document.getElementById(sectionId);
             if (section) {
                 section.classList.toggle('collapsed');
-                // Force charts section to show all content via inline styles
-                if (sectionId === 'section-charts') {
-                    fixChartsSectionHeight(section);
-                }
             }
         });
     });
-}
-
-/** Remove height constraints on expanded charts section */
-function fixChartsSectionHeight(section) {
-    var body = section.querySelector('.section-body');
-    if (!body) return;
-    if (section.classList.contains('collapsed')) {
-        body.style.maxHeight = '';
-        body.style.overflow = '';
-        section.style.overflow = '';
-    } else {
-        body.style.maxHeight = 'none';
-        body.style.overflow = 'visible';
-        section.style.overflow = 'visible';
-    }
 }
 
 /**
@@ -594,7 +575,6 @@ function updateResultsDisplay(results) {
         var chartsSection = document.getElementById('section-charts');
         if (chartsSection && chartsSection.classList.contains('collapsed') && !window._chartsAutoExpanded) {
             chartsSection.classList.remove('collapsed');
-            fixChartsSectionHeight(chartsSection);
             window._chartsAutoExpanded = true;
         }
 
