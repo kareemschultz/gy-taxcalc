@@ -672,23 +672,69 @@ label {
 /* ============================================
    CHARTS
    ============================================ */
+.chart-group-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
 .chart-card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
     padding: 1rem;
+    border-top: 3px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
+
+.chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.chart-card-blue { border-top-color: var(--primary); }
+.chart-card-red { border-top-color: var(--danger); }
+.chart-card-green { border-top-color: var(--success); }
+.chart-card-orange { border-top-color: var(--warning); }
+.chart-card-purple { border-top-color: #8b5cf6; }
+[data-theme="dark"] .chart-card-purple { border-top-color: #a78bfa; }
 
 .chart-card h6 {
     font-size: 0.85rem;
     font-weight: 600;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.15rem;
     color: var(--text-primary) !important;
+}
+
+.chart-subtitle {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
 }
 
 .chart-container {
     position: relative;
-    height: 220px;
+    height: 260px;
+}
+
+.chart-container-wide {
+    height: 300px;
+}
+
+@media (max-width: 767px) {
+    .chart-container {
+        height: 220px;
+    }
+    .chart-container-wide {
+        height: 250px;
+    }
 }
 
 /* ============================================

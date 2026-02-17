@@ -9,6 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <link rel="stylesheet" href="css/styles.css">
     <style>
         html[data-theme="dark"] { background-color: #0f172a; color: #f1f5f9; }
@@ -800,29 +801,99 @@
                     </div>
                 </div>
                 <div class="section-body" id="charts-section">
-                    <div class="row g-4">
+                    <!-- Income Analysis -->
+                    <div class="chart-group-label"><i class="fas fa-wallet me-1"></i> Income Analysis</div>
+                    <div class="row g-3 mb-4">
                         <div class="col-lg-6">
-                            <div class="chart-card">
+                            <div class="chart-card chart-card-blue">
                                 <h6><i class="fas fa-chart-pie me-1"></i> Income Breakdown</h6>
+                                <p class="chart-subtitle">Proportion of each income component</p>
                                 <div class="chart-container"><canvas id="income-chart"></canvas></div>
                             </div>
                         </div>
                         <div class="col-lg-6">
-                            <div class="chart-card">
+                            <div class="chart-card chart-card-purple">
+                                <h6><i class="fas fa-layer-group me-1"></i> Salary Composition</h6>
+                                <p class="chart-subtitle">All income sources at a glance</p>
+                                <div class="chart-container"><canvas id="salary-composition-chart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tax Analysis -->
+                    <div class="chart-group-label"><i class="fas fa-percentage me-1"></i> Tax Analysis</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-lg-6">
+                            <div class="chart-card chart-card-red">
                                 <h6><i class="fas fa-chart-bar me-1"></i> Tax Bracket Analysis</h6>
+                                <p class="chart-subtitle">Income and tax split across 25% / 35% brackets</p>
                                 <div class="chart-container"><canvas id="tax-chart"></canvas></div>
                             </div>
                         </div>
                         <div class="col-lg-6">
-                            <div class="chart-card">
-                                <h6><i class="fas fa-money-bill-wave me-1"></i> Annual Cash Flow</h6>
-                                <div class="chart-container"><canvas id="cash-flow-chart"></canvas></div>
+                            <div class="chart-card chart-card-orange">
+                                <h6><i class="fas fa-tachometer-alt me-1"></i> Effective Tax Rate</h6>
+                                <p class="chart-subtitle">Your overall tax burden at a glance</p>
+                                <div class="chart-container"><canvas id="tax-gauge-chart"></canvas></div>
                             </div>
                         </div>
                         <div class="col-lg-6">
-                            <div class="chart-card">
+                            <div class="chart-card chart-card-green">
+                                <h6><i class="fas fa-piggy-bank me-1"></i> Tax Savings Breakdown</h6>
+                                <p class="chart-subtitle">How deductions reduce your tax</p>
+                                <div class="chart-container"><canvas id="tax-savings-chart"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-card chart-card-red">
+                                <h6><i class="fas fa-minus-circle me-1"></i> Monthly Deductions</h6>
+                                <p class="chart-subtitle">Breakdown of all deductions from your pay</p>
+                                <div class="chart-container"><canvas id="deductions-chart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cash Flow -->
+                    <div class="chart-group-label"><i class="fas fa-chart-line me-1"></i> Cash Flow</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <div class="chart-card chart-card-blue">
+                                <h6><i class="fas fa-money-bill-wave me-1"></i> Annual Cash Flow</h6>
+                                <p class="chart-subtitle">Monthly take-home with gratuity and vacation spikes</p>
+                                <div class="chart-container chart-container-wide"><canvas id="cash-flow-chart"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="chart-card chart-card-green">
+                                <h6><i class="fas fa-chart-area me-1"></i> Cumulative Annual Earnings</h6>
+                                <p class="chart-subtitle">How your total package builds up month by month</p>
+                                <div class="chart-container chart-container-wide"><canvas id="cumulative-chart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="chart-group-label"><i class="fas fa-th-large me-1"></i> Summary</div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="chart-card chart-card-orange">
+                                <h6><i class="fas fa-water me-1"></i> Gross to Net Waterfall</h6>
+                                <p class="chart-subtitle">See exactly where every dollar goes from gross to net</p>
+                                <div class="chart-container chart-container-wide"><canvas id="waterfall-chart"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-card chart-card-blue">
                                 <h6><i class="fas fa-balance-scale me-1"></i> Net vs. Gross</h6>
+                                <p class="chart-subtitle">Compare take-home across regular and special months</p>
                                 <div class="chart-container"><canvas id="net-vs-gross-chart"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-card chart-card-green">
+                                <h6><i class="fas fa-calendar-alt me-1"></i> Annual Overview</h6>
+                                <p class="chart-subtitle">Big-picture annual figures for your total package</p>
+                                <div class="chart-container"><canvas id="annual-overview-chart"></canvas></div>
                             </div>
                         </div>
                     </div>

@@ -62,7 +62,7 @@ GY TaxCalc is a suite of tax calculators covering the most common tax questions 
 | 👶 **Child Allowance** | $10,000 per child |
 | 📈 **Salary Simulator** | Increase and retroactive pay calculations |
 | 👔 **Job Presets** | Pre-loaded government positions (ICT, Admin, Teaching, Nursing, Police) |
-| 📊 **Visual Charts** | Breakdown pie charts |
+| 📊 **Visual Charts** | 11 interactive charts — income doughnuts, tax gauge, waterfall, cash flow, cumulative earnings, and more |
 | 📄 **PDF Export** | Professional reports with employee name |
 
 </details>

@@ -4,6 +4,48 @@ All notable changes to GY TaxCalc are documented here.
 
 ---
 
+## [2.1.0] — 2026-02-17
+
+### 📊 Enhanced Chart Visualizations (Major Upgrade)
+
+**Upgraded Existing Charts:**
+- Converted Income Breakdown and Tax Savings from basic pie charts to **doughnut charts** with center text totals, percentage datalabels, and zero-value filtering
+- Enhanced Tax Bracket Analysis with compact currency datalabels and rounded bars
+- Upgraded Annual Cash Flow with gradient fill, base salary reference line, monthly average line, and triangle markers on gratuity months (Jun/Dec)
+- Improved Net vs. Gross with retention rate tooltips, compact datalabels on bars, and rounded corners
+
+**6 New Chart Visualizations:**
+- **Salary Composition** — horizontal stacked bar showing all income sources at a glance
+- **Effective Tax Rate Gauge** — half-circle doughnut that color-codes your tax burden (green/yellow/orange/red)
+- **Monthly Deductions Breakdown** — doughnut showing NIS, tax, loans, credit union, insurance proportions
+- **Cumulative Annual Earnings** — stacked area chart tracking how your total package builds month by month
+- **Gross-to-Net Waterfall** — horizontal floating bar showing exactly where every dollar goes from gross to net
+- **Annual Summary Overview** — color-coded bar chart for annual gross, tax, NIS, gratuity, and net package
+
+**Chart Infrastructure:**
+- Added `chartjs-plugin-datalabels` for showing values/percentages directly on charts
+- Custom center text plugin for doughnut charts
+- Compact currency formatting ($260K, $1.2M) for axis labels
+- Zero-value filtering across all pie/doughnut charts
+- Unified color system with theme-aware palette (8 colors)
+
+### 🎨 Chart Section Redesign
+- Reorganized into 4 labeled groups: Income Analysis, Tax Analysis, Cash Flow, Summary
+- Full-width layout for timeline charts (cash flow, cumulative, waterfall)
+- Chart cards with colored top borders, hover lift effects, and subtle shadows
+- Added descriptive subtitles under each chart title
+- Increased chart heights (260px desktop, 300px wide, 220px mobile)
+
+### 🔧 Bug Fixes
+- Fixed Tax Savings chart that was coded in JS but had no canvas element in HTML (never rendered)
+- Fixed theme toggle for charts — now properly re-renders all 11 charts on dark/light switch
+
+### ✨ QoL Improvements
+- Charts section auto-expands on first calculation (no more hunting for the accordion)
+- Smooth 600ms easeOutQuart animations on all chart renders
+
+---
+
 ## [2.0.2] — 2026-02-13
 
 ### ✨ New Positions
