@@ -325,8 +325,9 @@ body {
     opacity: 1;
 }
 
-#section-charts .section-body {
-    max-height: 5000px;
+#section-charts:not(.collapsed) .section-body {
+    max-height: none;
+    overflow: visible;
 }
 
 .calc-section.collapsed .section-body {
