@@ -325,6 +325,10 @@ body {
     opacity: 1;
 }
 
+#section-charts .section-body {
+    max-height: 5000px;
+}
+
 .calc-section.collapsed .section-body {
     max-height: 0;
     padding-top: 0;
