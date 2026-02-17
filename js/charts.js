@@ -450,6 +450,7 @@ function createNetVsGrossChart(results) {
             ]
         },
         options: Object.assign(baseOptions(), {
+            layout: { padding: { top: 20 } },
             scales: {
                 x: { grid: { display: false } },
                 y: {
@@ -845,6 +846,7 @@ function createWaterfallChart(results) {
         },
         options: Object.assign(baseOptions(), {
             indexAxis: 'y',
+            layout: { padding: { right: 80 } },
             scales: {
                 x: {
                     ticks: { callback: compactCurrency },
@@ -919,6 +921,7 @@ function createAnnualOverviewChart(results) {
             }]
         },
         options: Object.assign(baseOptions(), {
+            layout: { padding: { top: 20 } },
             scales: {
                 x: { grid: { display: false } },
                 y: {
