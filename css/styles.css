@@ -325,9 +325,13 @@ body {
     opacity: 1;
 }
 
-#section-charts:not(.collapsed) .section-body {
-    max-height: none;
+#section-charts:not(.collapsed) {
     overflow: visible;
+}
+#section-charts:not(.collapsed) .section-body {
+    max-height: none !important;
+    overflow: visible !important;
+    transition: opacity 0.3s ease;
 }
 
 .calc-section.collapsed .section-body {
