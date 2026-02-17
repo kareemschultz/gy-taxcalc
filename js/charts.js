@@ -3,8 +3,12 @@
  * Uses Chart.js 3.9.1 + chartjs-plugin-datalabels
  */
 
-// Register datalabels plugin globally
-Chart.register(ChartDataLabels);
+// Register datalabels plugin globally (guard against CDN failure)
+if (typeof ChartDataLabels !== 'undefined') {
+    Chart.register(ChartDataLabels);
+    // Disable datalabels by default — each chart must opt-in explicitly
+    Chart.defaults.set('plugins.datalabels', { display: false });
+}
 
 // Chart instances
 let incomeChart = null;
@@ -69,31 +73,35 @@ function compactCurrency(value) {
 const centerTextPlugin = {
     id: 'centerText',
     afterDraw: function(chart) {
-        if (!chart.config.options.plugins.centerText) return;
-        const { text, subtext } = chart.config.options.plugins.centerText;
-        if (!text) return;
+        // Defensive access — chart.options.plugins may not have centerText
+        var pluginOpts = chart.options && chart.options.plugins;
+        var centerOpts = pluginOpts && pluginOpts.centerText;
+        if (!centerOpts || !centerOpts.text) return;
 
-        const { ctx, chartArea } = chart;
-        const centerX = (chartArea.left + chartArea.right) / 2;
-        const centerY = (chartArea.top + chartArea.bottom) / 2;
-        const c = getChartColors();
+        var text = centerOpts.text;
+        var subtext = centerOpts.subtext;
+        var chartCtx = chart.ctx;
+        var chartArea = chart.chartArea;
+        var centerX = (chartArea.left + chartArea.right) / 2;
+        var centerY = (chartArea.top + chartArea.bottom) / 2;
+        var c = getChartColors();
 
-        ctx.save();
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        chartCtx.save();
+        chartCtx.textAlign = 'center';
+        chartCtx.textBaseline = 'middle';
 
         // Main text
-        ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, sans-serif';
-        ctx.fillStyle = c.text;
-        ctx.fillText(text, centerX, subtext ? centerY - 8 : centerY);
+        chartCtx.font = 'bold 14px -apple-system, BlinkMacSystemFont, sans-serif';
+        chartCtx.fillStyle = c.text;
+        chartCtx.fillText(text, centerX, subtext ? centerY - 8 : centerY);
 
         // Subtext
         if (subtext) {
-            ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
-            ctx.fillStyle = isDarkMode() ? '#9ca3af' : '#6b7280';
-            ctx.fillText(subtext, centerX, centerY + 10);
+            chartCtx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
+            chartCtx.fillStyle = isDarkMode() ? '#9ca3af' : '#6b7280';
+            chartCtx.fillText(subtext, centerX, centerY + 10);
         }
-        ctx.restore();
+        chartCtx.restore();
     }
 };
 Chart.register(centerTextPlugin);
@@ -101,6 +109,7 @@ Chart.register(centerTextPlugin);
 /** Common datalabels config for doughnuts — show percentages */
 function doughnutDatalabels() {
     return {
+        display: true,
         color: '#fff',
         font: { weight: 'bold', size: 11 },
         formatter: function(value, ctx) {
@@ -192,7 +201,7 @@ function createTaxChart(taxableIncome, incomeTax) {
             labels: ['Taxable Income', 'Income Tax'],
             datasets: [
                 {
-                    label: '28% Bracket (up to $260K)',
+                    label: '25% Bracket (up to $260K)',
                     data: [incomeIn25, taxAt25],
                     backgroundColor: c.blue,
                     borderRadius: 4
@@ -223,6 +232,7 @@ function createTaxChart(taxableIncome, incomeTax) {
                     }
                 },
                 datalabels: {
+                    display: true,
                     color: '#fff',
                     font: { weight: 'bold', size: 10 },
                     formatter: function(value) {
@@ -462,6 +472,7 @@ function createNetVsGrossChart(results) {
                     }
                 },
                 datalabels: {
+                    display: true,
                     anchor: 'end',
                     align: 'top',
                     color: function(context) { return getChartColors().text; },
@@ -533,6 +544,7 @@ function createSalaryCompositionChart(results) {
                     }
                 },
                 datalabels: {
+                    display: true,
                     color: '#fff',
                     font: { weight: 'bold', size: 10 },
                     formatter: function(value, ctx) {
@@ -857,6 +869,7 @@ function createWaterfallChart(results) {
                     }
                 },
                 datalabels: {
+                    display: true,
                     anchor: 'end',
                     align: 'right',
                     color: function() { return getChartColors().text; },
@@ -923,6 +936,7 @@ function createAnnualOverviewChart(results) {
                     }
                 },
                 datalabels: {
+                    display: true,
                     anchor: 'end',
                     align: 'top',
                     color: function() { return getChartColors().text; },
@@ -937,15 +951,20 @@ function createAnnualOverviewChart(results) {
 // ─── Master update function for all charts ────────────────
 
 function createAllCharts(results) {
-    createIncomeChart(results.basicSalary, results.taxableAllowances, results.nonTaxableAllowances, results.monthlyGratuityAccrual);
-    createTaxChart(results.taxableIncome, results.incomeTax);
-    createCashFlowChart(results.monthlyNetSalary, results.sixMonthGratuity, results.vacationAllowance);
-    createTaxSavingsChart(results);
-    createNetVsGrossChart(results);
-    createSalaryCompositionChart(results);
-    createTaxGaugeChart(results);
-    createDeductionsChart(results);
-    createCumulativeChart(results);
-    createWaterfallChart(results);
-    createAnnualOverviewChart(results);
+    var chartCalls = [
+        function() { createIncomeChart(results.basicSalary, results.taxableAllowances, results.nonTaxableAllowances, results.monthlyGratuityAccrual); },
+        function() { createTaxChart(results.taxableIncome, results.incomeTax); },
+        function() { createCashFlowChart(results.monthlyNetSalary, results.sixMonthGratuity, results.vacationAllowance); },
+        function() { createTaxSavingsChart(results); },
+        function() { createNetVsGrossChart(results); },
+        function() { createSalaryCompositionChart(results); },
+        function() { createTaxGaugeChart(results); },
+        function() { createDeductionsChart(results); },
+        function() { createCumulativeChart(results); },
+        function() { createWaterfallChart(results); },
+        function() { createAnnualOverviewChart(results); }
+    ];
+    chartCalls.forEach(function(fn) {
+        try { fn(); } catch (e) { console.error('Chart rendering error:', e); }
+    });
 }
