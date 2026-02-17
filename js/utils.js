@@ -95,68 +95,22 @@ function initializeTheme() {
 }
 
 /**
- * Update chart colors based on current theme
+ * Update chart colors based on current theme.
+ * Since charts use getChartColors() at creation time, the simplest reliable
+ * approach is to re-read the last results and recreate all charts.
  */
 function updateChartsTheme() {
     const isDark = isDarkMode();
-    
-    // Chart color themes
-    const chartColors = {
-        light: {
-            backgroundColor: '#ffffff',
-            textColor: '#1f2937',
-            gridColor: '#e5e7eb',
-            colors: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']
-        },
-        dark: {
-            backgroundColor: '#1f2937',
-            textColor: '#f9fafb',
-            gridColor: '#374151',
-            colors: ['#60a5fa', '#f87171', '#34d399', '#fbbf24', '#a78bfa', '#f472b6']
-        }
-    };
-    
-    const theme = isDark ? chartColors.dark : chartColors.light;
-    
-    // Update Chart.js defaults
+
+    // Update Chart.js global defaults
     if (typeof Chart !== 'undefined') {
-        Chart.defaults.color = theme.textColor;
-        Chart.defaults.scale.grid.color = theme.gridColor;
+        Chart.defaults.color = isDark ? '#f9fafb' : '#1f2937';
+        Chart.defaults.scale.grid.color = isDark ? '#374151' : '#e5e7eb';
     }
-    
-    // Redraw existing charts with new theme if they exist
-    if (typeof incomeChart !== 'undefined' && incomeChart) {
-        incomeChart.data.datasets[0].backgroundColor = theme.colors;
-        incomeChart.update();
-    }
-    
-    if (typeof taxChart !== 'undefined' && taxChart) {
-        taxChart.data.datasets[0].backgroundColor = theme.colors[0];
-        taxChart.data.datasets[0].borderColor = theme.colors[0];
-        taxChart.data.datasets[1].backgroundColor = theme.colors[1];
-        taxChart.data.datasets[1].borderColor = theme.colors[1];
-        taxChart.update();
-    }
-    
-    if (typeof cashFlowChart !== 'undefined' && cashFlowChart) {
-        cashFlowChart.data.datasets[0].borderColor = theme.colors[0];
-        cashFlowChart.update();
-    }
-    
-    if (typeof taxSavingsChart !== 'undefined' && taxSavingsChart) {
-        taxSavingsChart.data.datasets[0].backgroundColor = [
-            theme.colors[0],
-            theme.colors[1],
-            theme.colors[2],
-            theme.colors[3]
-        ];
-        taxSavingsChart.update();
-    }
-    
-    if (typeof netVsGrossChart !== 'undefined' && netVsGrossChart) {
-        netVsGrossChart.data.datasets[0].backgroundColor = theme.colors[0];
-        netVsGrossChart.data.datasets[1].backgroundColor = theme.colors[1];
-        netVsGrossChart.update();
+
+    // If we have stored results, recreate all charts with new theme colors
+    if (typeof _lastCalculationResults !== 'undefined' && _lastCalculationResults && typeof createAllCharts === 'function') {
+        createAllCharts(_lastCalculationResults);
     }
 }
 

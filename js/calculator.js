@@ -21,6 +21,9 @@ function calculateSalary() {
         // Store results for comparison with salary increase
         storeCurrentResults(results);
 
+        // Store for chart theme re-rendering
+        window._lastCalculationResults = results;
+
         // Update the UI with results
         updateResultsDisplay(results);
 

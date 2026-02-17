@@ -568,12 +568,15 @@ function updateResultsDisplay(results) {
 
         updateSummaryDisplay(results);
 
-        // Charts
-        createIncomeChart(results.basicSalary, results.taxableAllowances, results.nonTaxableAllowances, results.monthlyGratuityAccrual);
-        createTaxChart(results.taxableIncome, results.incomeTax);
-        createCashFlowChart(results.monthlyNetSalary, results.sixMonthGratuity, results.vacationAllowance);
-        createTaxSavingsChart(results);
-        createNetVsGrossChart(results);
+        // Charts — all 11 visualizations
+        createAllCharts(results);
+
+        // Auto-expand charts section on first calculation
+        var chartsSection = document.getElementById('section-charts');
+        if (chartsSection && chartsSection.classList.contains('collapsed') && !window._chartsAutoExpanded) {
+            chartsSection.classList.remove('collapsed');
+            window._chartsAutoExpanded = true;
+        }
 
         // Scroll to results on first calculation on mobile
         if (window.innerWidth < 768 && !window._hasScrolledToResults) {
