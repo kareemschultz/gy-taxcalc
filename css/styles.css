@@ -319,7 +319,7 @@ body {
 
 .section-body {
     padding: 0 1rem 1rem;
-    max-height: 2000px;
+    max-height: 5000px;
     overflow: hidden;
     transition: max-height 0.4s ease, padding 0.3s ease, opacity 0.3s ease;
     opacity: 1;
@@ -730,10 +730,10 @@ label {
 
 @media (max-width: 767px) {
     .chart-container {
-        height: 220px;
+        height: 200px;
     }
     .chart-container-wide {
-        height: 250px;
+        height: 200px;
     }
 }
 
