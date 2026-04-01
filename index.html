@@ -104,7 +104,7 @@
                 </div>
                 <div>
                     <h5 class="section-heading">Quick Start</h5>
-                    <small class="section-subtitle">Select a position or enter your salary to see instant results</small>
+                    <small class="section-subtitle">Enter your basic salary — expand the sections below to add allowances and deductions for accurate results</small>
                 </div>
             </div>
             <div class="section-body">
@@ -189,52 +189,6 @@
             </div>
         </div>
 
-        <!-- ===== SALARY QUICK RESULTS (shown immediately after first calculation) ===== -->
-        <div id="salary-quick-results" style="display: none;">
-            <!-- Summary Cards -->
-            <div class="results-summary" id="results-summary">
-                <h3><i class="fas fa-chart-line me-2"></i>Your Salary Summary</h3>
-                <div class="summary-grid">
-                    <div class="summary-item">
-                        <span class="summary-value" id="summary-net-monthly">$0</span>
-                        <span class="summary-label">Monthly Take-Home</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-value" id="summary-annual-net">$0</span>
-                        <span class="summary-label">Annual Package</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-value" id="summary-month-six">$0</span>
-                        <span class="summary-label">Month 6 Total</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-value" id="summary-month-twelve">$0</span>
-                        <span class="summary-label">Month 12 Total</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="quick-stats" id="quick-stats">
-                <div class="quick-stat">
-                    <span class="quick-stat-value" id="stat-tax-rate">0%</span>
-                    <span class="quick-stat-label">Effective Tax Rate</span>
-                </div>
-                <div class="quick-stat">
-                    <span class="quick-stat-value" id="stat-retention">0%</span>
-                    <span class="quick-stat-label">Income Retention</span>
-                </div>
-                <div class="quick-stat">
-                    <span class="quick-stat-value" id="stat-gratuity">$0</span>
-                    <span class="quick-stat-label">Monthly Gratuity</span>
-                </div>
-                <div class="quick-stat">
-                    <span class="quick-stat-value" id="stat-nis">$0</span>
-                    <span class="quick-stat-label">NIS Contribution</span>
-                </div>
-            </div>
-        </div>
-
         <!-- ===== STEP 2: ALLOWANCES (Collapsed) ===== -->
         <div class="calc-section collapsed" id="section-allowances">
             <div class="section-header" data-toggle-section="section-allowances">
@@ -243,7 +197,7 @@
                 </div>
                 <div class="flex-grow-1">
                     <h5 class="section-heading">Allowances & Additional Income</h5>
-                    <small class="section-subtitle">Taxable & non-taxable allowances, overtime, second job</small>
+                    <small class="section-subtitle">Duty, uniform, housing, travel, telephone, acting pay — expand to include in your calculation</small>
                 </div>
                 <div class="section-chevron">
                     <i class="fas fa-chevron-down"></i>
@@ -467,7 +421,7 @@
                 </div>
                 <div class="flex-grow-1">
                     <h5 class="section-heading">Deductions & Benefits</h5>
-                    <small class="section-subtitle">Children, insurance, loans, credit union</small>
+                    <small class="section-subtitle">Loans, credit union, life insurance, mortgage interest — expand to reduce your taxable income</small>
                 </div>
                 <div class="section-chevron">
                     <i class="fas fa-chevron-down"></i>
@@ -660,8 +614,58 @@
             </button>
         </div>
 
-        <!-- ===== RESULTS SECTION (Detailed — shown after first calculation) ===== -->
+        <!-- ===== RESULTS SECTION (shown after first calculation) ===== -->
         <div id="results-area" style="display: none;">
+
+            <!-- Results divider — visually marks the transition from inputs to results -->
+            <div class="results-section-divider">
+                <div class="results-divider-line"></div>
+                <span class="results-divider-label"><i class="fas fa-chart-line me-2"></i>Your Salary Results</span>
+                <div class="results-divider-line"></div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="results-summary" id="results-summary">
+                <h3><i class="fas fa-chart-line me-2"></i>Your Salary Summary</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="summary-value" id="summary-net-monthly">$0</span>
+                        <span class="summary-label">Monthly Take-Home</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-value" id="summary-annual-net">$0</span>
+                        <span class="summary-label">Annual Package</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-value" id="summary-month-six">$0</span>
+                        <span class="summary-label">Month 6 Total</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-value" id="summary-month-twelve">$0</span>
+                        <span class="summary-label">Month 12 Total</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats" id="quick-stats">
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="stat-tax-rate">0%</span>
+                    <span class="quick-stat-label">Effective Tax Rate</span>
+                </div>
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="stat-retention">0%</span>
+                    <span class="quick-stat-label">Income Retention</span>
+                </div>
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="stat-gratuity">$0</span>
+                    <span class="quick-stat-label">Monthly Gratuity</span>
+                </div>
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="stat-nis">$0</span>
+                    <span class="quick-stat-label">NIS Contribution</span>
+                </div>
+            </div>
 
             <!-- Detailed Results (Collapsible) -->
             <div class="calc-section" id="section-detailed-results">

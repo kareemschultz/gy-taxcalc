@@ -56,9 +56,7 @@ function clearSalaryForm() {
         cb.checked = false;
     });
 
-    // Hide quick results and sticky bars
-    var quickResults = document.getElementById('salary-quick-results');
-    if (quickResults) quickResults.style.display = 'none';
+    // Hide sticky bars
     var stickyResults = document.getElementById('sticky-results');
     if (stickyResults) stickyResults.style.display = 'none';
     var mobileBar = document.getElementById('mobile-sticky-bar');
