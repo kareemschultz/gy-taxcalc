@@ -112,6 +112,11 @@ function updateChartsTheme() {
     if (typeof _lastCalculationResults !== 'undefined' && _lastCalculationResults && typeof createAllCharts === 'function') {
         createAllCharts(_lastCalculationResults);
     }
+
+    // Re-render loan charts if they exist
+    if (typeof refreshLoanCharts === 'function') {
+        refreshLoanCharts();
+    }
 }
 
 /**

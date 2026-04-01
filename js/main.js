@@ -26,6 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
         clearSalaryBtn.addEventListener('click', clearSalaryForm);
     }
 
+    // Initialize loan calculator
+    if (typeof initLoanCalculator === 'function') {
+        initLoanCalculator();
+    }
+
     debug('Calculator initialization complete');
 });
 

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GY TaxCalc | Guyana Tax Calculator — Income, Salary & Vehicle Import</title>
-    <meta name="description" content="Guyana's Tax Toolkit — Calculate income tax, salary, gratuity, and vehicle import duties using the latest 2026 tax regulations. GRA-based formulas.">
-    <meta name="keywords" content="Guyana tax calculator, vehicle import tax, GRA, salary calculator, customs duty, excise tax, 2026 budget">
+    <title>GY TaxCalc | Guyana Tax Calculator — Income, Salary, Vehicle Import & Loan</title>
+    <meta name="description" content="Guyana's Tax Toolkit — Calculate income tax, salary, gratuity, vehicle import duties, and loan amortization using the latest 2026 tax regulations. GRA-based formulas.">
+    <meta name="keywords" content="Guyana tax calculator, vehicle import tax, GRA, salary calculator, customs duty, excise tax, loan calculator, amortization, 2026 budget">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -37,6 +37,7 @@
                 <div class="d-flex flex-wrap gap-2 justify-content-center">
                     <span class="badge bg-light text-dark"><i class="fas fa-percent me-1"></i>Income Tax</span>
                     <span class="badge bg-light text-dark"><i class="fas fa-car me-1"></i>Vehicle Import</span>
+                    <span class="badge bg-light text-dark"><i class="fas fa-landmark me-1"></i>Loan Calculator</span>
                     <span class="badge bg-light text-dark"><i class="fas fa-shield-alt me-1"></i>GRA Formulas</span>
                 </div>
                 <div class="mt-2">
@@ -57,6 +58,9 @@
                 </button>
                 <button class="mode-pill" id="pill-vehicle">
                     <i class="fas fa-car me-1"></i> Vehicle Import
+                </button>
+                <button class="mode-pill" id="pill-loan">
+                    <i class="fas fa-landmark me-1"></i> Loan Calculator
                 </button>
             </div>
         </div>
@@ -167,7 +171,7 @@
                             </div>
                             <div class="d-flex justify-content-between mb-1">
                                 <small>25% Bracket Up To:</small>
-                                <span id="preview-tax-threshold" class="fw-bold text-primary">$260,000</span>
+                                <span id="preview-tax-threshold" class="fw-bold text-primary">$280,000</span>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <small>NIS Ceiling:</small>
@@ -1082,8 +1086,8 @@
                         <div class="info-mini-card">
                             <h6><i class="fas fa-percentage me-1"></i> Tax Rates</h6>
                             <ul class="info-list">
-                                <li><strong>25%</strong> up to $260,000/mo</li>
-                                <li><strong>35%</strong> above $260,000/mo</li>
+                                <li><strong>25%</strong> up to $280,000/mo</li>
+                                <li><strong>35%</strong> above $280,000/mo</li>
                                 <li>Reduced from 28%/40%</li>
                             </ul>
                         </div>
@@ -1504,6 +1508,405 @@
 
     </div><!-- /vehicle-calculator -->
 
+    <!-- ========== LOAN CALCULATOR ========== -->
+    <div id="loan-calculator" style="display: none;">
+
+        <!-- Loan Sticky Results (Desktop) -->
+        <div class="sticky-results loan-sticky" id="loan-sticky-results" style="display:none;">
+            <div class="container">
+                <div class="sticky-results-grid">
+                    <div class="sticky-result-item primary">
+                        <span class="sticky-result-value" id="loan-sticky-monthly">GY$0</span>
+                        <span class="sticky-result-label">Monthly Payment</span>
+                    </div>
+                    <div class="sticky-result-item">
+                        <span class="sticky-result-value" id="loan-sticky-interest">GY$0</span>
+                        <span class="sticky-result-label">Total Interest</span>
+                    </div>
+                    <div class="sticky-result-item d-none d-md-block">
+                        <span class="sticky-result-value" id="loan-sticky-payoff">—</span>
+                        <span class="sticky-result-label">Payoff Date</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 1: Loan Details (Always Open) ===== -->
+        <div class="calc-section" id="section-loan-details">
+            <div class="section-header always-open">
+                <div class="section-icon section-icon-primary">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div>
+                    <h5 class="section-heading">Loan Details</h5>
+                    <small class="section-subtitle">Enter loan information to calculate amortization schedule</small>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="row g-3">
+
+                    <!-- Loan Type -->
+                    <div class="col-md-6">
+                        <label for="loan-type" class="form-label">
+                            <i class="fas fa-tag me-1"></i> Loan Type
+                        </label>
+                        <select class="form-select loan-calc-input" id="loan-type">
+                            <option value="auto">Auto Loan</option>
+                            <option value="personal">Personal Loan</option>
+                            <option value="mortgage">Mortgage</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+
+                    <!-- Bank / Lender -->
+                    <div class="col-md-6">
+                        <label for="loan-bank" class="form-label">
+                            <i class="fas fa-university me-1"></i> Bank / Lender
+                        </label>
+                        <select class="form-select loan-calc-input" id="loan-bank">
+                            <option value="gpsccu">GPSCCU — 1.0% flat</option>
+                            <option value="gbti">GBTI — from 6.99%</option>
+                            <option value="republic" selected>Republic Bank — from 8.0%</option>
+                            <option value="bank-of-baroda">Bank of Baroda — from 10.0%</option>
+                            <option value="citizens">Citizens Bank — from 9.5%</option>
+                            <option value="demerara">Demerara Bank — from 11.0%</option>
+                            <option value="custom">Custom / Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Principal Amount -->
+                    <div class="col-md-6">
+                        <label for="loan-principal" class="form-label">
+                            <i class="fas fa-dollar-sign me-1"></i> Principal Amount
+                            <span class="text-muted ms-1" id="loan-currency-label">GYD Mode</span>
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text loan-currency-label">GY$</span>
+                            <input type="number" class="form-control loan-calc-input" id="loan-principal"
+                                   placeholder="e.g., 2500000" min="0" step="50000">
+                        </div>
+                        <div class="form-check form-switch mt-1">
+                            <input class="form-check-input" type="checkbox" id="loan-currency-toggle">
+                            <label class="form-check-label small text-muted" for="loan-currency-toggle">
+                                Enter in USD (auto-converts at exchange rate)
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Exchange Rate (shown when USD mode) -->
+                    <div class="col-md-6">
+                        <label for="loan-exchange-rate" class="form-label">
+                            <i class="fas fa-exchange-alt me-1"></i> Exchange Rate (GY$ per US$1)
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text">GY$</span>
+                            <input type="number" class="form-control loan-calc-input" id="loan-exchange-rate"
+                                   value="218" min="1" step="0.5">
+                        </div>
+                    </div>
+
+                    <!-- Interest Rate -->
+                    <div class="col-md-4">
+                        <label for="loan-rate" class="form-label">
+                            <i class="fas fa-percent me-1"></i> Annual Interest Rate (%)
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <input type="number" class="form-control loan-calc-input" id="loan-rate"
+                                   placeholder="e.g., 10.0" min="0" max="50" step="0.01">
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <small class="text-muted mt-1 d-block" id="loan-rate-hint"></small>
+                    </div>
+
+                    <!-- Loan Term -->
+                    <div class="col-md-4">
+                        <label for="loan-term" class="form-label">
+                            <i class="fas fa-calendar-alt me-1"></i> Loan Term (Months)
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <input type="number" class="form-control loan-calc-input" id="loan-term"
+                                   placeholder="e.g., 60" min="1" max="360" step="1">
+                            <span class="input-group-text">mo</span>
+                        </div>
+                        <small class="text-muted mt-1 d-block" id="loan-term-years"></small>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="col-md-4">
+                        <label for="loan-start-date" class="form-label">
+                            <i class="fas fa-calendar me-1"></i> First Payment Date
+                        </label>
+                        <input type="date" class="form-control form-control-lg loan-calc-input" id="loan-start-date">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 2: Extra Payments (Collapsible) ===== -->
+        <div class="calc-section collapsed" id="section-loan-extra">
+            <div class="section-header" data-section="loan-extra">
+                <div class="section-icon section-icon-success">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h5 class="section-heading">Extra Payments</h5>
+                    <small class="section-subtitle">See how extra payments reduce interest and shorten your loan</small>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="loan-extra-toggle">
+                    <label class="form-check-label" for="loan-extra-toggle">
+                        <strong>Enable extra payment analysis</strong>
+                    </label>
+                </div>
+                <div id="loan-extra-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="loan-extra-monthly" class="form-label">
+                                <i class="fas fa-calendar-check me-1"></i> Additional Monthly Payment
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text loan-currency-label">GY$</span>
+                                <input type="number" class="form-control loan-calc-input" id="loan-extra-monthly"
+                                       placeholder="e.g., 50000" min="0" step="5000">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="loan-lump-sum" class="form-label">
+                                <i class="fas fa-hand-holding-usd me-1"></i> One-Time Lump Sum
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text loan-currency-label">GY$</span>
+                                <input type="number" class="form-control loan-calc-input" id="loan-lump-sum"
+                                       placeholder="e.g., 500000" min="0" step="50000">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="loan-lump-sum-month" class="form-label">
+                                <i class="fas fa-map-marker-alt me-1"></i> Apply Lump Sum at Month #
+                            </label>
+                            <input type="number" class="form-control loan-calc-input" id="loan-lump-sum-month"
+                                   placeholder="e.g., 12" min="1" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 3: Results Summary ===== -->
+        <div id="loan-results-area" style="display: none;">
+
+            <!-- Summary Cards -->
+            <div class="row g-3 mb-3">
+                <div class="col-6 col-md-3">
+                    <div class="result-card primary">
+                        <div class="result-card-label">Monthly Payment</div>
+                        <div class="result-card-value" id="loan-result-monthly">GY$0</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="result-card">
+                        <div class="result-card-label">Total Interest</div>
+                        <div class="result-card-value text-danger" id="loan-result-interest">GY$0</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="result-card">
+                        <div class="result-card-label">Total Paid</div>
+                        <div class="result-card-value" id="loan-result-total">GY$0</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="result-card">
+                        <div class="result-card-label">Payoff Date</div>
+                        <div class="result-card-value" id="loan-result-payoff">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row g-2 mb-3">
+                <div class="col-6 col-md-3">
+                    <div class="quick-stat">
+                        <span class="quick-stat-label">Interest Rate</span>
+                        <span class="quick-stat-value" id="loan-result-rate">0%</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="quick-stat">
+                        <span class="quick-stat-label">Loan Duration</span>
+                        <span class="quick-stat-value" id="loan-result-months">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extra Payment Savings -->
+            <div id="loan-savings-area" class="calc-section mb-3" style="display:none;">
+                <div class="section-header always-open">
+                    <div class="section-icon section-icon-success">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <div>
+                        <h5 class="section-heading">Extra Payment Savings</h5>
+                        <small class="section-subtitle">How much you save by paying extra</small>
+                    </div>
+                </div>
+                <div class="section-body">
+                    <div class="row g-3">
+                        <div class="col-6 col-md-3">
+                            <div class="savings-highlight-card">
+                                <div class="savings-label">Months Saved</div>
+                                <div class="savings-value" id="loan-savings-months">0</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="savings-highlight-card">
+                                <div class="savings-label">Interest Saved</div>
+                                <div class="savings-value text-success" id="loan-savings-interest">GY$0</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="savings-highlight-card">
+                                <div class="savings-label">New Payoff Date</div>
+                                <div class="savings-value" id="loan-savings-payoff">—</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="savings-highlight-card">
+                                <div class="savings-label">New Monthly</div>
+                                <div class="savings-value" id="loan-savings-new-monthly">GY$0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /loan-results-area -->
+
+        <!-- ===== SECTION 4: Amortization Schedule (Collapsible) ===== -->
+        <div class="calc-section collapsed" id="section-amortization">
+            <div class="section-header" data-section="amortization">
+                <div class="section-icon section-icon-primary">
+                    <i class="fas fa-table"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h5 class="section-heading">Amortization Schedule</h5>
+                    <small class="section-subtitle">Full payment breakdown — month by month</small>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <div class="d-flex justify-content-end mb-2 gap-2">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button class="btn btn-outline-primary active" id="amort-view-monthly">Monthly</button>
+                        <button class="btn btn-outline-primary" id="amort-view-yearly">Yearly</button>
+                    </div>
+                </div>
+                <div class="amortization-table-wrapper">
+                    <table class="table table-sm table-hover amortization-table">
+                        <thead class="table-dark sticky-top">
+                            <tr>
+                                <th>Period</th>
+                                <th>Payment</th>
+                                <th>Principal</th>
+                                <th>Interest</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="amortization-tbody">
+                            <tr><td colspan="5" class="text-center text-muted py-3">Enter loan details above to generate schedule</td></tr>
+                        </tbody>
+                        <tfoot id="amortization-tfoot"></tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 5: Bank Comparison (Collapsible) ===== -->
+        <div class="calc-section collapsed" id="section-loan-comparison">
+            <div class="section-header" data-section="loan-comparison">
+                <div class="section-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h5 class="section-heading">Bank Comparison</h5>
+                    <small class="section-subtitle">Compare top Guyanese lenders for your loan</small>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <p class="text-muted small mb-3">Showing estimates based on published rates. Contact each bank for your personalised offer.</p>
+                <div class="comparison-cards-grid" id="loan-comparison-cards">
+                    <p class="text-center text-muted">Enter loan details above to compare banks</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 6: Charts (Collapsible) ===== -->
+        <div class="calc-section collapsed" id="section-loan-charts">
+            <div class="section-header" data-section="loan-charts">
+                <div class="section-icon section-icon-primary">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h5 class="section-heading">Loan Visualizations</h5>
+                    <small class="section-subtitle">Charts for payment breakdown, balance over time, and bank comparison</small>
+                </div>
+                <i class="fas fa-chevron-down section-chevron"></i>
+            </div>
+            <div class="section-body">
+                <div class="row g-3">
+                    <!-- Payment Split Doughnut -->
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h6 class="chart-title">Principal vs. Interest</h6>
+                            <div class="chart-container">
+                                <canvas id="loan-split-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Balance Over Time -->
+                    <div class="col-md-6">
+                        <div class="chart-card">
+                            <h6 class="chart-title">Balance Over Time</h6>
+                            <div class="chart-container">
+                                <canvas id="loan-balance-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Monthly Breakdown Stacked Bar -->
+                    <div class="col-12">
+                        <div class="chart-card">
+                            <h6 class="chart-title">Principal vs. Interest Per Period</h6>
+                            <div class="chart-container chart-container-wide">
+                                <canvas id="loan-breakdown-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Bank Comparison Horizontal Bar -->
+                    <div class="col-12">
+                        <div class="chart-card">
+                            <h6 class="chart-title">Total Interest by Lender</h6>
+                            <div class="chart-container">
+                                <canvas id="loan-comparison-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loan Disclaimer -->
+        <div class="vehicle-disclaimer">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span>Bank rates shown are approximate reference figures verified <strong>April 2026</strong>. Rates change frequently and promotional rates may apply. This tool is <strong>not affiliated</strong> with any bank or lender. Always contact your bank directly for current rates before making financial decisions.</span>
+        </div>
+
+    </div><!-- /loan-calculator -->
+
         <!-- Footer -->
         <div class="footer">
             <p class="mb-1"><i class="fas fa-gavel me-1"></i> Based on 2026 Guyana Tax Regulations. Not affiliated with GRA. Consult a tax professional for official advice.</p>
@@ -1540,6 +1943,9 @@
     <script src="js/calculator.js"></script>
     <script src="js/salary-increase.js"></script>
     <script src="js/vehicle-calculator.js"></script>
+    <script src="js/loan-constants.js"></script>
+    <script src="js/loan-calculator.js"></script>
+    <script src="js/loan-charts.js"></script>
     <script src="js/app-toggle.js"></script>
     <script src="js/main.js"></script>
 </body>
