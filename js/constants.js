@@ -3,9 +3,9 @@
  */
 
 // Tax rates
-const TAX_RATE_1 = 0.25; // 25% on income up to $260,000 monthly
-const TAX_RATE_2 = 0.35; // 35% on income above $260,000 monthly
-const TAX_THRESHOLD = 260000; // Monthly threshold
+const TAX_RATE_1 = 0.25; // 25% on first $280,000 of chargeable income (monthly)
+const TAX_RATE_2 = 0.35; // 35% on chargeable income above $280,000 monthly
+const TAX_THRESHOLD = 280000; // Monthly chargeable income threshold (25% applies up to this amount)
 
 // Allowances and deductions
 const INCOME_TAX_THRESHOLD = 140000; // Monthly income tax threshold
@@ -203,7 +203,7 @@ const PAYMENT_FREQUENCIES = {
         label: 'Daily',
         factor: 1/21.67, // Approximate working days per month
         personalAllowance: 6460,
-        taxThreshold: 8548,
+        taxThreshold: 12922, // 280,000 / 21.67
         nisRate: 0.056,
         nisCeiling: 12923,
         childAllowance: 462,
@@ -217,7 +217,7 @@ const PAYMENT_FREQUENCIES = {
         label: 'Weekly',
         factor: 1/4.33,
         personalAllowance: 32333,
-        taxThreshold: 60000,
+        taxThreshold: 64665, // 280,000 / 4.33
         nisRate: 0.056,
         nisCeiling: 64615,
         childAllowance: 2308,
@@ -231,7 +231,7 @@ const PAYMENT_FREQUENCIES = {
         label: 'Fortnightly',
         factor: 1/2.17,
         personalAllowance: 64516,
-        taxThreshold: 120000,
+        taxThreshold: 128986, // 280,000 / 2.17
         nisRate: 0.056,
         nisCeiling: 129231,
         childAllowance: 4615,
@@ -245,7 +245,7 @@ const PAYMENT_FREQUENCIES = {
         label: 'Monthly',
         factor: 1,
         personalAllowance: 140000,
-        taxThreshold: 260000,
+        taxThreshold: 280000, // First $280,000 of chargeable income at 25%
         nisRate: 0.056,
         nisCeiling: 280000,
         childAllowance: 10000,
@@ -259,7 +259,7 @@ const PAYMENT_FREQUENCIES = {
         label: 'Yearly',
         factor: 12,
         personalAllowance: 1680000,
-        taxThreshold: 3120000,
+        taxThreshold: 3360000, // 280,000 × 12
         nisRate: 0.056,
         nisCeiling: 3360000,
         childAllowance: 120000,

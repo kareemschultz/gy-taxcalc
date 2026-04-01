@@ -51,8 +51,8 @@ GY TaxCalc is a suite of tax calculators covering the most common tax questions 
 | Feature | Description |
 |---------|-------------|
 | 📊 **Salary Calculation** | Gross-to-net across all frequencies (daily, weekly, fortnightly, monthly, yearly) |
-| 📈 **2026 Tax Rates** | 25% (up to $260,000/mo) and 35% (above threshold) |
-| 🏦 **Tax Threshold** | $140,000/month personal allowance |
+| 📈 **2026 Tax Rates** | 25% on first $280,000 of chargeable income, 35% above |
+| 🏦 **Tax Allowance** | max($140,000/month, gross ÷ 3) — whichever is greater |
 | 🛡️ **NIS Contributions** | 5.6% rate with $280,000 ceiling |
 | 🎖️ **Gratuity** | 22.5% calculation for public servants |
 | 💼 **Allowances** | Duty, acting, housing, travel, station (taxable/non-taxable) |
@@ -102,24 +102,33 @@ GY TaxCalc is a suite of tax calculators covering the most common tax questions 
 ### Income Tax (2026)
 
 ```
-                    Monthly Taxable Income
-                            │
-            ┌───────────────┼───────────────┐
-            │               │               │
-            ▼               ▼               ▼
-     ≤ $140,000      $140,001-$260,000   > $260,000
-         │                  │               │
-         ▼                  ▼               ▼
-      EXEMPT              25%             35%
-   (Personal            (on this        (on excess
-   Allowance)           bracket)         amount)
+        Monthly Gross Income
+                │
+                ▼
+  Tax Allowance = max($140,000, Gross ÷ 3)
+  (1/3 kicks in above $420,000/month gross)
+                │
+                ▼
+  Chargeable Income = Gross − Tax Allowance − NIS − other deductions
+                │
+        ┌───────┴────────┐
+        ▼                ▼
+  ≤ $280,000        > $280,000
+     25%          25% on first $280,000
+                  35% on the remainder
 ```
 
-| Bracket | Rate | Notes |
-|---------|------|-------|
-| First $140,000/month | **0%** | Personal allowance (exempt) |
-| $140,001 – $260,000 | **25%** | First taxable bracket |
-| Above $260,000 | **35%** | Higher rate bracket |
+| Component | Rule |
+|-----------|------|
+| **Tax Allowance** | `max($140,000/month, Gross ÷ 3)` — whichever is greater |
+| **Chargeable Income** | Gross − Tax Allowance − NIS − child/insurance deductions |
+| **25% bracket** | First **$280,000** of chargeable income |
+| **35% bracket** | Chargeable income **above $280,000** |
+
+**Example — $450,000/month gross:**
+- Tax allowance = max($140,000, $450,000 ÷ 3) = **$150,000**
+- Chargeable income = $450,000 − $150,000 = **$300,000**
+- Tax = ($280,000 × 25%) + ($20,000 × 35%) = $70,000 + $7,000 = **$77,000**
 
 ### Vehicle Import Tax Calculation Flow
 

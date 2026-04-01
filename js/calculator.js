@@ -175,24 +175,27 @@ function performCalculations(inputs) {
     const regularMonthlyGrossIncome = basicSalary + taxableAllowances + nonTaxableAllowances +
                                      overtimeIncome + secondJobIncome;
 
-    // Calculate deductions that reduce taxable income using frequency-specific values
-    const personalAllowance = Math.max(frequencyConfig.personalAllowance, regularMonthlyGrossIncome / 3);
-    const nisContribution = Math.min(regularMonthlyGrossIncome * frequencyConfig.nisRate, 
+    // NIS, child allowance, and other deductions
+    const nisContribution = Math.min(regularMonthlyGrossIncome * frequencyConfig.nisRate,
                                     frequencyConfig.nisCeiling * frequencyConfig.nisRate);
     const childAllowance = childCount * frequencyConfig.childAllowance;
-    
-    // Overtime and Second Job allowances (non-taxable portions)
+
+    // Overtime and Second Job allowances (non-taxable statutory portions)
     const overtimeAllowance = Math.min(overtimeIncome, frequencyConfig.overtimeMax);
     const secondJobAllowance = Math.min(secondJobIncome, frequencyConfig.secondJobMax);
 
     // Apply the cap for insurance premium deduction
-    const actualInsuranceDeduction = Math.min(insurancePremium, 
-                                             regularMonthlyGrossIncome * 0.10, 
+    const actualInsuranceDeduction = Math.min(insurancePremium,
+                                             regularMonthlyGrossIncome * 0.10,
                                              frequencyConfig.insuranceMaxMonthly);
 
-    // Calculate the 'gross income for taxable calculation'
-    const grossIncomeForTaxableCalculation = regularMonthlyGrossIncome - nonTaxableAllowances - 
+    // Balance of Income = gross minus non-taxable allowances and statutory OT/second-job portions
+    // Per GRA: personal allowance 1/3 is applied to Balance of Income, not total gross
+    const grossIncomeForTaxableCalculation = regularMonthlyGrossIncome - nonTaxableAllowances -
                                            overtimeAllowance - secondJobAllowance;
+
+    // Personal allowance: $140,000 OR 1/3 of Balance of Income — whichever is greater
+    const personalAllowance = Math.max(frequencyConfig.personalAllowance, grossIncomeForTaxableCalculation / 3);
 
     // Calculate actual taxable income (Chargeable Income)
     const taxableIncome = Math.max(0, grossIncomeForTaxableCalculation - personalAllowance -

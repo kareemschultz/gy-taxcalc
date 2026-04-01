@@ -4,6 +4,34 @@ All notable changes to GY TaxCalc are documented here.
 
 ---
 
+## [2.2.0] — 2026-03-31
+
+### 🐛 Critical Fix — Income Tax Bracket Calculation
+
+Two calculation errors identified and corrected against the official GRA Income Tax (Amendment) Act No. 3 of 2026.
+
+**Bug 1 — Tax bracket threshold was 260,000 instead of 280,000**
+
+The 25% rate incorrectly applied to only the first $260,000 of chargeable income. Per the Act, the 25% rate applies to the first **$280,000** of chargeable income; the 35% rate applies to the remainder above $280,000. All payment frequencies updated:
+
+| Frequency | Old threshold | Correct threshold |
+|-----------|--------------|-------------------|
+| Daily | $8,548 | $12,922 |
+| Weekly | $60,000 | $64,665 |
+| Fortnightly | $120,000 | $128,986 |
+| Monthly | $260,000 | **$280,000** |
+| Yearly | $3,120,000 | $3,360,000 |
+
+**Bug 2 — Personal allowance 1/3 was applied to total gross instead of Balance of Income**
+
+Per the Act, the 1/3 personal allowance applies to *Balance of Income* (gross after statutory overtime and second-job allowances are removed), not total gross. For standard salaries with no overtime or second job, the result is identical. The fix matters for employees with significant overtime income.
+
+Thanks to **Ganesh** for spotting both issues and cross-referencing the official GRA notice.
+
+**Source:** [GRA Notice — Revised Personal Allowance & Deductions 2026](https://www.gra.gov.gy/notice-to-employers-employees-self-employed-persons-revised-personal-allowance-and-deductions-for-income-tax-2026/)
+
+---
+
 ## [2.1.0] — 2026-02-17
 
 ### 📊 Enhanced Chart Visualizations (Major Upgrade)
