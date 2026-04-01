@@ -189,6 +189,52 @@
             </div>
         </div>
 
+        <!-- ===== SALARY QUICK RESULTS (shown immediately after first calculation) ===== -->
+        <div id="salary-quick-results" style="display: none;">
+            <!-- Summary Cards -->
+            <div class="results-summary" id="results-summary">
+                <h3><i class="fas fa-chart-line me-2"></i>Your Salary Summary</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="summary-value" id="summary-net-monthly">$0</span>
+                        <span class="summary-label">Monthly Take-Home</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-value" id="summary-annual-net">$0</span>
+                        <span class="summary-label">Annual Package</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-value" id="summary-month-six">$0</span>
+                        <span class="summary-label">Month 6 Total</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-value" id="summary-month-twelve">$0</span>
+                        <span class="summary-label">Month 12 Total</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats" id="quick-stats">
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="stat-tax-rate">0%</span>
+                    <span class="quick-stat-label">Effective Tax Rate</span>
+                </div>
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="stat-retention">0%</span>
+                    <span class="quick-stat-label">Income Retention</span>
+                </div>
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="stat-gratuity">$0</span>
+                    <span class="quick-stat-label">Monthly Gratuity</span>
+                </div>
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="stat-nis">$0</span>
+                    <span class="quick-stat-label">NIS Contribution</span>
+                </div>
+            </div>
+        </div>
+
         <!-- ===== STEP 2: ALLOWANCES (Collapsed) ===== -->
         <div class="calc-section collapsed" id="section-allowances">
             <div class="section-header" data-toggle-section="section-allowances">
@@ -614,51 +660,8 @@
             </button>
         </div>
 
-        <!-- ===== RESULTS SECTION ===== -->
+        <!-- ===== RESULTS SECTION (Detailed — shown after first calculation) ===== -->
         <div id="results-area" style="display: none;">
-
-            <!-- Results Summary Card -->
-            <div class="results-summary" id="results-summary">
-                <h3><i class="fas fa-chart-line me-2"></i>Your Salary Summary</h3>
-                <div class="summary-grid">
-                    <div class="summary-item">
-                        <span class="summary-value" id="summary-net-monthly">$0</span>
-                        <span class="summary-label">Monthly Take-Home</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-value" id="summary-annual-net">$0</span>
-                        <span class="summary-label">Annual Package</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-value" id="summary-month-six">$0</span>
-                        <span class="summary-label">Month 6 Total</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-value" id="summary-month-twelve">$0</span>
-                        <span class="summary-label">Month 12 Total</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="quick-stats" id="quick-stats">
-                <div class="quick-stat">
-                    <span class="quick-stat-value" id="stat-tax-rate">0%</span>
-                    <span class="quick-stat-label">Effective Tax Rate</span>
-                </div>
-                <div class="quick-stat">
-                    <span class="quick-stat-value" id="stat-retention">0%</span>
-                    <span class="quick-stat-label">Income Retention</span>
-                </div>
-                <div class="quick-stat">
-                    <span class="quick-stat-value" id="stat-gratuity">$0</span>
-                    <span class="quick-stat-label">Monthly Gratuity</span>
-                </div>
-                <div class="quick-stat">
-                    <span class="quick-stat-value" id="stat-nis">$0</span>
-                    <span class="quick-stat-label">NIS Contribution</span>
-                </div>
-            </div>
 
             <!-- Detailed Results (Collapsible) -->
             <div class="calc-section" id="section-detailed-results">
@@ -1374,9 +1377,9 @@
             </div>
         </div><!-- /vehicle-results-area -->
 
-            <!-- 2026 Vehicle Import Information -->
-            <div class="calc-section collapsed" id="section-vehicle-info">
-                <div class="section-header" data-toggle-section="section-vehicle-info">
+        <!-- 2026 Vehicle Import Information -->
+        <div class="calc-section collapsed" id="section-vehicle-info">
+            <div class="section-header" data-toggle-section="section-vehicle-info">
                     <div class="section-icon section-icon-blue">
                         <i class="fas fa-info-circle"></i>
                     </div>

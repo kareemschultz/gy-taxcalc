@@ -370,6 +370,9 @@ function calculateNonTaxableAllowancesTotal() {
  * Show results sections - REDESIGNED for new layout
  */
 function showResultsSections() {
+    const quickResults = document.getElementById('salary-quick-results');
+    if (quickResults) quickResults.style.display = 'block';
+
     const resultsArea = document.getElementById('results-area');
     if (resultsArea) resultsArea.style.display = 'block';
 
@@ -390,6 +393,9 @@ function showResultsSections() {
  * Hide results sections
  */
 function hideResultsSections() {
+    const quickResults = document.getElementById('salary-quick-results');
+    if (quickResults) quickResults.style.display = 'none';
+
     const resultsArea = document.getElementById('results-area');
     if (resultsArea) resultsArea.style.display = 'none';
 
