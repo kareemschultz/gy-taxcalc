@@ -614,6 +614,9 @@ function initLoanCalculator() {
 
     setupLoanAutoCalc();
 
+    // Trigger initial calculation so results show immediately on first open
+    calculateLoan();
+
     if (typeof console !== 'undefined') {
         console.log('[LoanCalc] Initialized');
     }
