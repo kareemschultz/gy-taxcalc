@@ -192,13 +192,13 @@ function createTaxChart(taxableIncome, incomeTax) {
             labels: ['Taxable Income', 'Income Tax'],
             datasets: [
                 {
-                    label: '28% Bracket (up to $260K)',
+                    label: '25% Bracket (up to $280K)',
                     data: [incomeIn25, taxAt25],
                     backgroundColor: c.blue,
                     borderRadius: 4
                 },
                 {
-                    label: '35% Bracket (above $260K)',
+                    label: '35% Bracket (above $280K)',
                     data: [incomeIn35, taxAt35],
                     backgroundColor: c.red,
                     borderRadius: 4

@@ -169,20 +169,22 @@ function calculateIncreaseResults(baseResults, increasePercentage, isTaxable, re
     newResults.regularMonthlyGrossIncome = newResults.basicSalary + newResults.taxableAllowances + newResults.nonTaxableAllowances +
                                            newResults.overtimeIncome + newResults.secondJobIncome;
 
-    // Recalculate deductions that reduce taxable income based on the new gross
-    newResults.personalAllowance = Math.max(PERSONAL_ALLOWANCE, newResults.regularMonthlyGrossIncome / 3);
+    // Recalculate NIS and other deductions based on the new gross
     newResults.nisContribution = Math.min(newResults.regularMonthlyGrossIncome * NIS_RATE, NIS_CEILING * NIS_RATE);
-    
+
     // Recalculate actual insurance deduction based on the new gross income
     const newActualInsuranceDeduction = Math.min(newResults.insurancePremium, newResults.regularMonthlyGrossIncome * 0.10, 50000);
-    newResults.actualInsuranceDeduction = newActualInsuranceDeduction; 
+    newResults.actualInsuranceDeduction = newActualInsuranceDeduction;
 
     // Recalculate non-taxable overtime and second job allowances for the new income
     newResults.overtimeAllowance = Math.min(newResults.overtimeIncome, OVERTIME_ALLOWANCE_MAX);
     newResults.secondJobAllowance = Math.min(newResults.secondJobIncome, SECOND_JOB_ALLOWANCE_MAX);
 
-    // Calculate the 'gross income for taxable calculation' for the new monthly salary
+    // Balance of Income (per GRA: personal allowance 1/3 applies to this, not total gross)
     const grossIncomeForTaxableCalculation = newResults.regularMonthlyGrossIncome - newResults.nonTaxableAllowances - newResults.overtimeAllowance - newResults.secondJobAllowance;
+
+    // Personal allowance: $140,000 OR 1/3 of Balance of Income — whichever is greater
+    newResults.personalAllowance = Math.max(PERSONAL_ALLOWANCE, grossIncomeForTaxableCalculation / 3);
 
     // Calculate actual taxable income for the new monthly salary
     newResults.taxableIncome = Math.max(0, grossIncomeForTaxableCalculation -
@@ -239,13 +241,14 @@ function calculateIncreaseResults(baseResults, increasePercentage, isTaxable, re
         // The basic salary backpay is taxable, but retro gratuity and vacation are typically non-taxable
         const grossForRetroMonth = newResults.regularMonthlyGrossIncome + newResults.totalRetroactiveLumpSum;
 
+        // Balance of Income for retro month (gross minus non-taxable statutory portions)
+        // Per GRA: 1/3 personal allowance applies to Balance of Income, not total gross
+        const retroGrossIncomeForTaxableCalculation = grossForRetroMonth - newResults.nonTaxableAllowances - newResults.overtimeAllowance - newResults.secondJobAllowance;
+
         // Recalculate PA/NIS based on this temporarily inflated gross for retro month
-        const retroPersonalAllowance = Math.max(PERSONAL_ALLOWANCE, grossForRetroMonth / 3);
+        const retroPersonalAllowance = Math.max(PERSONAL_ALLOWANCE, retroGrossIncomeForTaxableCalculation / 3);
         const retroNisContribution = Math.min(grossForRetroMonth * NIS_RATE, NIS_CEILING * NIS_RATE);
         const retroActualInsuranceDeduction = Math.min(newResults.insurancePremium, grossForRetroMonth * 0.10, 50000);
-
-        // Calculate gross income for taxable calculation for the retroactive month
-        const retroGrossIncomeForTaxableCalculation = grossForRetroMonth - newResults.nonTaxableAllowances - newResults.overtimeAllowance - newResults.secondJobAllowance;
 
         // Calculate taxable income for the retroactive payment month
         const retroTaxableIncome = Math.max(0, retroGrossIncomeForTaxableCalculation - retroPersonalAllowance -
