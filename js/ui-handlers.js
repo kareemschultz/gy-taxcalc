@@ -647,15 +647,19 @@ function setupPositionDropdown() {
             } else {
                 positionCustom.style.display = 'none';
                 applyPositionPreset(this.value);
-                // Auto-calculate immediately after applying preset
+                // Expand Deductions and Qualifications so personal details are visible
+                var deductionsSection = document.getElementById('section-deductions');
+                if (deductionsSection) deductionsSection.classList.remove('collapsed');
+                var qualificationsSection = document.getElementById('section-qualifications');
+                if (qualificationsSection) qualificationsSection.classList.remove('collapsed');
+                // Auto-calculate, then scroll to Deductions so user fills in personal details
                 setTimeout(function() {
                     calculateSalary();
                     showSalaryIncreaseSection();
-                    // Scroll to results
-                    var resultsArea = document.getElementById('results-area');
-                    if (resultsArea) {
+                    // Scroll to deductions — sticky bar already shows results at top
+                    if (deductionsSection) {
                         setTimeout(function() {
-                            resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            deductionsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }, 100);
                     }
                 }, 50);

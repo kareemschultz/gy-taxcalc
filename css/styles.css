@@ -557,6 +557,29 @@ label {
     display: none;
 }
 
+/* ── Personal Deductions Tip ─────────────────────────────────────────────── */
+.calc-personal-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin: 0 0 0.5rem;
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+.calc-personal-tip i {
+    color: #3b82f6;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+.calc-personal-tip strong {
+    color: var(--text-primary);
+}
+
 /* ============================================
    RESULTS SUMMARY
    ============================================ */
