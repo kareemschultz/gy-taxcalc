@@ -4,6 +4,49 @@ All notable changes to GY TaxCalc are documented here.
 
 ---
 
+## [2.3.0] — 2026-04-01
+
+### 🏦 New Feature — Loan Calculator
+
+Third calculator tab added alongside Income & Salary and Vehicle Import.
+
+**Amortization engine:**
+- Standard amortization formula `M = P[r(1+r)^n]/[(1+r)^n-1]`
+- Full monthly schedule: payment, principal portion, interest portion, remaining balance
+- Extra payment simulator: additional fixed monthly payment + one-time lump sum at any month
+- Shows months saved, interest saved, new payoff date, and new monthly payment when extra payments are enabled
+
+**6 Guyanese lender presets** (rates verified April 2026):
+
+| Lender | Rate Range | Notes |
+|--------|-----------|-------|
+| GPSCCU | ~1.0% flat | Government & Public Service Co-op |
+| GBTI | 6.99%–10% | Confirmed via GBTI website |
+| Republic Bank | 6%–12% | 6% promotional (Car Bonanza, 2026) |
+| Bank of Baroda | 10%–14% | Prime lending rate 10% |
+| Citizens Bank | 9.5%–13% | Confirmed for vehicle loans |
+| Demerara Bank | 11%–14% | Varies by down payment % |
+
+**GYD/USD dual currency:** enter principal in USD, auto-converts at editable exchange rate (default GY$218).
+
+**4 interactive charts:** principal vs. interest doughnut, balance-over-time line, principal/interest stacked bar per period, bank comparison horizontal bar.
+
+**Bank comparison section:** side-by-side monthly payment, total interest, and total cost across top 4 lenders for your loan amount and term.
+
+**Monthly/yearly amortization table toggle:** yearly view aggregates months into annual rows for long-term loans and mortgages.
+
+**Wiring:** `app-toggle.js` handles loan mode, `main.js` calls `initLoanCalculator()`, dark mode theme toggle re-renders loan charts via `refreshLoanCharts()`.
+
+> ⚠️ Rate disclaimer: all lender rates are approximate reference figures. Contact your bank directly before making financial decisions.
+
+### 🐛 Bug Fixes
+
+- `loan-charts.js`: all chart tooltips and axis labels now use `formatLoanAmount()` instead of hardcoded `GY$` strings — USD mode now formats correctly throughout
+- `css/styles.css`: added full loan component CSS (`result-card`, `savings-highlight-card`, `comparison-cards-grid`, `amortization-table-wrapper`, `loan-sticky`) — mobile layout was broken without these
+- `.gitignore` added to repository
+
+---
+
 ## [2.2.0] — 2026-03-31
 
 ### 🐛 Critical Fix — Income Tax Bracket Calculation

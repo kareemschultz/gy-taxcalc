@@ -25,18 +25,17 @@
 GY TaxCalc is a suite of tax calculators covering the most common tax questions in Guyana. No sign-up, no ads, no nonsense — just accurate calculations based on the latest GRA-published formulas and **Budget 2026** regulations.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        GY TaxCalc Suite                         │
-├─────────────────────────────┬───────────────────────────────────┤
-│   💰 Income & Salary        │      🚗 Vehicle Import Tax        │
-│   Calculator                │      Calculator                   │
-├─────────────────────────────┼───────────────────────────────────┤
-│ • Gross-to-net conversion   │ • Gasoline/Diesel/Electric/Hybrid │
-│ • NIS deductions            │ • Under 4 years & 4+ years        │
-│ • Income tax (25%/35%)      │ • Duty + Excise + VAT             │
-│ • Allowances & gratuity     │ • G-Plate & Dealer modes          │
-│ • PDF export                │ • USD/GYD dual currency           │
-└─────────────────────────────┴───────────────────────────────────┘
+┌──────────────────────┬───────────────────────┬──────────────────────────┐
+│  💰 Income & Salary  │  🚗 Vehicle Import Tax │  🏦 Loan Calculator      │
+│  Calculator          │  Calculator            │                          │
+├──────────────────────┼───────────────────────┼──────────────────────────┤
+│ • Gross-to-net       │ • Gas/Diesel/EV/Hybrid │ • Amortization schedule  │
+│ • NIS deductions     │ • Under 4yr & 4yr+     │ • Extra payment savings  │
+│ • Income tax 25%/35% │ • Duty + Excise + VAT  │ • 6 Guyanese lenders     │
+│ • Allowances &       │ • G-Plate & Dealer     │ • GYD/USD dual currency  │
+│   gratuity           │ • USD/GYD currency     │ • Bank comparison        │
+│ • PDF export         │                        │ • 4 interactive charts   │
+└──────────────────────┴───────────────────────┴──────────────────────────┘
 ```
 
 ---
@@ -64,6 +63,26 @@ GY TaxCalc is a suite of tax calculators covering the most common tax questions 
 | 👔 **Job Presets** | Pre-loaded government positions (ICT, Admin, Teaching, Nursing, Police) |
 | 📊 **Visual Charts** | 11 interactive charts — income doughnuts, tax gauge, waterfall, cash flow, cumulative earnings, and more |
 | 📄 **PDF Export** | Professional reports with employee name |
+
+</details>
+
+### 🏦 Loan Calculator
+
+<details>
+<summary><b>Click to expand full feature list</b></summary>
+
+| Feature | Description |
+|---------|-------------|
+| 📐 **Amortization Engine** | Standard formula `M = P[r(1+r)^n]/[(1+r)^n-1]` — accurate to the cent |
+| 💸 **Extra Payment Simulator** | See how additional monthly payments or a one-time lump sum reduce interest and shorten your loan |
+| 🏛️ **6 Lender Presets** | GPSCCU, GBTI, Republic Bank, Bank of Baroda, Citizens Bank, Demerara Bank — with current rate ranges |
+| 💱 **Dual Currency** | GYD and USD input with editable exchange rate (default: GY$218) |
+| 📅 **Payoff Date** | Exact calendar date you'll be debt-free |
+| 🔄 **Monthly/Yearly Toggle** | Switch amortization table between monthly detail and yearly summary |
+| 📊 **4 Charts** | Payment split doughnut, balance-over-time line, principal/interest stacked bar, bank comparison |
+| 🏪 **Bank Comparison** | Side-by-side total interest and monthly payment across top Guyanese lenders |
+| ⚡ **Auto-Calculate** | Real-time updates on input change (300ms debounce) |
+| ⚠️ **Rate Disclaimer** | Rates verified April 2026 — always contact your bank for current offers |
 
 </details>
 
