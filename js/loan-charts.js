@@ -3,6 +3,21 @@
  * Follows patterns from js/charts.js
  */
 
+/**
+ * Compact currency formatter for chart axes.
+ * Avoids long strings like "GY$2,500,000" on narrow mobile screens.
+ */
+function formatLoanAmountCompact(value) {
+    var abs = Math.abs(value);
+    if (abs >= 1000000) {
+        return 'GY$' + (value / 1000000).toFixed(1) + 'M';
+    }
+    if (abs >= 1000) {
+        return 'GY$' + Math.round(value / 1000) + 'k';
+    }
+    return 'GY$' + Math.round(value);
+}
+
 // Chart instances
 var loanSplitChart = null;
 var loanBalanceChart = null;
@@ -166,6 +181,9 @@ function createLoanBalanceChart(results) {
                     }
                 }
             },
+            layout: {
+                padding: { left: 4, right: 4 }
+            },
             scales: {
                 x: {
                     ticks: {
@@ -180,7 +198,7 @@ function createLoanBalanceChart(results) {
                         color: colors.text,
                         font: { size: 10 },
                         callback: function(value) {
-                            return formatLoanAmount(value);
+                            return formatLoanAmountCompact(value);
                         }
                     },
                     grid: { color: colors.grid }
@@ -247,6 +265,9 @@ function createLoanBreakdownChart(results) {
                     }
                 }
             },
+            layout: {
+                padding: { left: 4, right: 4 }
+            },
             scales: {
                 x: {
                     stacked: true,
@@ -263,7 +284,7 @@ function createLoanBreakdownChart(results) {
                         color: colors.text,
                         font: { size: 10 },
                         callback: function(value) {
-                            return formatLoanAmount(value);
+                            return formatLoanAmountCompact(value);
                         }
                     },
                     grid: { color: colors.grid }
@@ -336,13 +357,16 @@ function createLoanComparisonChart(results) {
                     }
                 }
             },
+            layout: {
+                padding: { left: 4, right: 4 }
+            },
             scales: {
                 x: {
                     ticks: {
                         color: colors.text,
                         font: { size: 10 },
                         callback: function(value) {
-                            return formatLoanAmount(value);
+                            return formatLoanAmountCompact(value);
                         }
                     },
                     grid: { color: colors.grid }
