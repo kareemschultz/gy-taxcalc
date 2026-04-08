@@ -8,6 +8,7 @@ let _loanAutoCalcDebounce = null;
 let _loanExtraEnabled = false;
 let _loanCurrency = 'GYD'; // 'GYD' or 'USD'
 let _loanAmortView = 'monthly'; // 'monthly' or 'yearly'
+let _loanIsBiweekly = false;
 
 // ─── Core Math ────────────────────────────────────────────────────────────────
 
@@ -109,6 +110,7 @@ function calculateWithExtraPayments(principal, annualRate, termMonths, extraMont
 
 /**
  * Summarize an amortization schedule.
+ * Note: monthlyPayment is overridden in calculateLoan() to avoid lump-sum inflation.
  */
 function summarizeSchedule(schedule, principal) {
     var totalPaid = 0;
@@ -119,6 +121,7 @@ function summarizeSchedule(schedule, principal) {
     });
     return {
         months: schedule.length,
+        periods: schedule.length,
         totalPaid: totalPaid,
         totalInterest: totalInterest,
         monthlyPayment: schedule.length > 0 ? schedule[0].payment : 0
@@ -126,7 +129,44 @@ function summarizeSchedule(schedule, principal) {
 }
 
 /**
+ * Generate bi-weekly amortization schedule.
+ * 26 bi-weekly periods per year; payment = P * [r(1+r)^n] / [(1+r)^n - 1]
+ */
+function calculateBiweeklyAmortization(principal, annualRate, termMonths) {
+    var r = annualRate / 100 / 26;
+    var n = Math.round(termMonths * 26 / 12);
+    var payment;
+    if (r === 0) {
+        payment = principal / n;
+    } else {
+        payment = principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    }
+    var balance = principal;
+    var schedule = [];
+    for (var i = 1; i <= n; i++) {
+        var interest = balance * r;
+        var principalPart = payment - interest;
+        if (i === n) {
+            principalPart = balance;
+            payment = principalPart + interest;
+        }
+        balance -= principalPart;
+        if (balance < 0) balance = 0;
+        schedule.push({
+            month: i,
+            payment: payment,
+            principal: principalPart,
+            interest: interest,
+            balance: balance
+        });
+        if (balance <= 0) break;
+    }
+    return schedule;
+}
+
+/**
  * Generate comparison data for multiple lender scenarios.
+ * Includes rateMin/rateMax/hasRange for banks with rate ranges.
  */
 function generateComparisonData(principal, termMonths, bankKeys) {
     return bankKeys.map(function(key) {
@@ -142,7 +182,10 @@ function generateComparisonData(principal, termMonths, bankKeys) {
             rate: rate,
             monthlyPayment: payment,
             totalPaid: totalPaid,
-            totalInterest: totalInterest
+            totalInterest: totalInterest,
+            hasRange: bank.rateMin !== bank.rateMax && bank.rateMin != null && bank.rateMax != null,
+            rateMin: bank.rateMin || rate,
+            rateMax: bank.rateMax || rate
         };
     }).filter(Boolean);
 }
@@ -199,8 +242,24 @@ function calculateLoan() {
         var inputs = getLoanInputs();
         if (!inputs) return;
 
-        var baseSchedule = calculateAmortization(inputs.principal, inputs.rate, inputs.term);
-        var baseSummary = summarizeSchedule(baseSchedule, inputs.principal);
+        _loanIsBiweekly = inputs.frequency === 'biweekly';
+
+        var baseSchedule, baseSummary;
+        var monthlySchedule = null; // standard monthly schedule for biweekly comparison
+
+        if (_loanIsBiweekly) {
+            baseSchedule = calculateBiweeklyAmortization(inputs.principal, inputs.rate, inputs.term);
+            baseSummary = summarizeSchedule(baseSchedule, inputs.principal);
+            // Approximate months from periods
+            baseSummary.months = Math.round(baseSchedule.length * 12 / 26);
+            monthlySchedule = calculateAmortization(inputs.principal, inputs.rate, inputs.term);
+        } else {
+            baseSchedule = calculateAmortization(inputs.principal, inputs.rate, inputs.term);
+            baseSummary = summarizeSchedule(baseSchedule, inputs.principal);
+        }
+
+        // Fix #3: override monthlyPayment so lump sums at month 1 don't inflate the display
+        baseSummary.monthlyPayment = calculateMonthlyPayment(inputs.principal, inputs.rate, inputs.term);
 
         var extraSchedule = null;
         var extraSummary = null;
@@ -213,8 +272,28 @@ function calculateLoan() {
                 inputs.extraMonthly, inputs.lumpSum, inputs.lumpSumMonth
             );
             extraSummary = summarizeSchedule(extraSchedule, inputs.principal);
-            monthsSaved = baseSummary.months - extraSummary.months;
+            // Extra payment keeps same contractual monthly payment
+            extraSummary.monthlyPayment = baseSummary.monthlyPayment;
+            monthsSaved = (monthlySchedule ? summarizeSchedule(monthlySchedule, inputs.principal).months : baseSummary.months) - extraSummary.months;
             interestSaved = baseSummary.totalInterest - extraSummary.totalInterest;
+        }
+
+        // Processing fee
+        var procFeeAmount = inputs.principal * inputs.procFeePct / 100;
+
+        // Biweekly savings vs monthly
+        var biweeklySavings = null;
+        if (_loanIsBiweekly && monthlySchedule) {
+            var monthlySummary = summarizeSchedule(monthlySchedule, inputs.principal);
+            var bwPayoffMonths = baseSummary.months;
+            var moPayoffMonths = monthlySummary.months;
+            var bwPayment = baseSchedule.length > 0 ? baseSchedule[0].payment : 0;
+            biweeklySavings = {
+                monthsSaved: moPayoffMonths - bwPayoffMonths,
+                interestSaved: monthlySummary.totalInterest - baseSummary.totalInterest,
+                bwPayment: bwPayment,
+                bwPayoffMonths: bwPayoffMonths
+            };
         }
 
         _loanLastResults = {
@@ -224,7 +303,10 @@ function calculateLoan() {
             extraSchedule: extraSchedule,
             extraSummary: extraSummary,
             monthsSaved: monthsSaved,
-            interestSaved: interestSaved
+            interestSaved: interestSaved,
+            procFeeAmount: procFeeAmount,
+            biweeklySavings: biweeklySavings,
+            isBiweekly: _loanIsBiweekly
         };
 
         updateLoanDisplay(_loanLastResults);
@@ -242,6 +324,8 @@ function getLoanInputs() {
     var extraMonthly = parseFloat(document.getElementById('loan-extra-monthly')?.value) || 0;
     var lumpSum = parseFloat(document.getElementById('loan-lump-sum')?.value) || 0;
     var lumpSumMonth = parseInt(document.getElementById('loan-lump-sum-month')?.value) || 0;
+    var procFeePct = parseFloat(document.getElementById('loan-proc-fee-pct')?.value) || 0;
+    var frequency = document.getElementById('loan-frequency')?.value || 'monthly';
 
     if (principal <= 0 || rate < 0 || term <= 0) return null;
 
@@ -262,7 +346,9 @@ function getLoanInputs() {
         startDate: startDate,
         extraMonthly: extraMonthly,
         lumpSum: lumpSum,
-        lumpSumMonth: lumpSumMonth
+        lumpSumMonth: lumpSumMonth,
+        procFeePct: procFeePct,
+        frequency: frequency
     };
 }
 
@@ -272,18 +358,44 @@ function updateLoanDisplay(results) {
     var inputs = results.inputs;
     var base = results.baseSummary;
     var extra = results.extraSummary;
+    var procFeeAmount = results.procFeeAmount || 0;
 
     // Show results area
     var resultsArea = document.getElementById('loan-results-area');
     if (resultsArea) resultsArea.style.display = '';
 
     // ── Summary cards ──
-    setLoanEl('loan-result-monthly', formatLoanAmount(base.monthlyPayment));
-    setLoanEl('loan-result-total', formatLoanAmount(base.totalPaid));
+    // Biweekly: show biweekly payment amount; monthly: show monthly payment
+    if (results.isBiweekly && results.baseSchedule && results.baseSchedule.length > 0) {
+        var bwPayment = results.baseSchedule[0].payment;
+        setLoanEl('loan-result-monthly', formatLoanAmount(bwPayment));
+        var monthlyCardLabel = document.querySelector('#loan-result-monthly')?.closest('.result-card')?.querySelector('.result-card-label');
+        if (monthlyCardLabel) monthlyCardLabel.textContent = 'Bi-weekly Payment';
+    } else {
+        setLoanEl('loan-result-monthly', formatLoanAmount(base.monthlyPayment));
+        var monthlyCardLabel2 = document.querySelector('#loan-result-monthly')?.closest('.result-card')?.querySelector('.result-card-label');
+        if (monthlyCardLabel2) monthlyCardLabel2.textContent = 'Monthly Payment';
+    }
+
+    // Total Paid = schedule total + processing fee; label as "Total Cost" if fee > 0
+    var totalCost = base.totalPaid + procFeeAmount;
+    setLoanEl('loan-result-total', formatLoanAmount(totalCost));
+    var totalCardLabel = document.querySelector('#loan-result-total')?.closest('.result-card')?.querySelector('.result-card-label');
+    if (totalCardLabel) totalCardLabel.textContent = procFeeAmount > 0 ? 'Total Cost' : 'Total Paid';
+
     setLoanEl('loan-result-interest', formatLoanAmount(base.totalInterest));
     setLoanEl('loan-result-rate', inputs.rate.toFixed(2) + '%');
     setLoanEl('loan-result-payoff', calculatePayoffDate(inputs.startDate, base.months));
     setLoanEl('loan-result-months', base.months + ' months (' + Math.floor(base.months / 12) + 'y ' + (base.months % 12) + 'm)');
+
+    // ── Processing fee stat ──
+    var feeStatEl = document.getElementById('loan-fee-stat');
+    if (procFeeAmount > 0) {
+        if (feeStatEl) feeStatEl.style.display = '';
+        setLoanEl('loan-result-fee', formatLoanAmount(procFeeAmount));
+    } else {
+        if (feeStatEl) feeStatEl.style.display = 'none';
+    }
 
     // ── Extra payment savings ──
     var savingsEl = document.getElementById('loan-savings-area');
@@ -297,10 +409,23 @@ function updateLoanDisplay(results) {
         if (savingsEl) savingsEl.style.display = 'none';
     }
 
+    // ── Biweekly savings ──
+    var bwAreaEl = document.getElementById('loan-biweekly-area');
+    if (results.isBiweekly && results.biweeklySavings) {
+        var bws = results.biweeklySavings;
+        if (bwAreaEl) bwAreaEl.style.display = '';
+        setLoanEl('loan-bw-months-saved', bws.monthsSaved > 0 ? bws.monthsSaved + ' months' : '0');
+        setLoanEl('loan-bw-interest-saved', formatLoanAmount(bws.interestSaved));
+        setLoanEl('loan-bw-payoff', calculatePayoffDate(inputs.startDate, bws.bwPayoffMonths));
+        setLoanEl('loan-bw-payment', formatLoanAmount(bws.bwPayment));
+    } else {
+        if (bwAreaEl) bwAreaEl.style.display = 'none';
+    }
+
     // ── Sticky bar ──
     var loanSticky = document.getElementById('loan-sticky-results');
     if (loanSticky) loanSticky.classList.add('visible');
-    setLoanEl('loan-sticky-monthly', formatLoanAmount(base.monthlyPayment));
+    setLoanEl('loan-sticky-monthly', formatLoanAmount(results.isBiweekly && results.baseSchedule.length > 0 ? results.baseSchedule[0].payment : base.monthlyPayment));
     setLoanEl('loan-sticky-interest', formatLoanAmount(base.totalInterest));
     setLoanEl('loan-sticky-payoff', calculatePayoffDate(inputs.startDate, (extra ? extra.months : base.months)));
 
@@ -323,8 +448,9 @@ function renderAmortizationTable(results) {
     var tfoot = document.getElementById('amortization-tfoot');
     if (!tbody) return;
 
+    var isBiweekly = results.isBiweekly;
     var schedule = results.extraSchedule || results.baseSchedule;
-    var rows = _loanAmortView === 'yearly' ? buildYearlyRows(schedule) : schedule;
+    var rows = _loanAmortView === 'yearly' ? buildYearlyRows(schedule, isBiweekly) : schedule;
 
     var totalPayment = 0, totalPrincipal = 0, totalInterest = 0;
     var html = '';
@@ -334,7 +460,14 @@ function renderAmortizationTable(results) {
         totalPrincipal += row.principal;
         totalInterest += row.interest;
 
-        var label = _loanAmortView === 'yearly' ? 'Year ' + row.month : 'Month ' + row.month;
+        var label;
+        if (_loanAmortView === 'yearly') {
+            label = 'Year ' + row.month;
+        } else if (isBiweekly) {
+            label = 'Period ' + row.month;
+        } else {
+            label = 'Month ' + row.month;
+        }
         var extraBadge = (row.extra && row.extra > 0) ? ' <span class="badge bg-success" style="font-size:0.65rem;">+extra</span>' : '';
         html += '<tr>' +
             '<td>' + label + extraBadge + '</td>' +
@@ -358,10 +491,11 @@ function renderAmortizationTable(results) {
     }
 }
 
-function buildYearlyRows(schedule) {
+function buildYearlyRows(schedule, isBiweekly) {
+    var periodsPerYear = isBiweekly ? 26 : 12;
     var years = {};
     schedule.forEach(function(row) {
-        var year = Math.ceil(row.month / 12);
+        var year = Math.ceil(row.month / periodsPerYear);
         if (!years[year]) {
             years[year] = { month: year, payment: 0, principal: 0, interest: 0, balance: 0, extra: 0 };
         }
@@ -396,10 +530,23 @@ function renderLoanComparison(principal, termMonths, userRate) {
             : '<span class="badge bg-secondary">Highest Cost</span>';
         var bestBadge = idx === 0 ? '<span class="badge bg-success ms-1">Best</span>' : '';
 
+        var rateDisplay = item.hasRange
+            ? item.rateMin.toFixed(2) + '%\u2013' + item.rateMax.toFixed(2) + '% p.a.'
+            : item.rate.toFixed(2) + '% p.a.';
+
+        var worstRow = '';
+        if (item.hasRange) {
+            var worstPayment = calculateMonthlyPayment(principal, item.rateMax, termMonths);
+            var worstTotal = worstPayment * termMonths;
+            var worstInterest = worstTotal - principal;
+            worstRow = '<div class="comparison-row"><small class="text-muted">At ' + item.rateMax.toFixed(2) + '%: ' +
+                formatLoanAmount(worstPayment) + '/mo, ' + formatLoanAmount(worstInterest) + ' interest</small></div>';
+        }
+
         html += '<div class="comparison-card">' +
             '<div class="comparison-card-header">' +
             '<strong>' + item.name + bestBadge + '</strong>' +
-            '<span class="text-muted">' + item.rate.toFixed(2) + '% p.a.</span>' +
+            '<span class="text-muted">' + rateDisplay + '</span>' +
             '</div>' +
             '<div class="comparison-card-body">' +
             '<div class="comparison-row">' +
@@ -414,6 +561,7 @@ function renderLoanComparison(principal, termMonths, userRate) {
             '<span>Total Cost</span>' +
             '<strong>' + formatLoanAmount(item.totalPaid) + '</strong>' +
             '</div>' +
+            worstRow +
             '<div class="mt-2">' + savingsBadge + '</div>' +
             '</div>' +
             '</div>';
@@ -458,7 +606,7 @@ function applyLoanTypePreset(loanType) {
     var principalInput = document.getElementById('loan-principal');
     var termInput = document.getElementById('loan-term');
     var bankSelect = document.getElementById('loan-bank');
-    var termYearsHint = document.getElementById('loan-term-years');
+    var purchaseRow = document.getElementById('loan-purchase-row');
 
     if (principalInput && !principalInput.value) {
         principalInput.value = config.defaultPrincipal;
@@ -470,6 +618,20 @@ function applyLoanTypePreset(loanType) {
         bankSelect.value = config.defaultBank;
         applyBankPreset(config.defaultBank);
     }
+
+    // Show purchase/down-payment row only for auto and mortgage
+    if (purchaseRow) {
+        if (loanType === 'auto' || loanType === 'mortgage') {
+            purchaseRow.style.display = '';
+        } else {
+            purchaseRow.style.display = 'none';
+            var ppEl = document.getElementById('loan-purchase-price');
+            var caEl = document.getElementById('loan-computed-amount');
+            if (ppEl) ppEl.value = '';
+            if (caEl) caEl.value = '';
+        }
+    }
+
     updateTermYearsHint();
 }
 
@@ -489,6 +651,35 @@ function updateTermYearsHint() {
     } else {
         hint.textContent = '';
     }
+}
+
+// ─── Down Payment Calculator ──────────────────────────────────────────────────
+
+function setupDownPaymentCalc() {
+    var priceEl = document.getElementById('loan-purchase-price');
+    var pctEl = document.getElementById('loan-down-payment-pct');
+    var computedEl = document.getElementById('loan-computed-amount');
+    var principalEl = document.getElementById('loan-principal');
+
+    if (!priceEl || !pctEl) return;
+
+    function recalcDownPayment() {
+        var price = parseFloat(priceEl.value) || 0;
+        var pct = parseFloat(pctEl.value) || 0;
+        if (price <= 0) {
+            if (computedEl) computedEl.value = '';
+            return;
+        }
+        var loanAmount = price * (1 - pct / 100);
+        var rounded = Math.round(loanAmount / 1000) * 1000;
+        if (computedEl) computedEl.value = rounded.toLocaleString('en-US');
+        if (principalEl) principalEl.value = rounded;
+        clearTimeout(_loanAutoCalcDebounce);
+        _loanAutoCalcDebounce = setTimeout(calculateLoan, 300);
+    }
+
+    priceEl.addEventListener('input', recalcDownPayment);
+    pctEl.addEventListener('input', recalcDownPayment);
 }
 
 // ─── Auto-Calculate Setup ─────────────────────────────────────────────────────
@@ -612,6 +803,7 @@ function initLoanCalculator() {
     var extraBody = document.getElementById('loan-extra-body');
     if (extraBody) extraBody.style.display = 'none';
 
+    setupDownPaymentCalc();
     setupLoanAutoCalc();
 
     // Trigger initial calculation so results show immediately on first open

@@ -1587,6 +1587,43 @@
                         </select>
                     </div>
 
+                    <!-- Purchase Price + Down Payment (auto/mortgage only) -->
+                    <div class="col-12" id="loan-purchase-row" style="display:none;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="loan-purchase-price" class="form-label">
+                                    <i class="fas fa-tag me-1"></i> Purchase Price
+                                    <span class="text-muted ms-1 small">(optional)</span>
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text loan-currency-label">GY$</span>
+                                    <input type="number" class="form-control loan-calc-input" id="loan-purchase-price"
+                                           placeholder="e.g., 3500000" min="0" step="50000">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="loan-down-payment-pct" class="form-label">
+                                    <i class="fas fa-percent me-1"></i> Down Payment (%)
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <input type="number" class="form-control loan-calc-input" id="loan-down-payment-pct"
+                                           placeholder="e.g., 20" min="0" max="99" step="1" value="20">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <div class="w-100">
+                                    <label class="form-label text-muted small">Computed Loan Amount</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text loan-currency-label">GY$</span>
+                                        <input type="text" class="form-control" id="loan-computed-amount" readonly placeholder="—">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted d-block mt-1">Loan amount = Purchase Price × (1 − Down Payment%). This auto-fills the Principal below.</small>
+                    </div>
+
                     <!-- Principal Amount -->
                     <div class="col-md-6">
                         <label for="loan-principal" class="form-label">
@@ -1652,6 +1689,31 @@
                         <input type="date" class="form-control form-control-lg loan-calc-input" id="loan-start-date">
                     </div>
 
+                    <!-- Processing / Origination Fee -->
+                    <div class="col-md-4">
+                        <label for="loan-proc-fee-pct" class="form-label">
+                            <i class="fas fa-receipt me-1"></i> Processing Fee (%)
+                            <span class="text-muted ms-1 small">(optional)</span>
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <input type="number" class="form-control loan-calc-input" id="loan-proc-fee-pct"
+                                   placeholder="e.g., 1.5" min="0" max="10" step="0.25" value="0">
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <small class="text-muted mt-1 d-block">Upfront fee charged on loan amount. Added to total cost.</small>
+                    </div>
+
+                    <!-- Payment Frequency -->
+                    <div class="col-md-4">
+                        <label for="loan-frequency" class="form-label">
+                            <i class="fas fa-sync me-1"></i> Payment Frequency
+                        </label>
+                        <select class="form-select form-select-lg loan-calc-input" id="loan-frequency">
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="biweekly">Bi-weekly (every 2 weeks)</option>
+                        </select>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -1702,6 +1764,12 @@
                         <span class="quick-stat-value" id="loan-result-months">—</span>
                     </div>
                 </div>
+                <div class="col-6 col-md-3" id="loan-fee-stat" style="display:none;">
+                    <div class="quick-stat">
+                        <span class="quick-stat-label">Processing Fee</span>
+                        <span class="quick-stat-value" id="loan-result-fee">GY$0</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Extra Payment Savings -->
@@ -1739,6 +1807,47 @@
                             <div class="savings-highlight-card">
                                 <div class="savings-label">New Monthly</div>
                                 <div class="savings-value" id="loan-savings-new-monthly">GY$0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bi-weekly vs Monthly Comparison -->
+            <div id="loan-biweekly-area" class="calc-section mb-3" style="display:none;">
+                <div class="section-header always-open">
+                    <div class="section-icon section-icon-primary">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div>
+                        <h5 class="section-heading">Bi-weekly vs Monthly</h5>
+                        <small class="section-subtitle">How bi-weekly payments compare to monthly</small>
+                    </div>
+                </div>
+                <div class="section-body">
+                    <div class="row g-3">
+                        <div class="col-6 col-md-3">
+                            <div class="savings-highlight-card">
+                                <div class="savings-label">Months Saved</div>
+                                <div class="savings-value" id="loan-bw-months-saved">0</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="savings-highlight-card">
+                                <div class="savings-label">Interest Saved</div>
+                                <div class="savings-value text-success" id="loan-bw-interest-saved">GY$0</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="savings-highlight-card">
+                                <div class="savings-label">New Payoff Date</div>
+                                <div class="savings-value" id="loan-bw-payoff">—</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="savings-highlight-card">
+                                <div class="savings-label">Bi-weekly Payment</div>
+                                <div class="savings-value" id="loan-bw-payment">GY$0</div>
                             </div>
                         </div>
                     </div>
