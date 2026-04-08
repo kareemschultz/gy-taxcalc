@@ -64,8 +64,15 @@ function calculateAmortization(principal, annualRate, termMonths) {
  * extraMonthly: additional fixed monthly payment
  * lumpSum: one-time extra payment
  * lumpSumMonth: month number for lump sum (0 = disabled)
+ * periodicAmount: lump sum applied at regular intervals (gratuity/bonus)
+ * periodicFreq: interval in months between periodic payments
+ * periodicStart: month number of first periodic payment
  */
-function calculateWithExtraPayments(principal, annualRate, termMonths, extraMonthly, lumpSum, lumpSumMonth) {
+function calculateWithExtraPayments(principal, annualRate, termMonths, extraMonthly, lumpSum, lumpSumMonth, periodicAmount, periodicFreq, periodicStart) {
+    periodicAmount = periodicAmount || 0;
+    periodicFreq = periodicFreq || 6;
+    periodicStart = periodicStart || periodicFreq;
+
     var r = annualRate / 100 / 12;
     var basePayment = calculateMonthlyPayment(principal, annualRate, termMonths);
     var balance = principal;
@@ -84,6 +91,14 @@ function calculateWithExtraPayments(principal, annualRate, termMonths, extraMont
         // Apply extra monthly
         if (extraMonthly > 0) {
             extra += extraMonthly;
+        }
+
+        // Apply periodic lump sum (gratuity/bonus)
+        if (periodicAmount > 0 && periodicStart > 0 && periodicFreq > 0) {
+            var monthsSinceStart = i - periodicStart;
+            if (i === periodicStart || (monthsSinceStart > 0 && monthsSinceStart % periodicFreq === 0)) {
+                extra += periodicAmount;
+            }
         }
 
         // Don't overpay
@@ -266,10 +281,11 @@ function calculateLoan() {
         var monthsSaved = 0;
         var interestSaved = 0;
 
-        if (_loanExtraEnabled && (inputs.extraMonthly > 0 || inputs.lumpSum > 0)) {
+        if (_loanExtraEnabled && (inputs.extraMonthly > 0 || inputs.lumpSum > 0 || inputs.periodicAmount > 0)) {
             extraSchedule = calculateWithExtraPayments(
                 inputs.principal, inputs.rate, inputs.term,
-                inputs.extraMonthly, inputs.lumpSum, inputs.lumpSumMonth
+                inputs.extraMonthly, inputs.lumpSum, inputs.lumpSumMonth,
+                inputs.periodicAmount, inputs.periodicFreq, inputs.periodicStart
             );
             extraSummary = summarizeSchedule(extraSchedule, inputs.principal);
             // Extra payment keeps same contractual monthly payment
@@ -329,12 +345,20 @@ function getLoanInputs() {
 
     if (principal <= 0 || rate < 0 || term <= 0) return null;
 
+    var periodicAmount = parseFloat(document.getElementById('loan-periodic-amount')?.value) || 0;
+    var periodicFreqVal = document.getElementById('loan-periodic-frequency')?.value || '6';
+    var periodicFreq = periodicFreqVal === 'custom'
+        ? (parseInt(document.getElementById('loan-periodic-custom')?.value) || 6)
+        : parseInt(periodicFreqVal);
+    var periodicStart = parseInt(document.getElementById('loan-periodic-start')?.value) || periodicFreq;
+
     // Convert USD input to GYD if toggle is active
     if (_loanCurrency === 'USD') {
         var rate_ex = getLoanExchangeRate();
         principal = principal * rate_ex;
         extraMonthly = extraMonthly * rate_ex;
         lumpSum = lumpSum * rate_ex;
+        periodicAmount = periodicAmount * rate_ex;
     }
 
     var startDate = startDateVal ? new Date(startDateVal) : new Date();
@@ -348,7 +372,10 @@ function getLoanInputs() {
         lumpSum: lumpSum,
         lumpSumMonth: lumpSumMonth,
         procFeePct: procFeePct,
-        frequency: frequency
+        frequency: frequency,
+        periodicAmount: periodicAmount,
+        periodicFreq: periodicFreq,
+        periodicStart: periodicStart
     };
 }
 
@@ -405,6 +432,16 @@ function updateLoanDisplay(results) {
         setLoanEl('loan-savings-interest', formatLoanAmount(results.interestSaved));
         setLoanEl('loan-savings-payoff', calculatePayoffDate(inputs.startDate, extra.months));
         setLoanEl('loan-savings-new-monthly', formatLoanAmount(extra.monthlyPayment));
+
+        // Breakdown summary of what's included
+        var parts = [];
+        if (inputs.extraMonthly > 0) parts.push(formatLoanAmount(inputs.extraMonthly) + '/mo extra');
+        if (inputs.lumpSum > 0 && inputs.lumpSumMonth > 0) parts.push('one-time ' + formatLoanAmount(inputs.lumpSum) + ' at month ' + inputs.lumpSumMonth);
+        if (inputs.periodicAmount > 0) parts.push(formatLoanAmount(inputs.periodicAmount) + ' every ' + inputs.periodicFreq + ' months');
+        var breakdownEl = document.getElementById('loan-savings-breakdown');
+        if (breakdownEl) {
+            breakdownEl.textContent = parts.length ? 'Includes: ' + parts.join(' + ') : '';
+        }
     } else {
         if (savingsEl) savingsEl.style.display = 'none';
     }
@@ -744,6 +781,15 @@ function setupLoanAutoCalc() {
             _loanCurrency = this.checked ? 'USD' : 'GYD';
             updateLoanCurrencyLabels();
             if (_loanLastResults) updateLoanDisplay(_loanLastResults);
+        });
+    }
+
+    // Periodic lump sum frequency custom-col toggle
+    var periodicFreqSel = document.getElementById('loan-periodic-frequency');
+    var periodicCustomCol = document.getElementById('loan-periodic-custom-col');
+    if (periodicFreqSel && periodicCustomCol) {
+        periodicFreqSel.addEventListener('change', function() {
+            periodicCustomCol.style.display = this.value === 'custom' ? '' : 'none';
         });
     }
 
