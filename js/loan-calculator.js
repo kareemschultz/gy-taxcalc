@@ -138,7 +138,7 @@ function generateComparisonData(principal, termMonths, bankKeys) {
         var totalInterest = totalPaid - principal;
         return {
             key: key,
-            name: bank.name,
+            name: bank.shortName,
             rate: rate,
             monthlyPayment: payment,
             totalPaid: totalPaid,

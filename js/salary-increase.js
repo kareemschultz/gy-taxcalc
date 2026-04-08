@@ -152,39 +152,45 @@ function getCurrentResults() {
  * @returns {Object} The new calculation results
  */
 function calculateIncreaseResults(baseResults, increasePercentage, isTaxable, retroactiveMonths, isGratuityMonth) {
+    const freq = baseResults.frequencyConfig;
+
     // Calculate the increase amount based on baseResults.basicSalary
     const monthlyBasicIncreaseAmount = baseResults.basicSalary * (increasePercentage / 100);
-    
+
     // Create a deep copy of the base results to modify
     const newResults = JSON.parse(JSON.stringify(baseResults));
-    
-    // Apply the increase to basic salary for the new monthly salary
-    newResults.basicSalary += monthlyBasicIncreaseAmount;
-    
+
+    // Apply the increase to the correct income bucket based on taxability
+    if (isTaxable) {
+        newResults.basicSalary += monthlyBasicIncreaseAmount;
+    } else {
+        newResults.nonTaxableAllowances += monthlyBasicIncreaseAmount;
+    }
+
     // Recalculate gratuity based on the new basicSalary
     newResults.monthlyGratuityAccrual = newResults.basicSalary * (newResults.gratuityRate / 100);
     newResults.sixMonthGratuity = newResults.monthlyGratuityAccrual * 6;
-    
+
     // Update regular monthly gross income for the new monthly salary
     newResults.regularMonthlyGrossIncome = newResults.basicSalary + newResults.taxableAllowances + newResults.nonTaxableAllowances +
                                            newResults.overtimeIncome + newResults.secondJobIncome;
 
     // Recalculate NIS and other deductions based on the new gross
-    newResults.nisContribution = Math.min(newResults.regularMonthlyGrossIncome * NIS_RATE, NIS_CEILING * NIS_RATE);
+    newResults.nisContribution = Math.min(newResults.regularMonthlyGrossIncome * freq.nisRate, freq.nisCeiling * freq.nisRate);
 
     // Recalculate actual insurance deduction based on the new gross income
-    const newActualInsuranceDeduction = Math.min(newResults.insurancePremium, newResults.regularMonthlyGrossIncome * 0.10, 50000);
+    const newActualInsuranceDeduction = Math.min(newResults.insurancePremium, newResults.regularMonthlyGrossIncome * 0.10, freq.insuranceMaxMonthly);
     newResults.actualInsuranceDeduction = newActualInsuranceDeduction;
 
     // Recalculate non-taxable overtime and second job allowances for the new income
-    newResults.overtimeAllowance = Math.min(newResults.overtimeIncome, OVERTIME_ALLOWANCE_MAX);
-    newResults.secondJobAllowance = Math.min(newResults.secondJobIncome, SECOND_JOB_ALLOWANCE_MAX);
+    newResults.overtimeAllowance = Math.min(newResults.overtimeIncome, freq.overtimeMax);
+    newResults.secondJobAllowance = Math.min(newResults.secondJobIncome, freq.secondJobMax);
 
     // Balance of Income (per GRA: personal allowance 1/3 applies to this, not total gross)
     const grossIncomeForTaxableCalculation = newResults.regularMonthlyGrossIncome - newResults.nonTaxableAllowances - newResults.overtimeAllowance - newResults.secondJobAllowance;
 
     // Personal allowance: $140,000 OR 1/3 of Balance of Income — whichever is greater
-    newResults.personalAllowance = Math.max(PERSONAL_ALLOWANCE, grossIncomeForTaxableCalculation / 3);
+    newResults.personalAllowance = Math.max(freq.personalAllowance, grossIncomeForTaxableCalculation / 3);
 
     // Calculate actual taxable income for the new monthly salary
     newResults.taxableIncome = Math.max(0, grossIncomeForTaxableCalculation -
@@ -192,15 +198,15 @@ function calculateIncreaseResults(baseResults, increasePercentage, isTaxable, re
                                          newResults.nisContribution -
                                          newResults.childAllowance -
                                          newActualInsuranceDeduction);
-    
+
     // Recalculate income tax for the new monthly salary
-    if (newResults.taxableIncome <= TAX_THRESHOLD) {
+    if (newResults.taxableIncome <= freq.taxThreshold) {
         newResults.incomeTax = newResults.taxableIncome * TAX_RATE_1;
     } else {
-        newResults.incomeTax = (TAX_THRESHOLD * TAX_RATE_1) +
-                              ((newResults.taxableIncome - TAX_THRESHOLD) * TAX_RATE_2);
+        newResults.incomeTax = (freq.taxThreshold * TAX_RATE_1) +
+                              ((newResults.taxableIncome - freq.taxThreshold) * TAX_RATE_2);
     }
-    
+
     // Recalculate net salary for the new monthly salary
     newResults.monthlyNetSalary = newResults.regularMonthlyGrossIncome -
                                   newResults.nisContribution -
@@ -233,8 +239,8 @@ function calculateIncreaseResults(baseResults, increasePercentage, isTaxable, re
         newResults.retroVacationAllowance = vacationAllowanceIncrease;
 
         // Calculate total retroactive gross (all retroactive components)
-        newResults.totalRetroGross = newResults.totalRetroactiveLumpSum + 
-                                    newResults.retroGratuityDifferential + 
+        newResults.totalRetroGross = newResults.totalRetroactiveLumpSum +
+                                    newResults.retroGratuityDifferential +
                                     newResults.retroVacationAllowance;
 
         // To calculate net pay for the retroactive month, we need to account for all retroactive components
@@ -246,9 +252,9 @@ function calculateIncreaseResults(baseResults, increasePercentage, isTaxable, re
         const retroGrossIncomeForTaxableCalculation = grossForRetroMonth - newResults.nonTaxableAllowances - newResults.overtimeAllowance - newResults.secondJobAllowance;
 
         // Recalculate PA/NIS based on this temporarily inflated gross for retro month
-        const retroPersonalAllowance = Math.max(PERSONAL_ALLOWANCE, retroGrossIncomeForTaxableCalculation / 3);
-        const retroNisContribution = Math.min(grossForRetroMonth * NIS_RATE, NIS_CEILING * NIS_RATE);
-        const retroActualInsuranceDeduction = Math.min(newResults.insurancePremium, grossForRetroMonth * 0.10, 50000);
+        const retroPersonalAllowance = Math.max(freq.personalAllowance, retroGrossIncomeForTaxableCalculation / 3);
+        const retroNisContribution = Math.min(grossForRetroMonth * freq.nisRate, freq.nisCeiling * freq.nisRate);
+        const retroActualInsuranceDeduction = Math.min(newResults.insurancePremium, grossForRetroMonth * 0.10, freq.insuranceMaxMonthly);
 
         // Calculate taxable income for the retroactive payment month
         const retroTaxableIncome = Math.max(0, retroGrossIncomeForTaxableCalculation - retroPersonalAllowance -
@@ -256,11 +262,11 @@ function calculateIncreaseResults(baseResults, increasePercentage, isTaxable, re
 
         // Calculate income tax for the retroactive payment month
         let retroIncomeTax = 0;
-        if (retroTaxableIncome <= TAX_THRESHOLD) {
+        if (retroTaxableIncome <= freq.taxThreshold) {
             retroIncomeTax = retroTaxableIncome * TAX_RATE_1;
         } else {
-            retroIncomeTax = (TAX_THRESHOLD * TAX_RATE_1) +
-                            ((retroTaxableIncome - TAX_THRESHOLD) * TAX_RATE_2);
+            retroIncomeTax = (freq.taxThreshold * TAX_RATE_1) +
+                            ((retroTaxableIncome - freq.taxThreshold) * TAX_RATE_2);
         }
 
         // Calculate Net Pay for the retroactive payment month (including only taxable retro components)
@@ -297,20 +303,20 @@ function calculateIncreaseResults(baseResults, increasePercentage, isTaxable, re
     }
 
     // Recalculate annual figures based on new monthly net salary
-    newResults.annualGrossIncome = newResults.regularMonthlyGrossIncome * 12;
-    newResults.annualNisContribution = newResults.nisContribution * 12;
-    newResults.annualTaxPayable = newResults.incomeTax * 12;
+    newResults.annualGrossIncome = newResults.regularMonthlyGrossIncome * freq.periodsPerYear;
+    newResults.annualNisContribution = newResults.nisContribution * freq.periodsPerYear;
+    newResults.annualTaxPayable = newResults.incomeTax * freq.periodsPerYear;
     newResults.annualGratuityTotal = newResults.sixMonthGratuity * 2;
-    
+
     // Recalculate annual total
-    newResults.annualTotal = (newResults.monthlyNetSalary * 12) + newResults.annualGratuityTotal + (newResults.vacationAllowance || 0);
-    
+    newResults.annualTotal = (newResults.monthlyNetSalary * freq.periodsPerYear) + newResults.annualGratuityTotal + (newResults.vacationAllowance || 0);
+
     // Add all retroactive components to annual total if applicable
     if (retroactiveMonths > 0) {
         // Add net effect of basic salary backpay
         const annualNetBackpayEffect = (newResults.netPayWithRetroactiveLumpSum - newResults.monthlyNetSalary);
         newResults.annualTotal += annualNetBackpayEffect;
-        
+
         // Add retroactive gratuity and vacation (non-taxable)
         newResults.annualTotal += newResults.retroGratuityDifferential + newResults.retroVacationAllowance;
     }
