@@ -18,14 +18,14 @@ const LOAN_RATES_VERIFIED_DATE = 'April 2026';
 // Guyanese bank/lender presets
 const LOAN_BANK_PRESETS = {
     'gpsccu': {
-        name: 'GPSCCU',
+        name: 'Guyana Public Service Co-operative Credit Union (GPSCCU)',
         shortName: 'GPSCCU',
-        rate: 1.0,
-        rateMin: 1.0,
-        rateMax: 1.0,
+        rate: 12.0,
+        rateMin: 12.0,
+        rateMax: 12.0,
         maxTerm: 84,
         type: 'credit_union',
-        note: 'Government & Public Service Co-op Credit Union — 1% flat monthly rate (approx.). Contact GPSCCU for current terms.'
+        note: 'Guyana Public Service Co-operative Credit Union (GPSCCU) — 1% per month on reducing balance (12% p.a. nominal). Character, Guarantor, Secured & Vehicle loans up to GY$5M. Mortgages up to GY$15M at variable rates. Source: mygpsccu.com'
     },
     'gbti': {
         name: 'GBTI',
