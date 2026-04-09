@@ -603,13 +603,19 @@ function runVehicleCalculation() {
     }
 
     const exchangeRate = parseFloat(document.getElementById('v-exchange-rate')?.value) || DEFAULT_EXCHANGE_RATE;
-    const vehicleAge = document.getElementById('v-vehicle-age')?.value || 'under4';
     const vehicleType = document.getElementById('v-vehicle-type')?.value || 'car';
     const fuelType = document.getElementById('v-fuel-type')?.value || 'gasoline';
     const engineCC = parseInt(document.getElementById('v-engine-cc')?.value) || 0;
     const plateType = document.getElementById('v-plate-type')?.value || 'private';
     const ratesEl = document.getElementById('v-2026-rates');
     const use2026Rates = ratesEl ? (ratesEl.type === 'hidden' ? true : ratesEl.checked) : true;
+
+    // Model year: update age warning FIRST so the select gets auto-set before we read it
+    const modelYear = parseInt(document.getElementById('v-model-year')?.value) || 0;
+    if (modelYear >= 1990) updateVehicleAgeWarning(modelYear, '');
+
+    // Read vehicleAge AFTER updateVehicleAgeWarning may have changed the select
+    const vehicleAge = document.getElementById('v-vehicle-age')?.value || 'under4';
 
     // Dealer type: 'private', 'dealer', 'franchise'
     const dealerTypeEl = document.getElementById('v-dealer-type');
@@ -622,10 +628,6 @@ function runVehicleCalculation() {
 
     // Re-migrant concession
     const isRemigrant = document.getElementById('v-remigrant')?.checked || false;
-
-    // Model year for age warning / auto-classify
-    const modelYear = parseInt(document.getElementById('v-model-year')?.value) || 0;
-    updateVehicleAgeWarning(modelYear, vehicleAge);
 
     const params = {
         cifUSD,
