@@ -1178,12 +1178,46 @@
             <div class="section-body">
                 <form id="vehicle-calc-form" onsubmit="return false;">
                     <div class="row g-3">
+
+                        <!-- FOB to CIF Converter -->
+                        <div class="col-12">
+                            <div class="card border-0 bg-light rounded-3">
+                                <div class="card-header bg-transparent border-0 pb-0" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#fob-converter-body">
+                                    <small class="text-muted"><i class="fas fa-calculator me-1"></i> <strong>FOB → CIF Converter</strong> <span class="text-muted fw-normal">(optional — if you only have the auction/FOB price)</span> <i class="fas fa-chevron-down ms-1" style="font-size:0.75rem;"></i></small>
+                                </div>
+                                <div class="collapse" id="fob-converter-body">
+                                    <div class="card-body pt-2">
+                                        <div class="row g-2">
+                                            <div class="col-sm-4">
+                                                <label for="v-fob" class="form-label form-label-sm mb-1">FOB Price (US$)</label>
+                                                <input type="number" class="form-control form-control-sm" id="v-fob" placeholder="e.g., 4500" min="0" step="100">
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label for="v-freight" class="form-label form-label-sm mb-1">Freight (US$)</label>
+                                                <input type="number" class="form-control form-control-sm" id="v-freight" placeholder="e.g., 1200" min="0" step="50">
+                                                <div class="form-text" style="font-size:0.7rem;">Japan ≈$1,200–2,000 · USA ≈$800–1,500</div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label for="v-insurance-cost" class="form-label form-label-sm mb-1">Insurance (US$)</label>
+                                                <input type="number" class="form-control form-control-sm" id="v-insurance-cost" placeholder="e.g., 100" min="0" step="10">
+                                            </div>
+                                            <div class="col-12 d-flex align-items-center gap-3 flex-wrap">
+                                                <span class="fw-semibold">CIF = <span id="v-fob-cif-result" class="text-primary">US$0.00</span></span>
+                                                <button type="button" class="btn btn-sm btn-primary" id="v-use-cif-btn">Use this CIF <i class="fas fa-arrow-right ms-1"></i></button>
+                                                <small class="text-muted">All GRA calculations use CIF (Cost + Insurance + Freight).</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- CIF Value -->
                         <div class="col-md-6">
                             <label for="v-cif" class="form-label">
                                 <i class="fas fa-dollar-sign me-1"></i> CIF Value (USD)
                                 <i class="fas fa-question-circle info-tooltip" data-bs-toggle="tooltip"
-                                   title="Cost, Insurance and Freight — the declared value of the vehicle in US Dollars."></i>
+                                   title="Cost, Insurance and Freight — the declared value of the vehicle in US Dollars. Use the FOB→CIF converter above if you only have the auction price."></i>
                             </label>
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text">US$</span>
@@ -1256,6 +1290,16 @@
                             </div>
                         </div>
 
+                        <!-- Model Year -->
+                        <div class="col-md-6" id="v-model-year-group">
+                            <label for="v-model-year" class="form-label">
+                                <i class="fas fa-calendar me-1"></i> Model Year
+                                <small class="text-muted">(optional — auto-sets age bracket)</small>
+                            </label>
+                            <input type="number" class="form-control v-calc-input" id="v-model-year" placeholder="e.g., 2022" min="1990" max="2030" step="1">
+                            <div id="v-age-warning" class="mt-1" style="display:none;"></div>
+                        </div>
+
                         <!-- Plate Type -->
                         <div class="col-md-6" id="v-plate-group">
                             <label for="v-plate-type" class="form-label">
@@ -1267,20 +1311,45 @@
                             </select>
                         </div>
 
-                        <!-- Dealer Toggle -->
+                        <!-- Importer Type -->
+                        <div class="col-md-6">
+                            <label for="v-dealer-type" class="form-label">
+                                <i class="fas fa-store me-1"></i> Importer Type
+                            </label>
+                            <select id="v-dealer-type" class="form-select v-calc-input">
+                                <option value="private">Private Importer</option>
+                                <option value="dealer">Dealer (1.5× CIF excise base)</option>
+                                <option value="franchise">Franchise / New Vehicle Trader (retail price)</option>
+                            </select>
+                            <input type="hidden" id="v-2026-rates" value="on">
+                        </div>
+
+                        <!-- Retail Price (franchise dealers only) -->
+                        <div class="col-md-6" id="v-retail-price-group" style="display:none;">
+                            <label for="v-retail-price" class="form-label">
+                                <i class="fas fa-tag me-1"></i> Retail Selling Price (US$)
+                                <i class="fas fa-question-circle info-tooltip" data-bs-toggle="tooltip"
+                                   title="For recognised new vehicle traders: GRA calculates excise on the ordinary retail selling price + Duty, per Excise Tax Regulations."></i>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">US$</span>
+                                <input type="number" class="form-control v-calc-input" id="v-retail-price" placeholder="e.g., 7500" min="0" step="100">
+                            </div>
+                        </div>
+
+                        <!-- Concessions -->
                         <div class="col-md-6">
                             <label class="form-label d-block">
-                                <i class="fas fa-store me-1"></i> Options
+                                <i class="fas fa-plane-arrival me-1"></i> Concessions
                             </label>
                             <div class="form-check form-switch mb-2">
-                                <input class="form-check-input v-calc-input" type="checkbox" id="v-dealer">
-                                <label class="form-check-label" for="v-dealer">
-                                    Dealer Import
+                                <input class="form-check-input v-calc-input" type="checkbox" id="v-remigrant">
+                                <label class="form-check-label" for="v-remigrant">
+                                    Returning National / Re-migrant
                                     <i class="fas fa-question-circle info-tooltip" data-bs-toggle="tooltip"
-                                       title="For dealers: excise is calculated on 1.5× CIF + Duty"></i>
+                                       title="Guyanese citizens returning after 5+ years abroad receive Customs Duty and VAT exemption on one vehicle. Apply at Ministry of Foreign Affairs within 6 months of returning."></i>
                                 </label>
                             </div>
-                            <input type="hidden" id="v-2026-rates" value="on">
                         </div>
                         <!-- Clear Button -->
                         <div class="col-12 text-center mt-3">
@@ -1387,6 +1456,47 @@
             </div>
         </div><!-- /vehicle-results-area -->
 
+        <!-- Outboard Engine Calculator (Budget 2026) -->
+        <div class="calc-section collapsed" id="section-outboard">
+            <div class="section-header" data-toggle-section="section-outboard">
+                <div class="section-icon section-icon-blue">
+                    <i class="fas fa-water"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h5 class="section-heading">Outboard Engine Import</h5>
+                    <small class="section-subtitle">Budget 2026: Engines ≤150 HP fully exempt from all import taxes</small>
+                </div>
+                <div class="section-chevron">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="v-outboard-hp" class="form-label">
+                            <i class="fas fa-tachometer-alt me-1"></i> Engine Power (HP)
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="v-outboard-hp" placeholder="e.g., 90" min="1" step="1" oninput="runOutboardCalculation()">
+                            <span class="input-group-text">HP</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="v-outboard-cif" class="form-label">
+                            <i class="fas fa-dollar-sign me-1"></i> CIF Value (US$)
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">US$</span>
+                            <input type="number" class="form-control" id="v-outboard-cif" placeholder="e.g., 3500" min="0" step="100" oninput="runOutboardCalculation()">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div id="v-outboard-result" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 2026 Vehicle Import Information -->
         <div class="calc-section collapsed" id="section-vehicle-info">
             <div class="section-header" data-toggle-section="section-vehicle-info">
@@ -1424,11 +1534,11 @@
                                 <h6><i class="fas fa-gas-pump me-1"></i> Gasoline (4+ yrs)</h6>
                                 <ul class="info-list">
                                     <li>0-1500cc: <strong>GY$800K</strong> flat</li>
-                                    <li>1501-1800cc: (CIF+$6K)×30%+$6K</li>
-                                    <li>1801-2000cc: (CIF+$6.5K)×30%+$6.5K</li>
+                                    <li>1501-2000cc: (CIF+$8.2K)×30%+$8.2K</li>
                                     <li>2001-3000cc: (CIF+$13.5K)×70%+$13.5K</li>
                                     <li>3000cc+: (CIF+$14.5K)×100%+$14.5K</li>
                                     <li>No duty. No VAT.</li>
+                                    <li><small class="text-muted">Source: GRA worked example, gra.gov.gy</small></li>
                                 </ul>
                             </div>
                         </div>
@@ -1489,10 +1599,12 @@
                             <div class="info-mini-card">
                                 <h6><i class="fas fa-store me-1"></i> Dealer Imports</h6>
                                 <ul class="info-list">
-                                    <li>Excise on <strong>1.5× CIF + Duty</strong></li>
-                                    <li>Applies to vehicles under 4 years</li>
-                                    <li>Recognised new vehicle traders may have different calculation</li>
-                                    <li>Per GRA Excise Tax Regulations</li>
+                                    <li><strong>Private:</strong> Excise on CIF + Duty</li>
+                                    <li><strong>Dealer:</strong> Excise on 1.5× CIF + Duty (under 4 yrs only)</li>
+                                    <li><strong>Franchise:</strong> Excise on retail selling price + Duty</li>
+                                    <li>Returning nationals: Duty + VAT exempt (one vehicle)</li>
+                                    <li>Maximum importable age: <strong>8 years</strong></li>
+                                    <li>Budget 2026 changes effective <strong>Feb 16, 2026</strong></li>
                                 </ul>
                             </div>
                         </div>

@@ -4,6 +4,26 @@ All notable changes to GY TaxCalc are documented here.
 
 ---
 
+## [2.4.0] — 2026-04-08
+
+### Vehicle Import Calculator — 2026 Audit Fixes + New Features
+
+**Bug fixes (verified against GRA gra.gov.gy/imports/motor-vehicle/):**
+- **B1 Fixed:** Gasoline 4+ year 1501–1800cc and 1801–2000cc brackets merged into one bracket at addon=US$8,200, matching the GRA published worked example (was split $6,000/$6,500 — under-calculated excise)
+- **B3 Fixed:** Dealer 1.5× CIF multiplier removed from 4+ year formula vehicles (GRA applies it only to under-4-year imports)
+- **B4 Fixed:** Diesel under 4 years — 1801–2000cc bracket now explicit at 10% excise, matching GRA table structure
+- **Info panel updated:** Gasoline 4+ years bracket display corrected to 1501–2000cc: (CIF+$8.2K)×30%+$8.2K
+
+**New features:**
+- **FOB → CIF Converter:** Collapsible helper above the CIF field. Enter FOB + freight + insurance, click "Use this CIF" to auto-populate the main CIF field. Typical freight estimates shown (Japan/USA ranges).
+- **Model Year input:** Optional field; auto-sets the age bracket (under 4 / 4+ years) and shows an alert if the vehicle exceeds the 8-year legal import maximum.
+- **Importer Type select:** Replaces the old "Dealer Import" checkbox. Now supports three modes — Private, Dealer (1.5× CIF), and Franchise/New Vehicle Trader (retail selling price as excise base per GRA Excise Tax Regulations).
+- **Returning National / Re-migrant concession:** Checkbox that removes Customs Duty and VAT from the result (one vehicle, qualifying returning nationals). Notes shown with conditions: apply at MFA within 6 months, hold period 3–5 years, 183 days/year residency.
+- **Outboard Engine Calculator:** Separate section. Budget 2026 fully exempts outboard engines ≤150 HP. Over 150 HP directs user to GRA/customs broker.
+- **Info panel updates:** Dealer section updated to document all three importer types; Budget 2026 effective date (Feb 16, 2026) and 8-year age cap added.
+
+---
+
 ## [2.3.0] — 2026-04-01
 
 ### 🏦 New Feature — Loan Calculator

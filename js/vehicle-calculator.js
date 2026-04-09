@@ -16,19 +16,28 @@ const GASOLINE_UNDER_4 = [
     { min: 3001, max: Infinity, duty: 0.45, excise: 1.40, vat: 0.14 }
 ];
 
+// BUG 4 FIX: GRA table (gra.gov.gy/imports/motor-vehicle/) lists 1501-1800cc explicitly at 10% excise,
+// then jumps to 2001-2500cc. 1801-2000cc is not listed separately — split to mirror the GRA table
+// and treat 1801-2000cc at the same 10% excise rate as 1501-1800cc (conservative, matching the table's
+// implicit coverage).
 const DIESEL_UNDER_4 = [
     { min: 0, max: 1500, duty: 0.35, excise: 0, vat: 0.14 },
-    { min: 1501, max: 2000, duty: 0.45, excise: 0.10, vat: 0.14 },
+    { min: 1501, max: 1800, duty: 0.45, excise: 0.10, vat: 0.14 },
+    { min: 1801, max: 2000, duty: 0.45, excise: 0.10, vat: 0.14 },
     { min: 2001, max: 2500, duty: 0.45, excise: 1.10, vat: 0.14 },
     { min: 2501, max: Infinity, duty: 0.45, excise: 1.10, vat: 0.14 }
 ];
 
 // 4+ years old formulas (gasoline) - returns excise in USD or flat GYD
+// BUG 1 FIX: GRA worked example (gra.gov.gy/imports/motor-vehicle/) uses US$8,200 as the addon
+// for "exceeding 1500cc but not exceeding 2000cc" as a single bracket. The task spec treats
+// this example as authoritative, so 1501-2000cc is merged into one bracket at addon=8200.
+// (The GRA rate table on the same page lists $6,000 and $6,500 separately, but the worked
+// example is the binding reference per project instructions.)
 const GASOLINE_4PLUS = [
     { min: 0, max: 1000, type: 'flat_gyd', amount: 800000 },
     { min: 1001, max: 1500, type: 'flat_gyd', amount: 800000 },
-    { min: 1501, max: 1800, type: 'formula', addon: 6000, rate: 0.30 },
-    { min: 1801, max: 2000, type: 'formula', addon: 6500, rate: 0.30 },
+    { min: 1501, max: 2000, type: 'formula', addon: 8200, rate: 0.30 },
     { min: 2001, max: 3000, type: 'formula', addon: 13500, rate: 0.70 },
     { min: 3001, max: Infinity, type: 'formula', addon: 14500, rate: 1.00 }
 ];
@@ -66,12 +75,15 @@ function calculateVehicleTax(params) {
     const {
         cifUSD,
         exchangeRate,
-        vehicleAge,      // 'under4' or '4plus'
-        vehicleType,     // 'car', 'suv', 'van', 'bus', 'single_cab', 'double_cab', 'motorcycle', 'atv', 'electric'
-        fuelType,        // 'gasoline', 'diesel', 'electric', 'hybrid'
+        vehicleAge,           // 'under4' or '4plus'
+        vehicleType,          // 'car', 'suv', 'van', 'bus', 'single_cab', 'double_cab', 'motorcycle', 'atv', 'electric'
+        fuelType,             // 'gasoline', 'diesel', 'electric', 'hybrid'
         engineCC,
-        plateType,       // 'private', 'government'
+        plateType,            // 'private', 'government'
         isDealer,
+        isNewVehicleTrader,   // FEATURE 4: franchise dealer uses retail price as excise base
+        retailPriceUSD,       // FEATURE 4: retail selling price for franchise dealers
+        isRemigrant,          // FEATURE 3: re-migrant concession (duty + VAT = 0)
         use2026Rates
     } = params;
 
@@ -132,14 +144,17 @@ function calculateVehicleTax(params) {
     }
 
     // === 2026 BUDGET: DOUBLE CAB PICKUPS ===
+    // BUG 5: The Budget 2026 flat GYD amounts (GY$2M and GY$3M) are VAT-exempt all-inclusive
+    // excise charges. GRA's budget notice does not add customs duty on top of the flat amount —
+    // the flat rate replaces all import taxes for the covered engine sizes. No separate duty line.
     if (use2026Rates && vehicleType === 'double_cab') {
         let flatGYD = 0;
         if (engineCC <= 2000) {
             flatGYD = 2000000;
-            result.notes.push('Budget 2026: Double-cab under 2000cc → GY$2,000,000 flat');
+            result.notes.push('Budget 2026: Double-cab under 2000cc → GY$2,000,000 flat (all-inclusive, no separate duty or VAT)');
         } else if (engineCC <= 2500) {
             flatGYD = 3000000;
-            result.notes.push('Budget 2026: Double-cab 2000-2500cc → GY$3,000,000 flat');
+            result.notes.push('Budget 2026: Double-cab 2000-2500cc → GY$3,000,000 flat (all-inclusive, no separate duty or VAT)');
         } else {
             // Over 2500cc not covered by 2026 budget special rate, use normal calculation
             // Fall through to normal calculation below
@@ -159,11 +174,43 @@ function calculateVehicleTax(params) {
 
     // === MOTORCYCLE / ATV ===
     if (vehicleType === 'motorcycle' || vehicleType === 'atv') {
-        return calculateMotorcycleTax(result, params);
+        const motoResult = calculateMotorcycleTax(result, params);
+        return applyRemigrantConcession(motoResult, params);
     }
 
     // === STANDARD VEHICLE CALCULATION ===
-    return calculateStandardVehicleTax(result, params);
+    const standardResult = calculateStandardVehicleTax(result, params);
+    return applyRemigrantConcession(standardResult, params);
+}
+
+/**
+ * FEATURE 3: Apply Re-migrant / Returning National concession.
+ * GRA exempts customs duty and VAT for qualifying returning nationals.
+ * Excise is excluded from the exemption (determined at GRA interview).
+ */
+function applyRemigrantConcession(result, params) {
+    if (!params.isRemigrant) return result;
+    const rate = params.exchangeRate || DEFAULT_EXCHANGE_RATE;
+
+    // Zero out duty and VAT
+    result.dutyUSD = 0;
+    result.dutyGYD = 0;
+    result.vatUSD = 0;
+    result.vatGYD = 0;
+    result.dutyRate = 0;
+    result.vatRate = 0;
+
+    // Recalculate totals with only excise remaining
+    result.totalTaxUSD = result.exciseUSD;
+    result.totalTaxGYD = result.exciseGYD;
+    result.totalCostUSD = result.cifUSD + result.exciseUSD;
+    result.totalCostGYD = result.cifGYD + result.exciseGYD;
+
+    result.notes.unshift('Returning National concession applied: Customs Duty and VAT exempted per GRA policy.');
+    result.notes.push('Excise tax on re-migrant vehicles is determined at GRA interview — this calculator excludes excise from the exemption as a conservative estimate.');
+    result.notes.push('Conditions: Apply at Ministry of Foreign Affairs within 6 months of returning. Cannot sell/transfer vehicle for 3 years (vehicle >4 yrs) or 5 years (vehicle <4 yrs). Must reside in Guyana 183 days/year during holding period. Approval letter valid for 6 months.');
+
+    return result;
 }
 
 /**
@@ -220,6 +267,8 @@ function calculateStandardVehicleTax(result, params) {
         fuelType,
         engineCC,
         isDealer,
+        isNewVehicleTrader,
+        retailPriceUSD,
         use2026Rates,
         vehicleType
     } = params;
@@ -237,8 +286,16 @@ function calculateStandardVehicleTax(result, params) {
 
         const bracket = findBracket(engineCC, table);
 
-        const dealerMultiplier = isDealer ? 1.5 : 1;
-        const effectiveCIF = cifUSD * dealerMultiplier;
+        // FEATURE 4: Franchise/New Vehicle Trader uses retail selling price as excise base
+        // (GRA Excise Tax Regulations — recognised new vehicle trader exception)
+        let effectiveCIF;
+        if (isNewVehicleTrader && retailPriceUSD > 0) {
+            effectiveCIF = retailPriceUSD;
+        } else if (isDealer) {
+            effectiveCIF = cifUSD * 1.5;
+        } else {
+            effectiveCIF = cifUSD;
+        }
 
         const dutyUSD = bracket.duty * cifUSD;
         const exciseUSD = bracket.excise * (effectiveCIF + dutyUSD);
@@ -271,7 +328,9 @@ function calculateStandardVehicleTax(result, params) {
         result.totalCostUSD = cifUSD + result.totalTaxUSD;
         result.totalCostGYD = result.totalCostUSD * rate;
 
-        if (isDealer) {
+        if (isNewVehicleTrader && retailPriceUSD > 0) {
+            result.notes.push(`Franchise Dealer: Excise calculated on retail selling price US$${retailPriceUSD.toLocaleString()} + Duty (per GRA Excise Tax Regulations)`);
+        } else if (isDealer) {
             result.notes.push('Dealer: Excise calculated on 1.5× CIF + Duty');
         }
 
@@ -302,11 +361,9 @@ function calculateStandardVehicleTax(result, params) {
         result.notes.push('No duty, no VAT for 4+ year vehicles');
         result.formulaUsed = `4+ years: Flat GY$${bracket.amount.toLocaleString()}`;
     } else {
-        // Formula-based: (CIF + addon) × rate + addon (all in USD)
-        const dealerMultiplier = isDealer ? 1.5 : 1;
-        const effectiveCIF = cifUSD * dealerMultiplier;
-
-        const exciseUSD = (effectiveCIF + bracket.addon) * bracket.rate + bracket.addon;
+        // BUG 3 FIX: GRA specifies the 1.5× dealer multiplier applies ONLY to vehicles
+        // less than four years old. For 4+ year vehicles, use straight CIF value.
+        const exciseUSD = (cifUSD + bracket.addon) * bracket.rate + bracket.addon;
 
         result.exciseUSD = exciseUSD;
         result.exciseGYD = exciseUSD * rate;
@@ -316,13 +373,106 @@ function calculateStandardVehicleTax(result, params) {
         result.totalCostGYD = (cifUSD + exciseUSD) * rate;
         result.notes.push(`4+ years, ${fuelType}, ${engineCC}cc: Formula-based excise`);
         result.notes.push('No duty, no VAT for 4+ year vehicles');
-        if (isDealer) {
-            result.notes.push('Dealer: Excise calculated on 1.5× CIF');
-        }
         result.formulaUsed = `4+ years: (CIF + US$${bracket.addon.toLocaleString()}) × ${(bracket.rate*100)}% + US$${bracket.addon.toLocaleString()}`;
     }
 
     return result;
+}
+
+/**
+ * FEATURE 2: Update vehicle age warning based on model year input.
+ * Also auto-sets the age select to under4/4plus and warns if >8 years.
+ */
+function updateVehicleAgeWarning(modelYear, currentAge) {
+    const warningEl = document.getElementById('v-age-warning');
+    const ageSelect = document.getElementById('v-vehicle-age');
+    if (!modelYear || modelYear < 1900) {
+        if (warningEl) warningEl.style.display = 'none';
+        return;
+    }
+    const importYear = new Date().getFullYear();
+    const age = importYear - modelYear;
+
+    // Auto-set age bracket
+    if (ageSelect) {
+        ageSelect.value = age < 4 ? 'under4' : '4plus';
+    }
+
+    if (!warningEl) return;
+
+    if (age > 8) {
+        warningEl.className = 'alert alert-danger py-2 px-3 mt-2 mb-0';
+        warningEl.innerHTML = '<i class="fas fa-ban me-1"></i><strong>Too old to import.</strong> Guyana\'s maximum importable vehicle age is 8 years. A ' + modelYear + ' model is ' + age + ' years old.';
+        warningEl.style.display = '';
+    } else if (age >= 4) {
+        warningEl.className = 'alert alert-warning py-2 px-3 mt-2 mb-0';
+        warningEl.innerHTML = '<i class="fas fa-info-circle me-1"></i>' + modelYear + ' model = <strong>' + age + ' years old</strong>. Classified as 4+ years. Age bracket auto-set.';
+        warningEl.style.display = '';
+    } else {
+        warningEl.className = 'alert alert-info py-2 px-3 mt-2 mb-0';
+        warningEl.innerHTML = '<i class="fas fa-check-circle me-1"></i>' + modelYear + ' model = <strong>' + age + ' years old</strong>. Under 4 years (2023+ = "under 4" for 2026 imports). Age bracket auto-set.';
+        warningEl.style.display = '';
+    }
+}
+
+/**
+ * FEATURE 1: FOB to CIF converter helper
+ */
+function initFobConverter() {
+    const fobInput = document.getElementById('v-fob');
+    const freightInput = document.getElementById('v-freight');
+    const insuranceInput = document.getElementById('v-insurance-cost');
+    const cifOutput = document.getElementById('v-fob-cif-result');
+    const useCifBtn = document.getElementById('v-use-cif-btn');
+
+    function updateFobCalc() {
+        const fob = parseFloat(fobInput?.value) || 0;
+        const freight = parseFloat(freightInput?.value) || 0;
+        const insurance = parseFloat(insuranceInput?.value) || 0;
+        const cif = fob + freight + insurance;
+        if (cifOutput) cifOutput.textContent = 'US$' + cif.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        if (useCifBtn) useCifBtn.dataset.cif = cif;
+    }
+
+    [fobInput, freightInput, insuranceInput].forEach(function(el) {
+        if (el) el.addEventListener('input', updateFobCalc);
+    });
+
+    if (useCifBtn) {
+        useCifBtn.addEventListener('click', function() {
+            const cif = parseFloat(this.dataset.cif) || 0;
+            const cifField = document.getElementById('v-cif');
+            if (cifField && cif > 0) {
+                cifField.value = cif.toFixed(2);
+                clearTimeout(vehicleCalcTimer);
+                vehicleCalcTimer = setTimeout(runVehicleCalculation, VEHICLE_CALC_DELAY);
+            }
+        });
+    }
+}
+
+/**
+ * FEATURE 6: Outboard engine calculator
+ */
+function runOutboardCalculation() {
+    const hp = parseFloat(document.getElementById('v-outboard-hp')?.value) || 0;
+    const cif = parseFloat(document.getElementById('v-outboard-cif')?.value) || 0;
+    const resultEl = document.getElementById('v-outboard-result');
+    if (!resultEl) return;
+
+    if (hp <= 0 || cif <= 0) {
+        resultEl.style.display = 'none';
+        return;
+    }
+
+    resultEl.style.display = '';
+    if (hp <= 150) {
+        resultEl.className = 'alert alert-success mt-3';
+        resultEl.innerHTML = '<i class="fas fa-check-circle me-2"></i><strong>All taxes exempt (Budget 2026).</strong> Outboard engines up to 150 HP are fully exempt from import duties, excise, and VAT. Total landed cost = <strong>US$' + cif.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</strong> (CIF only).';
+    } else {
+        resultEl.className = 'alert alert-warning mt-3';
+        resultEl.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i><strong>Over 150 HP — standard rates apply.</strong> The 2026 Budget exemption only covers engines up to 150 HP. Contact GRA or a licensed customs broker for the applicable duty and excise rates on engines over 150 HP.';
+    }
 }
 
 /**
@@ -357,6 +507,9 @@ function initVehicleCalculator() {
 
     // Setup conditional field visibility
     setupConditionalFields();
+
+    // Initialize FOB → CIF converter
+    initFobConverter();
 
     debug('Vehicle calculator initialized');
 }
@@ -421,6 +574,13 @@ function setupConditionalFields() {
         }
     }
 
+    // Retail price field: show only for franchise dealers
+    const dealerType = document.getElementById('v-dealer-type')?.value || 'private';
+    const retailGroup = document.getElementById('v-retail-price-group');
+    if (retailGroup) {
+        retailGroup.style.display = dealerType === 'franchise' ? '' : 'none';
+    }
+
     // Vehicle age: hide for electric
     const ageGroup = document.getElementById('v-age-group');
     if (ageGroup) {
@@ -448,9 +608,24 @@ function runVehicleCalculation() {
     const fuelType = document.getElementById('v-fuel-type')?.value || 'gasoline';
     const engineCC = parseInt(document.getElementById('v-engine-cc')?.value) || 0;
     const plateType = document.getElementById('v-plate-type')?.value || 'private';
-    const isDealer = document.getElementById('v-dealer')?.checked || false;
     const ratesEl = document.getElementById('v-2026-rates');
     const use2026Rates = ratesEl ? (ratesEl.type === 'hidden' ? true : ratesEl.checked) : true;
+
+    // Dealer type: 'private', 'dealer', 'franchise'
+    const dealerTypeEl = document.getElementById('v-dealer-type');
+    const dealerType = dealerTypeEl ? dealerTypeEl.value : 'private';
+    const isDealer = dealerType === 'dealer';
+    const isNewVehicleTrader = dealerType === 'franchise';
+    const retailPriceUSD = isNewVehicleTrader
+        ? (parseFloat(document.getElementById('v-retail-price')?.value) || 0)
+        : 0;
+
+    // Re-migrant concession
+    const isRemigrant = document.getElementById('v-remigrant')?.checked || false;
+
+    // Model year for age warning / auto-classify
+    const modelYear = parseInt(document.getElementById('v-model-year')?.value) || 0;
+    updateVehicleAgeWarning(modelYear, vehicleAge);
 
     const params = {
         cifUSD,
@@ -461,6 +636,9 @@ function runVehicleCalculation() {
         engineCC,
         plateType,
         isDealer,
+        isNewVehicleTrader,
+        retailPriceUSD,
+        isRemigrant,
         use2026Rates
     };
 
@@ -568,9 +746,22 @@ function clearVehicleForm() {
     if (fuel) fuel.value = 'gasoline';
     const plate = document.getElementById('v-plate-type');
     if (plate) plate.value = 'private';
-    // Uncheck dealer
-    const dealer = document.getElementById('v-dealer');
-    if (dealer) dealer.checked = false;
+    // Reset dealer type to private
+    const dealerType = document.getElementById('v-dealer-type');
+    if (dealerType) dealerType.value = 'private';
+    // Hide retail price field
+    const retailPriceGroup = document.getElementById('v-retail-price-group');
+    if (retailPriceGroup) retailPriceGroup.style.display = 'none';
+    const retailPrice = document.getElementById('v-retail-price');
+    if (retailPrice) retailPrice.value = '';
+    // Uncheck re-migrant
+    const remigrant = document.getElementById('v-remigrant');
+    if (remigrant) remigrant.checked = false;
+    // Clear model year and hide age warning
+    const modelYear = document.getElementById('v-model-year');
+    if (modelYear) modelYear.value = '';
+    const ageWarning = document.getElementById('v-age-warning');
+    if (ageWarning) ageWarning.style.display = 'none';
     // Show all conditional fields
     const ccGroup = document.getElementById('v-cc-group');
     if (ccGroup) ccGroup.style.display = '';
