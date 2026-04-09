@@ -1181,12 +1181,12 @@
 
                         <!-- FOB to CIF Converter -->
                         <div class="col-12">
-                            <div class="card border-0 bg-light rounded-3">
-                                <div class="card-header bg-transparent border-0 pb-0" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#fob-converter-body">
-                                    <small class="text-muted"><i class="fas fa-calculator me-1"></i> <strong>FOB → CIF Converter</strong> <span class="text-muted fw-normal">(optional — if you only have the auction/FOB price)</span> <i class="fas fa-chevron-down ms-1" style="font-size:0.75rem;"></i></small>
+                            <div class="info-mini-card" style="border-radius:var(--radius-sm);">
+                                <div style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#fob-converter-body">
+                                    <small class="text-muted"><i class="fas fa-calculator me-1"></i> <strong class="text-secondary">FOB → CIF Converter</strong> <span class="fw-normal">(optional — if you only have the auction/FOB price)</span> <i class="fas fa-chevron-down ms-1" style="font-size:0.75rem;"></i></small>
                                 </div>
                                 <div class="collapse" id="fob-converter-body">
-                                    <div class="card-body pt-2">
+                                    <div class="px-3 pb-3 pt-1">
                                         <div class="row g-2">
                                             <div class="col-sm-4">
                                                 <label for="v-fob" class="form-label form-label-sm mb-1">FOB Price (US$)</label>
@@ -1201,10 +1201,10 @@
                                                 <label for="v-insurance-cost" class="form-label form-label-sm mb-1">Insurance (US$)</label>
                                                 <input type="number" class="form-control form-control-sm" id="v-insurance-cost" placeholder="e.g., 100" min="0" step="10">
                                             </div>
-                                            <div class="col-12 d-flex align-items-center gap-3 flex-wrap">
+                                            <div class="col-12 d-flex align-items-center gap-3 flex-wrap mt-1">
                                                 <span class="fw-semibold">CIF = <span id="v-fob-cif-result" class="text-primary">US$0.00</span></span>
                                                 <button type="button" class="btn btn-sm btn-primary" id="v-use-cif-btn">Use this CIF <i class="fas fa-arrow-right ms-1"></i></button>
-                                                <small class="text-muted">All GRA calculations use CIF (Cost + Insurance + Freight).</small>
+                                                <small class="text-muted">GRA uses CIF (Cost + Insurance + Freight).</small>
                                             </div>
                                         </div>
                                     </div>
