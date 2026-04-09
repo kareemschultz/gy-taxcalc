@@ -13,14 +13,34 @@ All notable changes to GY TaxCalc are documented here.
 - **B3 Fixed:** Dealer 1.5× CIF multiplier removed from 4+ year formula vehicles (GRA applies it only to under-4-year imports)
 - **B4 Fixed:** Diesel under 4 years — 1801–2000cc bracket now explicit at 10% excise, matching GRA table structure
 - **Info panel updated:** Gasoline 4+ years bracket display corrected to 1501–2000cc: (CIF+$8.2K)×30%+$8.2K
+- **Sequencing fix:** `runVehicleCalculation()` now calls `updateVehicleAgeWarning()` before reading the age select, so model year auto-classification is reflected in the same calculation pass
+- **FOB converter dark theme:** Card was using Bootstrap `bg-light` which rendered white in dark mode; switched to `info-mini-card` class (`var(--gray-100)` = `#334155`)
 
 **New features:**
 - **FOB → CIF Converter:** Collapsible helper above the CIF field. Enter FOB + freight + insurance, click "Use this CIF" to auto-populate the main CIF field. Typical freight estimates shown (Japan/USA ranges).
-- **Model Year input:** Optional field; auto-sets the age bracket (under 4 / 4+ years) and shows an alert if the vehicle exceeds the 8-year legal import maximum.
-- **Importer Type select:** Replaces the old "Dealer Import" checkbox. Now supports three modes — Private, Dealer (1.5× CIF), and Franchise/New Vehicle Trader (retail selling price as excise base per GRA Excise Tax Regulations).
-- **Returning National / Re-migrant concession:** Checkbox that removes Customs Duty and VAT from the result (one vehicle, qualifying returning nationals). Notes shown with conditions: apply at MFA within 6 months, hold period 3–5 years, 183 days/year residency.
-- **Outboard Engine Calculator:** Separate section. Budget 2026 fully exempts outboard engines ≤150 HP. Over 150 HP directs user to GRA/customs broker.
-- **Info panel updates:** Dealer section updated to document all three importer types; Budget 2026 effective date (Feb 16, 2026) and 8-year age cap added.
+- **Model Year input:** Optional field; auto-sets the age bracket (under 4 / 4+ years) and shows colour-coded alerts — red if over 8 years (illegal to import), amber for 4–8 years, blue for under 4 years.
+- **Importer Type select:** Replaces the old "Dealer Import" checkbox. Three modes — Private (straight CIF), Dealer (1.5× CIF excise base), Franchise/New Vehicle Trader (retail selling price as excise base per GRA Excise Tax Regulations). Retail price field shows/hides based on selection.
+- **Returning National / Re-migrant concession:** Checkbox removes Customs Duty and VAT from the calculation. Conditions note shown: apply at Ministry of Foreign Affairs within 6 months of returning, hold period 3–5 years, 183 days/year residency requirement.
+- **Outboard Engine Calculator:** New collapsible section. Budget 2026 fully exempts outboard engines ≤150 HP from all import taxes. Over 150 HP directs user to GRA/licensed customs broker.
+- **Info panel updates:** All three importer types documented; Budget 2026 effective date (Feb 16, 2026) and 8-year maximum import age added.
+
+---
+
+### Loan Calculator — Enhancements + Bug Fixes
+
+**New features:**
+- **Down payment support:** Enter a purchase price and down payment amount or percentage; calculator auto-derives the loan principal and shows the financed amount separately.
+- **Processing fee:** Optional one-time origination/processing fee field (flat amount or percentage); included in total cost comparisons.
+- **Bi-weekly payment option:** Choose monthly or bi-weekly payment frequency; bi-weekly payments reduce interest faster and shorten the loan term.
+- **Rate ranges:** Lender presets now show min/max rate ranges in the comparison table, not just a single rate.
+- **Periodic lump sum payments:** Simulate recurring lump sum payments (e.g. annual gratuity or quarterly bonus) on top of regular payments. Enter amount and frequency; calculator recomputes the amortization schedule with the extra injections and shows interest saved.
+
+**Bug fixes:**
+- **GPSCCU rate corrected:** Rate stored as `12.0` (12% p.a. nominal, 1% per month on reducing balance) — was incorrectly stored as `1.0` which the engine interpreted as 1% p.a., massively underestimating payments. Full name corrected to "Guyana Public Service Co-operative Credit Union (GPSCCU)" (source: mygpsccu.com, verified April 2026).
+- **Frequency-aware salary increase calculations:** `salary-increase.js` now extracts `frequencyConfig` from base results so NIS, tax, and allowance caps scale correctly per payment frequency (weekly/fortnightly/monthly) instead of hardcoding monthly constants. Annual totals use `freq.periodsPerYear` instead of hardcoded `× 12`.
+- **Salary increase taxable routing fixed:** Non-taxable allowances now routed to `nonTaxableAllowances` instead of `basicSalary`.
+- **Amortization table dark theme:** Table rows, borders, and headers now use CSS variables instead of hardcoded light colours. Chart labels compacted for mobile. Down payment row layout fixed on small screens.
+- **Bank short names in comparison cards:** Comparison cards now use `bank.shortName` for cleaner display on mobile.
 
 ---
 
