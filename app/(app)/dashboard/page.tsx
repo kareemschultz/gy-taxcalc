@@ -3,7 +3,6 @@
 import * as React from "react"
 import { CalculatorInputs } from "@/components/calculator/CalculatorInputs"
 import { ResultsPanel } from "@/components/calculator/ResultsPanel"
-import { SalaryIncreaseSection } from "@/components/calculator/SalaryIncreaseSection"
 import { performCalculations } from "@/lib/tax/calculator"
 import type { CalculatorInputs as TCalcInputs, CalculationResults } from "@/lib/tax/types"
 import { DotPattern } from "@/components/dot-pattern"
@@ -29,12 +28,11 @@ export default function DashboardPage() {
         {/* Left: Inputs */}
         <div className="space-y-0">
           <CalculatorInputs onChange={handleInputChange} />
-          {inputs && <SalaryIncreaseSection baseInputs={inputs} />}
         </div>
 
         {/* Right: Results */}
         <div className="lg:sticky lg:top-0 lg:self-start">
-          <ResultsPanel results={results} />
+          <ResultsPanel results={results} baseInputs={inputs} />
         </div>
       </div>
     </div>

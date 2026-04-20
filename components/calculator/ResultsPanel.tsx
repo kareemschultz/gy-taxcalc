@@ -19,6 +19,8 @@ import type { CalculationResults } from "@/lib/tax/types"
 import { PAYMENT_FREQUENCIES } from "@/lib/tax/constants"
 import { TaxBreakdownChart } from "./TaxBreakdownChart"
 import { AnnualCashflowChart } from "./AnnualCashflowChart"
+import type { CalculatorInputs as TCalcInputs } from "@/lib/tax/types"
+import { SalaryIncreaseSection } from "./SalaryIncreaseSection"
 
 /* ── animated number ──────────────────────────────────── */
 function AnimatedCurrency({ value }: { value: number }) {
@@ -94,9 +96,10 @@ function EmptyState() {
 /* ── main component ───────────────────────────────────── */
 interface ResultsPanelProps {
   results: CalculationResults | null
+  baseInputs?: TCalcInputs | null
 }
 
-export function ResultsPanel({ results }: ResultsPanelProps) {
+export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
   if (!results || results.basicSalary === 0) {
     return (
       <Card className="h-full">
@@ -195,6 +198,8 @@ export function ResultsPanel({ results }: ResultsPanelProps) {
           <TabsTrigger value="special" className="flex-1">Special Months</TabsTrigger>
           <TabsTrigger value="annual" className="flex-1">Annual</TabsTrigger>
           <TabsTrigger value="charts" className="flex-1">Charts</TabsTrigger>
+          <TabsTrigger value="simulator" className="flex-1">Simulator</TabsTrigger>
+          <TabsTrigger value="info" className="flex-1">Info</TabsTrigger>
         </TabsList>
 
         {/* Breakdown tab */}
@@ -426,6 +431,66 @@ export function ResultsPanel({ results }: ResultsPanelProps) {
           <div className="space-y-4">
             <TaxBreakdownChart results={results} />
             <AnnualCashflowChart results={results} />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="simulator">
+          {baseInputs ? (
+            <SalaryIncreaseSection baseInputs={baseInputs} />
+          ) : (
+            <Card className="bg-muted/30">
+              <CardContent className="py-8 text-center text-sm text-muted-foreground">
+                Enter a basic salary above to use the salary increase simulator.
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="info">
+          <div className="grid gap-3 md:grid-cols-2">
+            <Card className="bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Tax Rates</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0 text-sm text-muted-foreground space-y-1">
+                <p>25% up to GY$280,000 of chargeable income.</p>
+                <p>35% above GY$280,000.</p>
+                <p>2026 reduced rates replaced the previous 28% / 40% bands.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Allowances</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0 text-sm text-muted-foreground space-y-1">
+                <p>Personal allowance: GY$140,000 monthly or one-third of balance of income.</p>
+                <p>Child allowance: GY$10,000 per child.</p>
+                <p>Overtime and second job: first GY$50,000 each is non-taxable.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Deductions</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0 text-sm text-muted-foreground space-y-1">
+                <p>NIS: 5.6% capped at GY$280,000 of monthly income.</p>
+                <p>Insurance: up to 10% of gross, capped at GY$50,000 monthly.</p>
+                <p>Gratuity: default 22.5% of basic salary accrued monthly.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">New for 2026</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0 text-sm text-muted-foreground space-y-1">
+                <p>ACCA allowance: GY$15,000 monthly.</p>
+                <p>Master&apos;s allowance: GY$22,000 monthly.</p>
+                <p>PhD allowance: GY$32,000 monthly.</p>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
       </Tabs>
