@@ -1,37 +1,22 @@
 "use client"
 
-import * as React from "react"
 import { Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
-import { useTheme } from "@/hooks/use-theme"
 
 export function ModeToggle({ variant = "outline" }: { variant?: "outline" | "ghost" }) {
-  const { theme, setTheme } = useTheme()
-  const [isDark, setIsDark] = React.useState(false)
-
-  React.useEffect(() => {
-    if (theme === "dark") setIsDark(true)
-    else if (theme === "light") setIsDark(false)
-    else
-      setIsDark(
-        typeof window !== "undefined" &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches
-      )
-  }, [theme])
+  const { resolvedTheme, setTheme } = useTheme()
 
   return (
     <Button
       variant={variant}
       size="icon"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       className="cursor-pointer"
       aria-label="Toggle theme"
     >
-      {isDark ? (
-        <Sun className="size-4 transition-transform duration-300" />
-      ) : (
-        <Moon className="size-4 transition-transform duration-300" />
-      )}
+      <Sun className="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
     </Button>
   )
 }

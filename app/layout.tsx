@@ -7,19 +7,18 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: "GY TaxCalc — Guyana Income Tax Calculator 2026",
   description:
-    "Calculate your Guyana income tax, NIS, gratuity, and take-home pay for the 2026 tax year. Supports all GRA-approved deductions and allowances.",
-  keywords: ["Guyana tax calculator", "GRA", "PAYE", "NIS", "income tax 2026"],
+    "Calculate your Guyana income tax, NIS, gratuity, and take-home pay for the 2026 tax year.",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} dark`}
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
       suppressHydrationWarning
     >
       <body className="font-sans antialiased">
-        <ThemeProvider defaultTheme="dark" storageKey="gy-taxcalc-theme">
+        <ThemeProvider>
           {children}
         </ThemeProvider>
       </body>
