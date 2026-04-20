@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { CurrencyInput } from "@/components/ui/currency-input"
+import { Hint } from "@/components/ui/hint"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { Section } from "@/components/calculator/Section"
@@ -37,7 +39,7 @@ function Field({
   hint,
   children,
 }: {
-  label: string
+  label: React.ReactNode
   hint?: string
   children: React.ReactNode
 }) {
@@ -183,41 +185,50 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
       {/* Income */}
       <Section title="Income" defaultOpen>
         <div className="grid grid-cols-2 gap-3">
-          <Field label={`Basic Salary (${PAYMENT_FREQUENCIES[freq].periodLabel})`}>
-            <Input
-              type="number"
+          <Field
+            label={
+              <span className="inline-flex items-center gap-1">
+                Basic Salary ({PAYMENT_FREQUENCIES[freq].periodLabel})
+                <Hint
+                  label=""
+                  tip="Your base pay before allowances or deductions."
+                  className="normal-case tracking-normal"
+                />
+              </span>
+            }
+          >
+            <CurrencyInput
+              prefix="GY$"
               min={0}
               value={inputs.basicSalary || ""}
-              onChange={(e) => update({ basicSalary: num(e.target.value) })}
+              onChange={(value) => update({ basicSalary: num(value) })}
               placeholder="0"
             />
           </Field>
           <Field label="Taxable Allowances">
-            <Input
-              type="number"
+            <CurrencyInput
+              prefix="GY$"
               min={0}
               value={inputs.taxableAllowances || ""}
-              onChange={(e) => update({ taxableAllowances: num(e.target.value) })}
+              onChange={(value) => update({ taxableAllowances: num(value) })}
               placeholder="0"
             />
           </Field>
           <Field label="Non-Taxable Allowances" hint="Travel, telecom, station, etc.">
-            <Input
-              type="number"
+            <CurrencyInput
+              prefix="GY$"
               min={0}
               value={inputs.nonTaxableAllowances || ""}
-              onChange={(e) =>
-                update({ nonTaxableAllowances: num(e.target.value) })
-              }
+              onChange={(value) => update({ nonTaxableAllowances: num(value) })}
               placeholder="0"
             />
           </Field>
           <Field label="Vacation Allowance" hint="Annual lump sum">
-            <Input
-              type="number"
+            <CurrencyInput
+              prefix="GY$"
               min={0}
               value={inputs.vacationAllowance || ""}
-              onChange={(e) => update({ vacationAllowance: num(e.target.value) })}
+              onChange={(value) => update({ vacationAllowance: num(value) })}
               placeholder="0"
             />
           </Field>
@@ -228,20 +239,20 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
       <Section title="Additional Income" defaultOpen={false}>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Overtime" hint={`Max non-taxable: $${PAYMENT_FREQUENCIES[freq].overtimeMax.toLocaleString()}`}>
-            <Input
-              type="number"
+            <CurrencyInput
+              prefix="GY$"
               min={0}
               value={inputs.overtimeIncome || ""}
-              onChange={(e) => update({ overtimeIncome: num(e.target.value) })}
+              onChange={(value) => update({ overtimeIncome: num(value) })}
               placeholder="0"
             />
           </Field>
           <Field label="Second Job" hint={`Max non-taxable: $${PAYMENT_FREQUENCIES[freq].secondJobMax.toLocaleString()}`}>
-            <Input
-              type="number"
+            <CurrencyInput
+              prefix="GY$"
               min={0}
               value={inputs.secondJobIncome || ""}
-              onChange={(e) => update({ secondJobIncome: num(e.target.value) })}
+              onChange={(value) => update({ secondJobIncome: num(value) })}
               placeholder="0"
             />
           </Field>
@@ -262,22 +273,20 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
             />
           </Field>
           <Field label="Loan Payment">
-            <Input
-              type="number"
+            <CurrencyInput
+              prefix="GY$"
               min={0}
               value={inputs.loanPayment || ""}
-              onChange={(e) => update({ loanPayment: num(e.target.value) })}
+              onChange={(value) => update({ loanPayment: num(value) })}
               placeholder="0"
             />
           </Field>
           <Field label="Credit Union">
-            <Input
-              type="number"
+            <CurrencyInput
+              prefix="GY$"
               min={0}
               value={inputs.creditUnionDeduction || ""}
-              onChange={(e) =>
-                update({ creditUnionDeduction: num(e.target.value) })
-              }
+              onChange={(value) => update({ creditUnionDeduction: num(value) })}
               placeholder="0"
             />
           </Field>
@@ -298,14 +307,12 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
               </SelectContent>
             </Select>
             {inputs.insuranceType === "custom" && (
-              <Input
-                type="number"
+              <CurrencyInput
+                prefix="GY$"
                 min={0}
                 className="mt-2"
                 value={inputs.insurancePremium || ""}
-                onChange={(e) =>
-                  update({ insurancePremium: num(e.target.value) })
-                }
+                onChange={(value) => update({ insurancePremium: num(value) })}
                 placeholder="Custom premium"
               />
             )}

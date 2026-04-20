@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils"
 
 interface HintProps {
-  label: string
+  label?: string
   tip: React.ReactNode
   className?: string
 }
@@ -27,7 +27,7 @@ export function Hint({ label, tip, className }: HintProps) {
             className
           )}
         >
-          <span>{label}</span>
+          {label ? <span>{label}</span> : null}
           <HelpCircle className="size-3.5 text-muted-foreground/70" />
         </TooltipTrigger>
         <TooltipContent side="top" align="start" className="max-w-64 text-xs leading-relaxed">
