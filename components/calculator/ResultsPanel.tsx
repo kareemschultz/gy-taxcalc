@@ -147,8 +147,9 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
     ? (annualNetSalary / annualGrossIncome) * 100
     : 0
 
-  return (
-    <motion.div
+    return (
+      <motion.div
+      id="salary-results"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
