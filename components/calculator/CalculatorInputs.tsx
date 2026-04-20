@@ -1,8 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown, RotateCcw, Briefcase } from "lucide-react"
+import { RotateCcw, Briefcase } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -13,9 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
+import { Section } from "@/components/calculator/Section"
 import {
   POSITION_PRESETS,
   PAYMENT_FREQUENCIES,
@@ -32,57 +31,7 @@ import type {
   InsuranceType,
 } from "@/lib/tax/types"
 
-/* ── section accordion ────────────────────────────────── */
-function Section({
-  title,
-  icon,
-  defaultOpen = true,
-  children,
-}: {
-  title: string
-  icon?: React.ReactNode
-  defaultOpen?: boolean
-  children: React.ReactNode
-}) {
-  const [open, setOpen] = React.useState(defaultOpen)
-  return (
-    <div className="border rounded-xl overflow-hidden bg-card">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium hover:bg-muted/40 transition-colors"
-      >
-        <span className="flex items-center gap-2">
-          {icon}
-          {title}
-        </span>
-        <ChevronDown
-          className={cn(
-            "size-4 text-muted-foreground transition-transform duration-200",
-            open && "rotate-180"
-          )}
-        />
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="content"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="overflow-hidden"
-          >
-            <Separator />
-            <div className="px-4 py-4 space-y-4">{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
-
-/* ── field row ────────────────────────────────────────── */
+/* field row ────────────────────────────────────────── */
 function Field({
   label,
   hint,
@@ -445,3 +394,4 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
     </div>
   )
 }
+
