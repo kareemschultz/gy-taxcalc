@@ -1,20 +1,48 @@
-"use client"
-
-import * as React from "react"
-import { ChangelogEntryCard } from "./ChangelogEntry"
+import { TimelineItem } from "./TimelineItem"
+import { BadgeAccordion } from "./BadgeAccordion"
 import type { ChangelogEntry } from "@/lib/changelog"
 
-export function ChangelogTimeline({ entries }: { entries: ChangelogEntry[] }) {
+function sectionType(title: string): "new" | "updates" | "bugfixes" {
+  const t = title.toLowerCase()
+  if (t.includes("fix") || t.includes("bug")) return "bugfixes"
+  if (t.includes("new") || t.includes("feature") || t.includes("add")) return "new"
+  return "updates"
+}
+
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr + "T00:00:00")
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+}
+
+interface ChangelogTimelineProps {
+  entries: ChangelogEntry[]
+}
+
+export function ChangelogTimeline({ entries }: ChangelogTimelineProps) {
   return (
-    <div className="relative">
-      {entries.map((entry, i) => (
-        <ChangelogEntryCard
-          key={entry.version}
-          entry={entry}
-          index={i}
-          isLatest={i === 0}
-        />
-      ))}
-    </div>
+    <section>
+      <div className="mx-auto max-w-4xl px-4 py-10 md:px-8 md:py-16">
+        <div className="flex flex-col items-start">
+          {entries.map((entry) => {
+            const accordionData = entry.sections.map((s) => ({
+              type: sectionType(s.title),
+              items: s.items,
+            }))
+
+            return (
+              <TimelineItem
+                key={entry.version}
+                version={`v ${entry.version}`}
+                date={formatDate(entry.date)}
+              >
+                <div className="space-y-4">
+                  <BadgeAccordion data={accordionData} />
+                </div>
+              </TimelineItem>
+            )
+          })}
+        </div>
+      </div>
+    </section>
   )
 }
