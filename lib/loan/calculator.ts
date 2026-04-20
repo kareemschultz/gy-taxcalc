@@ -152,18 +152,25 @@ function calculatePayoffDate(startDate: Date, months: number) {
   return d.toLocaleDateString("en-US", { year: "numeric", month: "long" })
 }
 
+export function resolveLoanPrincipal(inputs: LoanInputs) {
+  const exchangeRate = inputs.exchangeRate || LOAN_DEFAULT_EXCHANGE_RATE
+  const principalFromCurrency =
+    inputs.currencyMode === "usd" ? inputs.principalGYD * exchangeRate : inputs.principalGYD
+
+  if (principalFromCurrency > 0) {
+    return principalFromCurrency
+  }
+
+  if (inputs.purchasePrice && inputs.downPaymentPct !== undefined) {
+    return inputs.purchasePrice * (1 - inputs.downPaymentPct / 100)
+  }
+
+  return 0
+}
+
 export function calculateLoan(inputs: LoanInputs): LoanResults {
   const exchangeRate = inputs.exchangeRate || LOAN_DEFAULT_EXCHANGE_RATE
-  const principalFromCurrency = inputs.currencyMode === "usd" ? inputs.principalGYD * exchangeRate : inputs.principalGYD
-
-  const derivedPrincipal =
-    principalFromCurrency > 0
-      ? principalFromCurrency
-      : inputs.purchasePrice && inputs.downPaymentPct !== undefined
-        ? inputs.purchasePrice * (1 - inputs.downPaymentPct / 100)
-        : 0
-
-  const principal = derivedPrincipal
+  const principal = resolveLoanPrincipal(inputs)
   const annualRate = inputs.annualRatePct
   const startDate = inputs.firstPaymentDate ? new Date(inputs.firstPaymentDate) : new Date()
 
@@ -174,7 +181,7 @@ export function calculateLoan(inputs: LoanInputs): LoanResults {
 
   const monthlyBaseSchedule = buildAmortizationSchedule(principal, annualRate, inputs.termMonths)
   const biweekly = calculateBiweekly(principal, annualRate, inputs.termMonths)
-  const activeSchedule = baseSchedule
+  let activeSchedule = baseSchedule
 
   const totalPaid = activeSchedule.reduce((sum, row) => sum + row.payment, 0)
   const totalInterest = activeSchedule.reduce((sum, row) => sum + row.interest, 0)
@@ -216,6 +223,9 @@ export function calculateLoan(inputs: LoanInputs): LoanResults {
     result.monthsSaved = monthsSaved > 0 ? monthsSaved : 0
     result.interestSaved = totalInterest - extraInterest
     result.newPayoffDate = calculatePayoffDate(startDate, extraSchedule.length)
+    if (inputs.paymentFrequency === "monthly") {
+      activeSchedule = extraSchedule
+    }
   }
 
   if (inputs.paymentFrequency === "biweekly") {
@@ -226,6 +236,9 @@ export function calculateLoan(inputs: LoanInputs): LoanResults {
     )
     result.biweeklyInterestSaved = monthlySummary.totalInterest - result.totalInterest
   }
+
+  result.amortizationSchedule = activeSchedule
+  result.yearlySchedule = aggregateYearly(activeSchedule)
 
   return result
 }
