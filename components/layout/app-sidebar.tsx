@@ -4,6 +4,8 @@ import * as React from "react"
 import Link from "next/link"
 import {
   Calculator,
+  Car,
+  Landmark,
   ScrollText,
   TrendingUp,
   Info,
@@ -28,6 +30,16 @@ const mainNav = [
     title: "Tax Calculator",
     url: "/dashboard",
     icon: Calculator,
+  },
+  {
+    title: "Vehicle Import",
+    url: "/vehicle",
+    icon: Car,
+  },
+  {
+    title: "Loan Calculator",
+    url: "/loan",
+    icon: Landmark,
   },
   {
     title: "Changelog",

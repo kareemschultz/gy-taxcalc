@@ -12,6 +12,14 @@ const breadcrumbMap: Record<string, { label: string; description: string }> = {
     label: "Tax Calculator",
     description: "Guyana 2026 income tax & payroll calculator",
   },
+  "/vehicle": {
+    label: "Vehicle Import",
+    description: "Guyana 2026 import tax calculator",
+  },
+  "/loan": {
+    label: "Loan Calculator",
+    description: "Amortization, extra payments & lender comparison",
+  },
   "/changelog": {
     label: "Changelog",
     description: "Release history & updates",
