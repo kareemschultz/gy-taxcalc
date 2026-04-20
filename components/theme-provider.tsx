@@ -16,16 +16,23 @@ export function ThemeProvider({
   defaultTheme = "dark",
   storageKey = "gy-taxcalc-theme",
 }: ThemeProviderProps) {
-  const [theme, setTheme] = React.useState<Theme>(
-    () =>
-      (typeof window !== "undefined" &&
-        (localStorage.getItem(storageKey) as Theme)) ||
-      defaultTheme
-  )
+  const [theme, setThemeState] = React.useState<Theme>(defaultTheme)
 
+  // Read persisted theme only on the client, after mount
   React.useEffect(() => {
-    if (typeof window === "undefined") return
-    const root = window.document.documentElement
+    try {
+      const stored = localStorage.getItem(storageKey) as Theme | null
+      if (stored === "dark" || stored === "light" || stored === "system") {
+        setThemeState(stored)
+      }
+    } catch {
+      // localStorage unavailable — keep defaultTheme
+    }
+  }, [storageKey])
+
+  // Apply class to <html> whenever theme changes
+  React.useEffect(() => {
+    const root = document.documentElement
     root.classList.remove("light", "dark")
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -37,18 +44,20 @@ export function ThemeProvider({
     }
   }, [theme])
 
-  const value = {
-    theme,
-    setTheme: (newTheme: Theme) => {
-      if (typeof window !== "undefined") {
+  const setTheme = React.useCallback(
+    (newTheme: Theme) => {
+      try {
         localStorage.setItem(storageKey, newTheme)
+      } catch {
+        // ignore
       }
-      setTheme(newTheme)
+      setThemeState(newTheme)
     },
-  }
+    [storageKey]
+  )
 
   return (
-    <ThemeProviderContext.Provider value={value}>
+    <ThemeProviderContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeProviderContext.Provider>
   )
