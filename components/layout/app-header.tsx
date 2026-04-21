@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
+import { ModeToggle } from "@/components/mode-toggle"
 
 const breadcrumbMap: Record<string, { label: string; description: string }> = {
   "/dashboard": {
@@ -60,6 +61,9 @@ export function AppHeader() {
       </div>
 
       <div className="ml-auto flex items-center gap-2 shrink-0">
+        <div className="md:hidden">
+          <ModeToggle variant="ghost" />
+        </div>
         <Badge variant="outline" className="hidden sm:inline-flex text-xs">
           2026 Rates
         </Badge>
