@@ -1,29 +1,8 @@
 import Link from "next/link"
-import { Activity, ArrowRight, BarChart3, Car, Landmark, PieChart, TrendingUp } from "lucide-react"
+import { Activity, ArrowRight, BarChart3, PieChart } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-
-const analyticsCards = [
-  {
-    title: "Salary analytics",
-    icon: TrendingUp,
-    summary: "Charts, breakdowns, take-home rate, and gratuity tracking.",
-    href: "/dashboard",
-  },
-  {
-    title: "Vehicle analytics",
-    icon: Car,
-    summary: "Tax bands, exemption paths, and landed-cost comparison.",
-    href: "/vehicle",
-  },
-  {
-    title: "Loan analytics",
-    icon: Landmark,
-    summary: "Amortization, lender comparison, payoff timing, and strategy views.",
-    href: "/loan",
-  },
-]
 
 export default function AnalyticsPage() {
   return (
@@ -65,25 +44,6 @@ export default function AnalyticsPage() {
         </Card>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        {analyticsCards.map((card) => (
-          <Card key={card.title} className="bg-muted/20 transition-transform hover:-translate-y-1 hover:shadow-md">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <card.icon className="size-4 text-primary" />
-                {card.title}
-              </CardTitle>
-              <CardDescription>{card.summary}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button asChild size="sm" variant="outline" className="w-full">
-                <Link href={card.href}>Open</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
-
       <Card className="bg-muted/20">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-sm">
@@ -91,20 +51,20 @@ export default function AnalyticsPage() {
             Visual snapshots
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-lg border bg-background p-4">
+        <CardContent className="grid gap-0 divide-y divide-border/60 rounded-lg border bg-background/70 p-0 md:grid-cols-2 md:divide-x md:divide-y-0 xl:grid-cols-4">
+          <div className="p-4">
             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Salary trend</p>
-            <p className="mt-1 text-sm font-semibold">Breakdown + charts + simulator</p>
+            <p className="mt-1 text-sm font-semibold">Breakdown, charts, and simulator</p>
           </div>
-          <div className="rounded-lg border bg-background p-4">
+          <div className="p-4">
             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Vehicle trend</p>
             <p className="mt-1 text-sm font-semibold">CC, age, duty, excise, VAT</p>
           </div>
-          <div className="rounded-lg border bg-background p-4">
+          <div className="p-4">
             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Loan trend</p>
             <p className="mt-1 text-sm font-semibold">Months saved, interest saved, payoff path</p>
           </div>
-          <div className="rounded-lg border bg-background p-4">
+          <div className="p-4">
             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Policy trend</p>
             <p className="mt-1 text-sm font-semibold">Guide, FAQ, changelog, and updates</p>
           </div>
