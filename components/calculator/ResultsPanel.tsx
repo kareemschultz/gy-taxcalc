@@ -153,14 +153,12 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
     monthlyGratuityAccrual,
     sixMonthGratuity,
     monthSixTotal,
-    monthTwelveTotal,
     vacationAllowance,
     annualGrossIncome,
     annualTaxPayable,
     annualNisContribution,
     annualNetSalary,
     annualGratuityTotal,
-    annualTotal,
     paymentFrequency,
     overtimeAllowance,
     secondJobAllowance,
@@ -168,6 +166,9 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
   } = results
 
   const freqLabel = PAYMENT_FREQUENCIES[paymentFrequency].periodLabel
+  const resolvedVacationAllowance = baseInputs?.vacationAllowance ?? vacationAllowance
+  const resolvedMonthTwelveTotal = monthlyNetSalary + sixMonthGratuity + resolvedVacationAllowance
+  const resolvedAnnualTotal = annualNetSalary + annualGratuityTotal + resolvedVacationAllowance
   const effectiveTaxRate = annualGrossIncome > 0
     ? (annualTaxPayable / annualGrossIncome) * 100
     : 0
@@ -236,7 +237,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           { label: "Monthly Net", value: formatCurrency(monthlyNetSalary) },
           { label: "Gross Income", value: formatCurrency(regularMonthlyGrossIncome) },
           { label: "PAYE", value: formatCurrency(incomeTax) },
-          { label: "Annual Package", value: formatCurrency(annualTotal) },
+          { label: "Annual Package", value: formatCurrency(resolvedAnnualTotal) },
         ]}
         sections={[
           {
@@ -258,7 +259,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               { label: "Annual NIS", value: formatCurrency(-annualNisContribution) },
               { label: "Annual Tax", value: formatCurrency(-annualTaxPayable) },
               { label: "Annual Gratuity", value: formatCurrency(annualGratuityTotal) },
-              { label: "Total Annual Package", value: formatCurrency(annualTotal) },
+              { label: "Total Annual Package", value: formatCurrency(resolvedAnnualTotal) },
             ],
           },
         ]}
@@ -266,34 +267,65 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           `Net take-home: ${formatCurrency(monthlyNetSalary)}`,
           `Gross income: ${formatCurrency(regularMonthlyGrossIncome)}`,
           `PAYE: ${formatCurrency(incomeTax)}`,
-          `Annual package: ${formatCurrency(annualTotal)}`,
+          `Annual package: ${formatCurrency(resolvedAnnualTotal)}`,
         ]}
       />
 
-      <Card className="border-border/60 bg-muted/10">
-        <CardContent className="grid divide-y divide-border/60 p-0 sm:grid-cols-2 sm:divide-x sm:divide-y-0 xl:grid-cols-4">
-          <div className="p-4">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Annual Package</p>
-            <p className="mt-1 text-lg font-semibold tabular-nums text-primary">{formatCurrency(annualTotal)}</p>
-            <p className="mt-1 text-[11px] text-muted-foreground">Total including gratuity</p>
-          </div>
-          <div className="p-4">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Month 6 Total</p>
-            <p className="mt-1 text-lg font-semibold tabular-nums">{formatCurrency(monthSixTotal)}</p>
-            <p className="mt-1 text-[11px] text-muted-foreground">Net + 6-month gratuity</p>
-          </div>
-          <div className="p-4">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Month 12 Total</p>
-            <p className="mt-1 text-lg font-semibold tabular-nums">{formatCurrency(monthTwelveTotal)}</p>
-            <p className="mt-1 text-[11px] text-muted-foreground">Net + gratuity + vacation</p>
-          </div>
-          <div className="p-4">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Monthly Gratuity</p>
-            <p className="mt-1 text-lg font-semibold tabular-nums">{formatCurrency(monthlyGratuityAccrual)}</p>
-            <p className="mt-1 text-[11px] text-muted-foreground">Accrued from basic salary</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          {
+            label: "Annual Package",
+            value: resolvedAnnualTotal,
+            sub: "Total including gratuity",
+            tone: "from-emerald-500/25 via-emerald-500/10 to-background",
+            accent: "text-emerald-300",
+          },
+          {
+            label: "Month 6 Total",
+            value: monthSixTotal,
+            sub: "Net + 6-month gratuity",
+            tone: "from-cyan-500/25 via-cyan-500/10 to-background",
+            accent: "text-cyan-300",
+          },
+          {
+            label: "Month 12 Total",
+            value: resolvedMonthTwelveTotal,
+            sub:
+              resolvedVacationAllowance > 0
+                ? `Net + gratuity + vacation (${formatCurrency(resolvedVacationAllowance)})`
+                : "Net + gratuity + vacation",
+            tone: "from-lime-500/25 via-lime-500/10 to-background",
+            accent: "text-lime-300",
+          },
+          {
+            label: "Monthly Gratuity",
+            value: monthlyGratuityAccrual,
+            sub: "Accrued from basic salary",
+            tone: "from-amber-500/25 via-amber-500/10 to-background",
+            accent: "text-amber-300",
+          },
+        ].map((item) => (
+          <motion.div
+            key={item.label}
+            whileHover={{ y: -2 }}
+            transition={{ duration: 0.18 }}
+            className={`rounded-2xl border bg-gradient-to-br ${item.tone} p-4 shadow-sm shadow-black/5`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{item.label}</p>
+                <p className={`mt-2 text-[clamp(1.15rem,3vw,1.6rem)] font-bold tabular-nums ${item.accent}`}>
+                  {formatCurrency(item.value)}
+                </p>
+              </div>
+              <div className={`rounded-xl border border-white/10 bg-white/10 p-2 ${item.accent}`}>
+                <BadgeDollarSign className="size-4" />
+              </div>
+            </div>
+            <p className="mt-3 text-[11px] text-muted-foreground">{item.sub}</p>
+          </motion.div>
+        ))}
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -536,14 +568,14 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               <CardContent className="pt-0">
                 <StatRow label="Monthly Net Salary" value={monthlyNetSalary} />
                 <StatRow label="6-Month Gratuity" value={sixMonthGratuity} />
-                {vacationAllowance > 0 && (
-                  <StatRow label="Vacation Allowance" value={vacationAllowance} />
+                {resolvedVacationAllowance > 0 && (
+                  <StatRow label="Vacation Allowance" value={resolvedVacationAllowance} />
                 )}
                 <Separator className="my-2" />
                 <div className="flex items-baseline justify-between">
                   <span className="text-sm font-bold">Total Month 12</span>
                   <span className="text-lg font-bold text-primary tabular-nums">
-                    <AnimatedCurrency value={monthTwelveTotal} />
+                    <AnimatedCurrency value={resolvedMonthTwelveTotal} />
                   </span>
                 </div>
               </CardContent>
@@ -568,14 +600,14 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               {annualGratuityTotal > 0 && (
                 <StatRow label="Annual Gratuity (×2)" value={annualGratuityTotal} />
               )}
-              {vacationAllowance > 0 && (
-                <StatRow label="Vacation Allowance" value={vacationAllowance} />
+              {resolvedVacationAllowance > 0 && (
+                <StatRow label="Vacation Allowance" value={resolvedVacationAllowance} />
               )}
               <Separator className="my-3" />
               <div className="flex items-baseline justify-between">
                 <span className="text-sm font-bold">Total Annual Package</span>
                 <span className="text-xl font-bold text-primary tabular-nums">
-                  <AnimatedCurrency value={annualTotal} />
+                  <AnimatedCurrency value={resolvedAnnualTotal} />
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-2 mt-4">
