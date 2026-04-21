@@ -233,6 +233,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
       update({
         taxableAllowances: taxableTotal,
         nonTaxableAllowances: nonTaxableTotal,
+        vacationAllowance: detailedNonTaxable.vacation,
       })
     }
     setAllowanceMode(mode)
@@ -249,7 +250,9 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
   const updateDetailedNonTaxable = (field: keyof DetailedNonTaxableAllowances, value: number) => {
     setDetailedNonTaxable((prev) => {
       const next = { ...prev, [field]: value }
-      update({ nonTaxableAllowances: sum(next), vacationAllowance: next.vacation })
+      const patch: Partial<TCalcInputs> = { nonTaxableAllowances: sum(next) }
+      if (field === "vacation") patch.vacationAllowance = value
+      update(patch)
       return next
     })
   }

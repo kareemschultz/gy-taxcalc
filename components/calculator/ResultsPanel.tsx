@@ -12,6 +12,9 @@ import {
   BadgeDollarSign,
   ScrollText,
   BookOpen,
+  Coins,
+  Gift,
+  PackageOpen,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -30,6 +33,7 @@ import { SalaryIncreaseSection } from "./SalaryIncreaseSection"
 import { ResultActions } from "@/components/results/result-actions"
 import { ResultCard } from "./ResultCard"
 import { InfoCard } from "./InfoCard"
+import { SummaryCard } from "./SummaryCard"
 
 /* ── animated number ──────────────────────────────────── */
 function AnimatedCurrency({ value }: { value: number }) {
@@ -154,6 +158,9 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
   const takeHomeRate = annualGrossIncome > 0
     ? (annualNetSalary / annualGrossIncome) * 100
     : 0
+  const nisRate = annualGrossIncome > 0
+    ? (annualNisContribution / annualGrossIncome) * 100
+    : 0
 
     return (
       <motion.div
@@ -171,39 +178,62 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
         whileHover={{ y: -2 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
       >
-        <Card className="bg-primary text-primary-foreground border-0 shadow-lg shadow-primary/20">
-          <CardContent className="pt-6 pb-5">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <p className="text-xs font-medium opacity-80 uppercase tracking-wide">
-                Net Take-Home ({freqLabel})
-              </p>
-              <p className="text-3xl font-bold mt-1 tabular-nums">
-                {formatCurrency(monthlyNetSalary)}
-              </p>
+        <Card className="bg-primary text-primary-foreground border-0 shadow-lg shadow-primary/25 overflow-hidden relative">
+          {/* subtle glow orb */}
+          <div className="pointer-events-none absolute -top-8 -right-8 size-40 rounded-full bg-white/10 blur-2xl" />
+          <CardContent className="pt-6 pb-5 relative">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <p className="text-[10px] font-semibold opacity-75 uppercase tracking-widest">
+                  Net Take-Home ({freqLabel})
+                </p>
+                <p className="text-4xl font-bold mt-1.5 tabular-nums">
+                  {formatCurrency(monthlyNetSalary)}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white/15 p-2.5 backdrop-blur-sm">
+                <Wallet className="size-5" />
+              </div>
             </div>
-            <div className="rounded-xl bg-white/15 p-2.5">
-              <Wallet className="size-5" />
+            {/* Take-home progress bar */}
+            <div className="mb-4">
+              <div className="flex justify-between mb-1">
+                <span className="text-[10px] opacity-60 uppercase tracking-wide">Take-home rate</span>
+                <span className="text-[11px] font-semibold opacity-90">{formatPercent(takeHomeRate)}</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-white/15 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-white/70"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(100, takeHomeRate)}%` }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                />
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-white/20">
-            <div>
-              <p className="text-[10px] opacity-70 uppercase tracking-wide">Gross</p>
-              <p className="text-sm font-semibold tabular-nums">
-                {formatCurrency(regularMonthlyGrossIncome)}
-              </p>
+            <div className="grid grid-cols-4 gap-2 pt-3 border-t border-white/20">
+              <div>
+                <p className="text-[9px] opacity-60 uppercase tracking-wide">Gross</p>
+                <p className="text-xs font-semibold tabular-nums mt-0.5">
+                  {formatCurrency(regularMonthlyGrossIncome)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[9px] opacity-60 uppercase tracking-wide">NIS</p>
+                <p className="text-xs font-semibold tabular-nums mt-0.5">
+                  {formatCurrency(nisContribution)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[9px] opacity-60 uppercase tracking-wide">PAYE</p>
+                <p className="text-xs font-semibold tabular-nums mt-0.5">
+                  {formatCurrency(incomeTax)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[9px] opacity-60 uppercase tracking-wide">Eff. Rate</p>
+                <p className="text-xs font-semibold mt-0.5">{formatPercent(effectiveTaxRate)}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] opacity-70 uppercase tracking-wide">PAYE</p>
-              <p className="text-sm font-semibold tabular-nums">
-                {formatCurrency(incomeTax)}
-              </p>
-            </div>
-            <div>
-              <p className="text-[10px] opacity-70 uppercase tracking-wide">Eff. Rate</p>
-              <p className="text-sm font-semibold">{formatPercent(effectiveTaxRate)}</p>
-            </div>
-          </div>
           </CardContent>
         </Card>
       </motion.div>
@@ -250,30 +280,48 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
         ]}
       />
 
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <ResultCard
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <SummaryCard
           label="Annual Package"
           value={formatCurrency(annualTotal)}
-          sub="Total including gratuity"
-          variant="primary"
+          icon={<PackageOpen className="size-3.5" />}
+          variant="blue"
+          breakdown={[
+            { label: "Net salary", value: formatCurrency(annualNetSalary) },
+            { label: "Gratuity", value: formatCurrency(annualGratuityTotal) },
+            { label: "Vacation", value: vacationAllowance > 0 ? formatCurrency(vacationAllowance) : "—" },
+          ]}
         />
-        <ResultCard
+        <SummaryCard
           label="Month 6 Total"
           value={formatCurrency(monthSixTotal)}
-          sub="Net + 6-month gratuity"
-          variant="success"
+          icon={<Coins className="size-3.5" />}
+          variant="teal"
+          breakdown={[
+            { label: "Net pay", value: formatCurrency(monthlyNetSalary) },
+            { label: "Gratuity", value: formatCurrency(sixMonthGratuity), highlight: true },
+          ]}
         />
-        <ResultCard
+        <SummaryCard
           label="Month 12 Total"
           value={formatCurrency(monthTwelveTotal)}
-          sub="Net + gratuity + vacation"
-          variant="success"
+          icon={<Gift className="size-3.5" />}
+          variant="violet"
+          breakdown={[
+            { label: "Net pay", value: formatCurrency(monthlyNetSalary) },
+            { label: "Gratuity", value: formatCurrency(sixMonthGratuity) },
+            { label: "Vacation", value: vacationAllowance > 0 ? formatCurrency(vacationAllowance) : "—", highlight: vacationAllowance > 0 },
+          ]}
         />
-        <ResultCard
+        <SummaryCard
           label="Monthly Gratuity"
           value={formatCurrency(monthlyGratuityAccrual)}
-          sub="Accrued from basic salary"
-          variant="muted"
+          icon={<TrendingUp className="size-3.5" />}
+          variant="amber"
+          breakdown={[
+            { label: "Rate", value: `${results.gratuityRate}%` },
+            { label: "Annual total", value: formatCurrency(annualGratuityTotal) },
+          ]}
         />
       </div>
 
