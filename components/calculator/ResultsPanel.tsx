@@ -28,7 +28,6 @@ import { WaterfallChart } from "./WaterfallChart"
 import type { CalculatorInputs as TCalcInputs } from "@/lib/tax/types"
 import { SalaryIncreaseSection } from "./SalaryIncreaseSection"
 import { ResultActions } from "@/components/results/result-actions"
-import { ResultCard } from "./ResultCard"
 import { InfoCard } from "./InfoCard"
 
 /* ── animated number ──────────────────────────────────── */
@@ -250,32 +249,30 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
         ]}
       />
 
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <ResultCard
-          label="Annual Package"
-          value={formatCurrency(annualTotal)}
-          sub="Total including gratuity"
-          variant="primary"
-        />
-        <ResultCard
-          label="Month 6 Total"
-          value={formatCurrency(monthSixTotal)}
-          sub="Net + 6-month gratuity"
-          variant="success"
-        />
-        <ResultCard
-          label="Month 12 Total"
-          value={formatCurrency(monthTwelveTotal)}
-          sub="Net + gratuity + vacation"
-          variant="success"
-        />
-        <ResultCard
-          label="Monthly Gratuity"
-          value={formatCurrency(monthlyGratuityAccrual)}
-          sub="Accrued from basic salary"
-          variant="muted"
-        />
-      </div>
+      <Card className="border-border/60 bg-muted/10">
+        <CardContent className="grid divide-y divide-border/60 p-0 sm:grid-cols-2 sm:divide-x sm:divide-y-0 xl:grid-cols-4">
+          <div className="p-4">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Annual Package</p>
+            <p className="mt-1 text-lg font-semibold tabular-nums text-primary">{formatCurrency(annualTotal)}</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">Total including gratuity</p>
+          </div>
+          <div className="p-4">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Month 6 Total</p>
+            <p className="mt-1 text-lg font-semibold tabular-nums">{formatCurrency(monthSixTotal)}</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">Net + 6-month gratuity</p>
+          </div>
+          <div className="p-4">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Month 12 Total</p>
+            <p className="mt-1 text-lg font-semibold tabular-nums">{formatCurrency(monthTwelveTotal)}</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">Net + gratuity + vacation</p>
+          </div>
+          <div className="p-4">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Monthly Gratuity</p>
+            <p className="mt-1 text-lg font-semibold tabular-nums">{formatCurrency(monthlyGratuityAccrual)}</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">Accrued from basic salary</p>
+          </div>
+        </CardContent>
+      </Card>
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
