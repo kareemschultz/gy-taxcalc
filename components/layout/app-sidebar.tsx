@@ -6,6 +6,7 @@ import {
   Calculator,
   Car,
   Landmark,
+  BookOpen,
   ScrollText,
   TrendingUp,
   Info,
@@ -41,11 +42,19 @@ const mainNav = [
     url: "/loan",
     icon: Landmark,
   },
+]
+
+const updatesNav = [
   {
-    title: "Changelog",
+    title: "Tax Information",
+    url: "/tax-info",
+    icon: BookOpen,
+  },
+  {
+    title: "Tax Updates",
     url: "/changelog",
     icon: ScrollText,
-    badge: "v2.4",
+    badge: "Track",
   },
 ]
 
@@ -89,6 +98,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {/* Navigation */}
       <SidebarContent>
         <NavMain label="Tools" items={mainNav} />
+        <SidebarSeparator />
+        <NavMain label="Updates" items={updatesNav} />
         <SidebarSeparator />
         <NavMain label="Resources" items={resourcesNav} />
       </SidebarContent>

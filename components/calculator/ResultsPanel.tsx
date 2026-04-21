@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   TrendingUp,
@@ -9,10 +10,13 @@ import {
   Calculator,
   Calendar,
   BadgeDollarSign,
+  ScrollText,
+  BookOpen,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { formatCurrency, formatPercent } from "@/lib/utils"
 import type { CalculationResults } from "@/lib/tax/types"
@@ -187,6 +191,54 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
             <div>
               <p className="text-[10px] opacity-70 uppercase tracking-wide">Eff. Rate</p>
               <p className="text-sm font-semibold">{formatPercent(effectiveTaxRate)}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-dashed bg-muted/20">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <BookOpen className="size-4 text-primary" />
+            Tax Info &amp; Updates
+          </CardTitle>
+          <CardDescription>
+            Keep up with 2026 rates, allowances, and release notes as the rules change.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="grid gap-3 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="space-y-2">
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                  2026 Rates
+                </Badge>
+                <Badge variant="new" className="text-[10px] uppercase tracking-wide">
+                  Track
+                </Badge>
+                <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                  GRA Updates
+                </Badge>
+              </div>
+              <ul className="space-y-1.5 text-sm text-muted-foreground">
+                <li>25% PAYE on chargeable income up to GYD 280,000 per month.</li>
+                <li>35% PAYE above the GYD 280,000 threshold.</li>
+                <li>Personal allowance remains GYD 140,000 monthly or one-third of balance.</li>
+                <li>Qualification allowances now include ACCA, Master&apos;s, and PhD.</li>
+              </ul>
+            </div>
+            <div className="rounded-xl border bg-background/70 p-3">
+              <div className="flex items-center gap-2">
+                <ScrollText className="size-4 text-primary" />
+                <p className="text-sm font-semibold">Latest release notes</p>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Follow the changelog for fixes, policy updates, and UI improvements we add as
+                the government publishes new guidance.
+              </p>
+              <Button asChild size="sm" variant="secondary" className="mt-4 w-full">
+                <Link href="/changelog">Open Tax Updates</Link>
+              </Button>
             </div>
           </div>
         </CardContent>
