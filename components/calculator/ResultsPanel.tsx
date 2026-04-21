@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import {
   TrendingUp,
   TrendingDown,
@@ -23,9 +23,13 @@ import type { CalculationResults } from "@/lib/tax/types"
 import { PAYMENT_FREQUENCIES } from "@/lib/tax/constants"
 import { TaxBreakdownChart } from "./TaxBreakdownChart"
 import { AnnualCashflowChart } from "./AnnualCashflowChart"
+import { TaxBracketChart } from "./TaxBracketChart"
+import { WaterfallChart } from "./WaterfallChart"
 import type { CalculatorInputs as TCalcInputs } from "@/lib/tax/types"
 import { SalaryIncreaseSection } from "./SalaryIncreaseSection"
 import { ResultActions } from "@/components/results/result-actions"
+import { ResultCard } from "./ResultCard"
+import { InfoCard } from "./InfoCard"
 
 /* ── animated number ──────────────────────────────────── */
 function AnimatedCurrency({ value }: { value: number }) {
@@ -138,7 +142,6 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
     annualGratuityTotal,
     annualTotal,
     paymentFrequency,
-    grossIncomeForTaxableCalculation,
     overtimeAllowance,
     secondJobAllowance,
     nonTaxableAllowances,
@@ -246,6 +249,33 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           `Annual package: ${formatCurrency(annualTotal)}`,
         ]}
       />
+
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <ResultCard
+          label="Annual Package"
+          value={formatCurrency(annualTotal)}
+          sub="Total including gratuity"
+          variant="primary"
+        />
+        <ResultCard
+          label="Month 6 Total"
+          value={formatCurrency(monthSixTotal)}
+          sub="Net + 6-month gratuity"
+          variant="success"
+        />
+        <ResultCard
+          label="Month 12 Total"
+          value={formatCurrency(monthTwelveTotal)}
+          sub="Net + gratuity + vacation"
+          variant="success"
+        />
+        <ResultCard
+          label="Monthly Gratuity"
+          value={formatCurrency(monthlyGratuityAccrual)}
+          sub="Accrued from basic salary"
+          variant="muted"
+        />
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -543,6 +573,8 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           <div className="space-y-4">
             <TaxBreakdownChart results={results} />
             <AnnualCashflowChart results={results} />
+            <TaxBracketChart results={results} />
+            <WaterfallChart results={results} />
           </div>
         </TabsContent>
 
@@ -560,49 +592,29 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
 
         <TabsContent value="info">
           <div className="grid gap-3 md:grid-cols-2">
-            <Card className="bg-muted/30">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Tax Rates</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0 text-sm text-muted-foreground space-y-1">
-                <p>25% up to GY$280,000 of taxable income.</p>
-                <p>35% above GY$280,000.</p>
-                <p>2026 reduced rates replaced the previous 28% / 40% bands.</p>
-              </CardContent>
-            </Card>
+            <InfoCard title="Tax Rates">
+              <p>25% up to GY$280,000 of taxable income.</p>
+              <p>35% above GY$280,000.</p>
+              <p>2026 reduced rates replaced the previous 28% / 40% bands.</p>
+            </InfoCard>
 
-            <Card className="bg-muted/30">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Allowances</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0 text-sm text-muted-foreground space-y-1">
-                <p>Personal allowance: GY$140,000 monthly or one-third of balance of income.</p>
-                <p>Child allowance: GY$10,000 per child.</p>
-                <p>Overtime and second job: first GY$50,000 each is non-taxable.</p>
-              </CardContent>
-            </Card>
+            <InfoCard title="Allowances">
+              <p>Personal allowance: GY$140,000 monthly or one-third of balance of income.</p>
+              <p>Child allowance: GY$10,000 per child.</p>
+              <p>Overtime and second job: first GY$50,000 each is non-taxable.</p>
+            </InfoCard>
 
-            <Card className="bg-muted/30">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Deductions</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0 text-sm text-muted-foreground space-y-1">
-                <p>NIS: 5.6% capped at GY$280,000 of monthly income.</p>
-                <p>Insurance: up to 10% of gross, capped at GY$50,000 monthly.</p>
-                <p>Gratuity: default 22.5% of basic salary accrued monthly.</p>
-              </CardContent>
-            </Card>
+            <InfoCard title="Deductions">
+              <p>NIS: 5.6% capped at GY$280,000 of monthly income.</p>
+              <p>Insurance: up to 10% of gross, capped at GY$50,000 monthly.</p>
+              <p>Gratuity: default 22.5% of basic salary accrued monthly.</p>
+            </InfoCard>
 
-            <Card className="bg-muted/30">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">New for 2026</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0 text-sm text-muted-foreground space-y-1">
-                <p>ACCA allowance: GY$15,000 monthly.</p>
-                <p>Master&apos;s allowance: GY$22,000 monthly.</p>
-                <p>PhD allowance: GY$32,000 monthly.</p>
-              </CardContent>
-            </Card>
+            <InfoCard title="New for 2026" variant="success">
+              <p>ACCA allowance: GY$15,000 monthly.</p>
+              <p>Master&apos;s allowance: GY$22,000 monthly.</p>
+              <p>PhD allowance: GY$32,000 monthly.</p>
+            </InfoCard>
           </div>
         </TabsContent>
       </Tabs>

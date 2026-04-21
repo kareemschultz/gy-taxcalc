@@ -1,13 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { ArrowDown } from "lucide-react"
 import { DotPattern } from "@/components/dot-pattern"
-import { Button } from "@/components/ui/button"
 import { LoanInputs } from "@/components/loan/LoanInputs"
 import { LoanResults } from "@/components/loan/LoanResults"
 import { calculateLoan } from "@/lib/loan/calculator"
 import type { LoanInputs as TLoanInputs, LoanResults as TLoanResults } from "@/lib/loan/types"
+import { StickyResultsBar } from "@/components/calculator/StickyResultsBar"
 
 export default function LoanPage() {
   const [inputs, setInputs] = React.useState<TLoanInputs | null>(null)
@@ -32,38 +31,22 @@ export default function LoanPage() {
       </div>
 
       {result && inputs ? (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-3 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur-sm lg:hidden">
-          <div className="mx-auto flex max-w-7xl items-center gap-2">
-            <div className="grid flex-1 grid-cols-3 gap-2 text-center text-xs">
-              <div className="rounded-lg bg-muted px-2 py-2">
-                <p className="text-[10px] uppercase text-muted-foreground">Payment</p>
-                <p className="font-semibold">
-                  {(inputs.paymentFrequency === "biweekly" && result.biweeklyPayment
-                    ? result.biweeklyPayment
-                    : result.monthlyPayment
-                  ).toLocaleString("en-US", { maximumFractionDigits: 0 })}
-                </p>
-              </div>
-              <div className="rounded-lg bg-muted px-2 py-2">
-                <p className="text-[10px] uppercase text-muted-foreground">Interest</p>
-                <p className="font-semibold">{result.totalInterest.toLocaleString("en-US", { maximumFractionDigits: 0 })}</p>
-              </div>
-              <div className="rounded-lg bg-muted px-2 py-2">
-                <p className="text-[10px] uppercase text-muted-foreground">Payoff</p>
-                <p className="font-semibold">{result.payoffDate}</p>
-              </div>
-            </div>
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              onClick={() => document.getElementById("loan-results")?.scrollIntoView({ behavior: "smooth", block: "start" })}
-            >
-              <ArrowDown className="size-4" />
-              Details
-            </Button>
-          </div>
-        </div>
+        <StickyResultsBar
+          items={[
+            {
+              label: "Payment",
+              value: (inputs.paymentFrequency === "biweekly" && result.biweeklyPayment
+                ? result.biweeklyPayment
+                : result.monthlyPayment
+              ).toLocaleString("en-US", { maximumFractionDigits: 0 }),
+            },
+            { label: "Interest", value: result.totalInterest.toLocaleString("en-US", { maximumFractionDigits: 0 }) },
+            { label: "Payoff", value: result.payoffDate },
+          ]}
+          onDetails={() =>
+            document.getElementById("loan-results")?.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
+        />
       ) : null}
     </div>
   )
