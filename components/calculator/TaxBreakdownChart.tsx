@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { motion } from "framer-motion"
 import {
   PieChart,
   Pie,
@@ -51,55 +52,63 @@ export function TaxBreakdownChart({ results }: { results: CalculationResults }) 
     .sort((a, b) => b.value - a.value)[0]
 
   return (
-    <Card className="bg-muted/30">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm">Monthly Mix</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={55}
-                outerRadius={80}
-                paddingAngle={3}
-                dataKey="value"
-                activeIndex={activeIndex}
-                onMouseEnter={(_, index) => setActiveIndex(index)}
-                onMouseLeave={() => setActiveIndex(0)}
-              >
-                {data.map((_, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                    stroke="transparent"
-                    opacity={activeIndex === index ? 1 : 0.75}
-                  />
-                ))}
-              </Pie>
-              <Tooltip content={<ChartTooltip />} />
-              <Legend
-                iconType="circle"
-                iconSize={8}
-                wrapperStyle={{ fontSize: "11px" }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2">
-          <div className="rounded-lg border bg-background/60 p-3">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Take-home share</p>
-            <p className="mt-1 text-lg font-semibold text-primary">{takeHomeRate.toFixed(1)}%</p>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      whileHover={{ y: -3, scale: 1.01 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+    >
+      <Card className="bg-muted/30 shadow-sm transition-shadow duration-200 hover:shadow-md hover:shadow-primary/10">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Monthly Mix</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={80}
+                  paddingAngle={3}
+                  dataKey="value"
+                  activeIndex={activeIndex}
+                  onMouseEnter={(_, index) => setActiveIndex(index)}
+                  onMouseLeave={() => setActiveIndex(0)}
+                >
+                  {data.map((_, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                      stroke="transparent"
+                      opacity={activeIndex === index ? 1 : 0.75}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip content={<ChartTooltip />} />
+                <Legend
+                  iconType="circle"
+                  iconSize={8}
+                  wrapperStyle={{ fontSize: "11px" }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-          <div className="rounded-lg border bg-background/60 p-3">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Largest deduction</p>
-            <p className="mt-1 text-sm font-semibold">{largestDeduction?.name ?? "None"}</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <div className="rounded-lg border bg-background/60 p-3 transition-colors hover:bg-background/80">
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Take-home share</p>
+              <p className="mt-1 text-lg font-semibold text-primary">{takeHomeRate.toFixed(1)}%</p>
+            </div>
+            <div className="rounded-lg border bg-background/60 p-3 transition-colors hover:bg-background/80">
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Largest deduction</p>
+              <p className="mt-1 text-sm font-semibold">{largestDeduction?.name ?? "None"}</p>
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }

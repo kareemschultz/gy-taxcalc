@@ -160,8 +160,15 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
       className="space-y-4"
     >
       {/* Hero summary */}
-      <Card className="bg-primary text-primary-foreground border-0 shadow-lg">
-        <CardContent className="pt-6 pb-5">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        whileHover={{ y: -2 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        <Card className="bg-primary text-primary-foreground border-0 shadow-lg shadow-primary/20">
+          <CardContent className="pt-6 pb-5">
           <div className="flex items-start justify-between mb-3">
             <div>
               <p className="text-xs font-medium opacity-80 uppercase tracking-wide">
@@ -193,10 +200,18 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               <p className="text-sm font-semibold">{formatPercent(effectiveTaxRate)}</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
-      <Card className="border-dashed bg-muted/20">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        whileHover={{ y: -2 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        <Card className="border-dashed bg-muted/20">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-sm">
             <BookOpen className="size-4 text-primary" />
@@ -241,8 +256,9 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Detailed tabs */}
       <Tabs defaultValue="breakdown">

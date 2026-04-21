@@ -2,7 +2,7 @@ name: Deploy Next.js to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "claude/nextjs-shadcn-refactor-nU58h"]
   workflow_dispatch:
 
 permissions:

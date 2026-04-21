@@ -26,11 +26,17 @@ export function Section({
   const [open, setOpen] = React.useState(defaultOpen)
 
   return (
-    <div className={cn("overflow-hidden rounded-xl border bg-card", className)}>
+    <motion.div
+      className={cn("overflow-hidden rounded-xl border bg-card", className)}
+      initial={{ opacity: 0, y: 12, scale: 0.985 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.28, ease: "easeOut" }}
+    >
       <button
         type="button"
         onClick={() => setOpen((state) => !state)}
-        className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-muted/40"
+        className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-muted/40 motion-safe:active:scale-[0.995]"
       >
         <span className="flex min-w-0 flex-col gap-1">
           <span className="flex items-center gap-2">
@@ -55,17 +61,27 @@ export function Section({
         {open && (
           <motion.div
             key="content"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
+            initial={{ height: 0, opacity: 0, y: -8 }}
+            animate={{ height: "auto", opacity: 1, y: 0 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
+            transition={{ duration: 0.26, ease: "easeInOut" }}
             className="overflow-hidden"
           >
             <Separator />
-            <div className="space-y-4 px-4 py-4">{children}</div>
+            <motion.div
+              className="space-y-4 px-4 py-4"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.06, delayChildren: 0.02 } },
+              }}
+            >
+              {children}
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { motion } from "framer-motion"
 import {
   Area,
   AreaChart,
@@ -44,15 +45,23 @@ function ChartCard({
   children: React.ReactNode
 }) {
   return (
-    <Card className="bg-muted/20">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm">{title}</CardTitle>
-        {description ? <CardDescription className="text-xs">{description}</CardDescription> : null}
-      </CardHeader>
-      <CardContent>
-        <div className="h-56">{children}</div>
-      </CardContent>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      whileHover={{ y: -3, scale: 1.01 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+    >
+      <Card className="bg-muted/20 shadow-sm transition-shadow duration-200 hover:shadow-md hover:shadow-primary/10">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">{title}</CardTitle>
+          {description ? <CardDescription className="text-xs">{description}</CardDescription> : null}
+        </CardHeader>
+        <CardContent>
+          <div className="h-56">{children}</div>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
 
@@ -115,15 +124,15 @@ export function LoanCharts({
   return (
     <div className="grid gap-4">
       <div className="grid gap-2 sm:grid-cols-3">
-        <div className="rounded-lg border bg-background/60 p-3">
+        <div className="rounded-lg border bg-background/60 p-3 transition-colors hover:bg-background/80">
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Best lender in view</p>
           <p className="mt-1 text-sm font-semibold">{topBank?.name ?? "N/A"}</p>
         </div>
-        <div className="rounded-lg border bg-background/60 p-3">
+        <div className="rounded-lg border bg-background/60 p-3 transition-colors hover:bg-background/80">
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Interest share</p>
           <p className="mt-1 text-sm font-semibold">{totalInterestPct.toFixed(1)}% of total paid</p>
         </div>
-        <div className="rounded-lg border bg-background/60 p-3">
+        <div className="rounded-lg border bg-background/60 p-3 transition-colors hover:bg-background/80">
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Payoff style</p>
           <p className="mt-1 text-sm font-semibold">
             {inputs.paymentFrequency === "biweekly" ? "Faster with bi-weekly pay" : "Standard monthly"}
