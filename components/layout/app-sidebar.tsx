@@ -144,12 +144,12 @@ const resourceSections: ResourceSection[] = [
     label: "Official Guyana",
     items: [
       { title: "GRA Home", url: "https://www.gra.gov.gy", icon: Globe, external: true },
-      { title: "Motor Vehicle Duty / Tax Guide", url: "https://www.gra.gov.gy/imports/motor-vehicle/", icon: FileText, external: true },
-      { title: "Motor Vehicle Registration", url: "https://www.gra.gov.gy/vehicles/register-your-motor-vehicle/", icon: Car, external: true },
-      { title: "Vehicle Registration Simplified", url: "https://www.gra.gov.gy/simplified-procedures-for-registration-of-vehicles-expanded/", icon: FileText, external: true },
+      { title: "Vehicle Tax Guide", url: "https://www.gra.gov.gy/imports/motor-vehicle/", icon: FileText, external: true },
+      { title: "Vehicle Registration", url: "https://www.gra.gov.gy/vehicles/register-your-motor-vehicle/", icon: Car, external: true },
+      { title: "Registration Guide", url: "https://www.gra.gov.gy/simplified-procedures-for-registration-of-vehicles-expanded/", icon: FileText, external: true },
       { title: "Re-migrant Policy", url: "https://www.gra.gov.gy/tax-exemption-policy-for-qualifying-re-migrants-settlers-and-returning-students-2/", icon: Shield, external: true },
       { title: "Vehicle Exemptions", url: "https://www.gra.gov.gy/exemptions/", icon: Shield, external: true },
-      { title: "Budget at a Glance 2026", url: "https://finance.gov.gy/budget-at-a-glance-2026/", icon: TrendingUp, external: true },
+      { title: "Budget 2026", url: "https://finance.gov.gy/budget-at-a-glance-2026/", icon: TrendingUp, external: true },
       { title: "VAT Fishing Policy", url: "https://www.gra.gov.gy/policy-17-vat-and-fishing-sector/", icon: FileText, external: true },
     ],
   },
@@ -158,12 +158,12 @@ const resourceSections: ResourceSection[] = [
     items: [
       { title: "GPSCCU Home", url: "https://mygpsccu.com/", icon: CircleDollarSign, external: true },
       { title: "GBTI Home", url: "https://www.gbtibank.com/", icon: Banknote, external: true },
-      { title: "Bank of Baroda Vehicle Loan", url: "https://www.bankofbaroda.gy/products/financing-facilities/vehicle-loan", icon: Car, external: true },
-      { title: "Bank of Baroda Personal Loan", url: "https://www.bankofbaroda.gy/products/financing-facilities/personal-loans", icon: Landmark, external: true },
-      { title: "Republic Retail Loans", url: "https://www.republicguyana.com/personal/retail-loans", icon: Banknote, external: true },
-      { title: "Citizens Loan Calculator", url: "https://www.citizensbankgy.com/calculators/", icon: Calculator, external: true },
-      { title: "Demerara Credit Facilities", url: "https://demerarabank.com/credit-facilities/", icon: Landmark, external: true },
-      { title: "Demerara Loan Calculator", url: "https://demerarabank.com/loan-repayment-calculator/", icon: Calculator, external: true },
+      { title: "BoB Vehicle Loan", url: "https://www.bankofbaroda.gy/products/financing-facilities/vehicle-loan", icon: Car, external: true },
+      { title: "BoB Personal Loan", url: "https://www.bankofbaroda.gy/products/financing-facilities/personal-loans", icon: Landmark, external: true },
+      { title: "Republic Retail", url: "https://www.republicguyana.com/personal/retail-loans", icon: Banknote, external: true },
+      { title: "Citizens Calculator", url: "https://www.citizensbankgy.com/calculators/", icon: Calculator, external: true },
+      { title: "Demerara Credit", url: "https://demerarabank.com/credit-facilities/", icon: Landmark, external: true },
+      { title: "Demerara Calculator", url: "https://demerarabank.com/loan-repayment-calculator/", icon: Calculator, external: true },
     ],
   },
 ]
@@ -179,13 +179,13 @@ function ResourcesMenu() {
               <SidebarMenuSubItem key={item.title}>
                 <SidebarMenuSubButton asChild>
                   {item.external ? (
-                    <a href={item.url} target="_blank" rel="noopener noreferrer">
+                    <a href={item.url} title={item.title} target="_blank" rel="noopener noreferrer">
                       <item.icon />
                       <span>{item.title}</span>
                       <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
                     </a>
                   ) : (
-                    <Link href={item.url}>
+                    <Link href={item.url} title={item.title}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
