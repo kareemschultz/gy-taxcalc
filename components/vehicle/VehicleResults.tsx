@@ -64,6 +64,27 @@ function Metric({
   )
 }
 
+function SwipeHint() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: 0.1 }}
+      className="mt-2 flex items-center justify-end gap-2 px-1 text-[11px] text-muted-foreground sm:hidden"
+      aria-hidden="true"
+    >
+      <span className="relative flex h-4 w-10 items-center overflow-hidden rounded-full border border-border/60 bg-muted/20">
+        <motion.span
+          animate={{ x: [0, 14, 0] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          className="ml-1 inline-flex h-2.5 w-2.5 rounded-full bg-primary/80"
+        />
+      </span>
+      <span>Swipe for more tabs</span>
+    </motion.div>
+  )
+}
+
 export function VehicleResults({
   inputs,
   result,
@@ -149,6 +170,7 @@ export function VehicleResults({
             Quick Reference
           </TabsTrigger>
         </TabsList>
+        <SwipeHint />
 
         <TabsContent value="breakdown">
           <Card className="bg-muted/20">
