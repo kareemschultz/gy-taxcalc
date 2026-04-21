@@ -12,6 +12,9 @@ import {
   BadgeDollarSign,
   ScrollText,
   BookOpen,
+  Coins,
+  Gift,
+  PackageOpen,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -29,6 +32,7 @@ import type { CalculatorInputs as TCalcInputs } from "@/lib/tax/types"
 import { SalaryIncreaseSection } from "./SalaryIncreaseSection"
 import { ResultActions } from "@/components/results/result-actions"
 import { InfoCard } from "./InfoCard"
+import { SummaryCard } from "./SummaryCard"
 
 /* ── animated number ──────────────────────────────────── */
 function AnimatedCurrency({ value }: { value: number }) {
@@ -175,6 +179,9 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
   const takeHomeRate = annualGrossIncome > 0
     ? (annualNetSalary / annualGrossIncome) * 100
     : 0
+  const nisRate = annualGrossIncome > 0
+    ? (annualNisContribution / annualGrossIncome) * 100
+    : 0
 
     return (
       <motion.div
@@ -192,39 +199,62 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
         whileHover={{ y: -2 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
       >
-        <Card className="bg-primary text-primary-foreground border-0 shadow-lg shadow-primary/20">
-          <CardContent className="pt-6 pb-5">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <p className="text-xs font-medium opacity-80 uppercase tracking-wide">
-                Net Take-Home ({freqLabel})
-              </p>
-              <p className="text-3xl font-bold mt-1 tabular-nums">
-                {formatCurrency(monthlyNetSalary)}
-              </p>
+        <Card className="bg-primary text-primary-foreground border-0 shadow-lg shadow-primary/25 overflow-hidden relative">
+          {/* subtle glow orb */}
+          <div className="pointer-events-none absolute -top-8 -right-8 size-40 rounded-full bg-white/10 blur-2xl" />
+          <CardContent className="pt-6 pb-5 relative">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <p className="text-[10px] font-semibold opacity-75 uppercase tracking-widest">
+                  Net Take-Home ({freqLabel})
+                </p>
+                <p className="text-4xl font-bold mt-1.5 tabular-nums">
+                  {formatCurrency(monthlyNetSalary)}
+                </p>
+              </div>
+              <div className="rounded-xl bg-white/15 p-2.5 backdrop-blur-sm">
+                <Wallet className="size-5" />
+              </div>
             </div>
-            <div className="rounded-xl bg-white/15 p-2.5">
-              <Wallet className="size-5" />
+            {/* Take-home progress bar */}
+            <div className="mb-4">
+              <div className="flex justify-between mb-1">
+                <span className="text-[10px] opacity-60 uppercase tracking-wide">Take-home rate</span>
+                <span className="text-[11px] font-semibold opacity-90">{formatPercent(takeHomeRate)}</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-white/15 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-white/70"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(100, takeHomeRate)}%` }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                />
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-white/20">
-            <div>
-              <p className="text-[10px] opacity-70 uppercase tracking-wide">Gross</p>
-              <p className="text-sm font-semibold tabular-nums">
-                {formatCurrency(regularMonthlyGrossIncome)}
-              </p>
+            <div className="grid grid-cols-4 gap-2 pt-3 border-t border-white/20">
+              <div>
+                <p className="text-[9px] opacity-60 uppercase tracking-wide">Gross</p>
+                <p className="text-xs font-semibold tabular-nums mt-0.5">
+                  {formatCurrency(regularMonthlyGrossIncome)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[9px] opacity-60 uppercase tracking-wide">NIS</p>
+                <p className="text-xs font-semibold tabular-nums mt-0.5">
+                  {formatCurrency(nisContribution)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[9px] opacity-60 uppercase tracking-wide">PAYE</p>
+                <p className="text-xs font-semibold tabular-nums mt-0.5">
+                  {formatCurrency(incomeTax)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[9px] opacity-60 uppercase tracking-wide">Eff. Rate</p>
+                <p className="text-xs font-semibold mt-0.5">{formatPercent(effectiveTaxRate)}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] opacity-70 uppercase tracking-wide">PAYE</p>
-              <p className="text-sm font-semibold tabular-nums">
-                {formatCurrency(incomeTax)}
-              </p>
-            </div>
-            <div>
-              <p className="text-[10px] opacity-70 uppercase tracking-wide">Eff. Rate</p>
-              <p className="text-sm font-semibold">{formatPercent(effectiveTaxRate)}</p>
-            </div>
-          </div>
           </CardContent>
         </Card>
       </motion.div>
@@ -272,59 +302,48 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
       />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          {
-            label: "Annual Package",
-            value: resolvedAnnualTotal,
-            sub: "Total including gratuity",
-            tone: "from-emerald-500/25 via-emerald-500/10 to-background",
-            accent: "text-emerald-300",
-          },
-          {
-            label: "Month 6 Total",
-            value: monthSixTotal,
-            sub: "Net + 6-month gratuity",
-            tone: "from-cyan-500/25 via-cyan-500/10 to-background",
-            accent: "text-cyan-300",
-          },
-          {
-            label: "Month 12 Total",
-            value: resolvedMonthTwelveTotal,
-            sub:
-              resolvedVacationAllowance > 0
-                ? `Net + gratuity + vacation (${formatCurrency(resolvedVacationAllowance)})`
-                : "Net + gratuity + vacation",
-            tone: "from-lime-500/25 via-lime-500/10 to-background",
-            accent: "text-lime-300",
-          },
-          {
-            label: "Monthly Gratuity",
-            value: monthlyGratuityAccrual,
-            sub: "Accrued from basic salary",
-            tone: "from-amber-500/25 via-amber-500/10 to-background",
-            accent: "text-amber-300",
-          },
-        ].map((item) => (
-          <motion.div
-            key={item.label}
-            whileHover={{ y: -2 }}
-            transition={{ duration: 0.18 }}
-            className={`rounded-2xl border bg-gradient-to-br ${item.tone} p-4 shadow-sm shadow-black/5`}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{item.label}</p>
-                <p className={`mt-2 text-[clamp(1.15rem,3vw,1.6rem)] font-bold tabular-nums ${item.accent}`}>
-                  {formatCurrency(item.value)}
-                </p>
-              </div>
-              <div className={`rounded-xl border border-white/10 bg-white/10 p-2 ${item.accent}`}>
-                <BadgeDollarSign className="size-4" />
-              </div>
-            </div>
-            <p className="mt-3 text-[11px] text-muted-foreground">{item.sub}</p>
-          </motion.div>
-        ))}
+        <SummaryCard
+          label="Annual Package"
+          value={formatCurrency(resolvedAnnualTotal)}
+          icon={<PackageOpen className="size-3.5" />}
+          variant="blue"
+          breakdown={[
+            { label: "Net salary", value: formatCurrency(annualNetSalary) },
+            { label: "Gratuity", value: formatCurrency(annualGratuityTotal) },
+            { label: "Vacation", value: resolvedVacationAllowance > 0 ? formatCurrency(resolvedVacationAllowance) : "—" },
+          ]}
+        />
+        <SummaryCard
+          label="Month 6 Total"
+          value={formatCurrency(monthSixTotal)}
+          icon={<Coins className="size-3.5" />}
+          variant="teal"
+          breakdown={[
+            { label: "Net pay", value: formatCurrency(monthlyNetSalary) },
+            { label: "Gratuity", value: formatCurrency(sixMonthGratuity), highlight: true },
+          ]}
+        />
+        <SummaryCard
+          label="Month 12 Total"
+          value={formatCurrency(resolvedMonthTwelveTotal)}
+          icon={<Gift className="size-3.5" />}
+          variant="violet"
+          breakdown={[
+            { label: "Net pay", value: formatCurrency(monthlyNetSalary) },
+            { label: "Gratuity", value: formatCurrency(sixMonthGratuity) },
+            { label: "Vacation", value: resolvedVacationAllowance > 0 ? formatCurrency(resolvedVacationAllowance) : "—", highlight: resolvedVacationAllowance > 0 },
+          ]}
+        />
+        <SummaryCard
+          label="Monthly Gratuity"
+          value={formatCurrency(monthlyGratuityAccrual)}
+          icon={<TrendingUp className="size-3.5" />}
+          variant="amber"
+          breakdown={[
+            { label: "Rate", value: `${results.gratuityRate}%` },
+            { label: "Annual total", value: formatCurrency(annualGratuityTotal) },
+          ]}
+        />
       </div>
 
       <motion.div
@@ -568,8 +587,12 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               <CardContent className="pt-0">
                 <StatRow label="Monthly Net Salary" value={monthlyNetSalary} />
                 <StatRow label="6-Month Gratuity" value={sixMonthGratuity} />
-                {resolvedVacationAllowance > 0 && (
+                {resolvedVacationAllowance > 0 ? (
                   <StatRow label="Vacation Allowance" value={resolvedVacationAllowance} />
+                ) : (
+                  <p className="text-[11px] text-muted-foreground/60 italic py-1">
+                    No vacation allowance set — use the <span className="font-medium text-primary">Auto</span> button in Income to fill it
+                  </p>
                 )}
                 <Separator className="my-2" />
                 <div className="flex items-baseline justify-between">

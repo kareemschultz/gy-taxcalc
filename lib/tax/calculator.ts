@@ -240,13 +240,15 @@ export function calculateSalaryIncrease(
       (newResults.taxableIncome - freq.taxThreshold) * TAX_RATE_2
   }
 
-  // Net monthly
-  newResults.monthlyNetSalary =
+  // Net at selected frequency, then convert to true monthly (mirrors performCalculations)
+  const newNetSalaryForFrequency =
     newResults.regularMonthlyGrossIncome -
     newResults.nisContribution -
     newResults.incomeTax -
     newResults.loanPayment -
     newResults.creditUnionDeduction
+  newResults.monthlyNetSalary = convertToMonthly(newNetSalaryForFrequency, baseResults.paymentFrequency)
+  newResults.annualNetSalary = newNetSalaryForFrequency * freq.periodsPerYear
 
   // Retroactive calculations
   let retroactiveMonthlyIncrease = 0
@@ -330,7 +332,7 @@ export function calculateSalaryIncrease(
   newResults.annualTaxPayable = newResults.incomeTax * freq.periodsPerYear
   newResults.annualGratuityTotal = newResults.sixMonthGratuity * 2
   newResults.annualTotal =
-    newResults.monthlyNetSalary * freq.periodsPerYear +
+    newResults.annualNetSalary +
     newResults.annualGratuityTotal +
     (newResults.vacationAllowance || 0)
 
