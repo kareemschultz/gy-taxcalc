@@ -46,7 +46,7 @@ const mainNav = [
 
 const updatesNav = [
   {
-    title: "Tax Guide",
+    title: "Policy Guide",
     url: "/tax-info",
     icon: BookOpen,
   },

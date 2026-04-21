@@ -147,10 +147,10 @@ export function LoanResults({
       </div>
 
       <div className="grid gap-2 sm:grid-cols-3">
-        <StatCard label="Interest Rate" value={`${result.effectiveRate.toFixed(2)}% effective`} />
+        <StatCard label="Rate" value={`${result.effectiveRate.toFixed(2)}% effective`} />
         <StatCard label="Loan Term" value={`${result.termMonths} months`} />
         <StatCard
-          label="Processing Fee"
+          label="Upfront Fee"
           value={result.processingFee > 0 ? formatCurrency(result.processingFee) : "None"}
         />
       </div>
@@ -161,13 +161,13 @@ export function LoanResults({
             Summary
           </TabsTrigger>
           <TabsTrigger value="schedule" className="min-w-[92px] flex-none sm:flex-1">
-            Schedule
+            Payment Schedule
           </TabsTrigger>
           <TabsTrigger value="banks" className="min-w-[92px] flex-none sm:flex-1">
-            Banks
+            Compare Lenders
           </TabsTrigger>
           <TabsTrigger value="charts" className="min-w-[92px] flex-none sm:flex-1">
-            Charts
+            Visual Summary
           </TabsTrigger>
         </TabsList>
 
@@ -177,7 +177,7 @@ export function LoanResults({
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <BadgeDollarSign className="size-4 text-primary" />
-                  Loan Summary
+                  Loan Overview
                 </CardTitle>
                 <CardDescription>Key results for the selected loan setup.</CardDescription>
               </CardHeader>
@@ -227,7 +227,7 @@ export function LoanResults({
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <TrendingDown className="size-4 text-primary" />
-                    Bi-weekly Comparison
+                    Bi-weekly vs Monthly
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -257,9 +257,9 @@ export function LoanResults({
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <CalendarClock className="size-4 text-primary" />
-                Amortization Schedule
+                Payment Schedule
               </CardTitle>
-              <CardDescription>Monthly and yearly schedule views.</CardDescription>
+              <CardDescription>Monthly or yearly view of each payment.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-0">
               <div className="flex gap-2">

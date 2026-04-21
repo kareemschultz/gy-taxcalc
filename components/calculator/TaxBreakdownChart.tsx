@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  type TooltipProps,
 } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/utils"
@@ -20,7 +21,21 @@ const COLORS = [
   "var(--color-chart-4)",
 ]
 
+function ChartTooltip({ active, payload }: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null
+  const item = payload[0]
+  const data = item.payload as { name: string; value: number }
+
+  return (
+    <div className="rounded-lg border bg-background/95 px-3 py-2 shadow-sm backdrop-blur">
+      <p className="text-xs font-semibold">{data.name}</p>
+      <p className="mt-1 text-sm font-medium tabular-nums">{formatCurrency(data.value)}</p>
+    </div>
+  )
+}
+
 export function TaxBreakdownChart({ results }: { results: CalculationResults }) {
+  const [activeIndex, setActiveIndex] = React.useState(0)
   const data = [
     { name: "Net Take-Home", value: Math.max(0, results.monthlyNetSalary) },
     { name: "Income Tax (PAYE)", value: results.incomeTax },
@@ -29,11 +44,16 @@ export function TaxBreakdownChart({ results }: { results: CalculationResults }) 
       ? [{ name: "Deductions", value: results.loanPayment + results.creditUnionDeduction }]
       : []),
   ].filter((d) => d.value > 0)
+  const grossMonthly = Math.max(0, results.annualGrossIncome / 12)
+  const takeHomeRate = grossMonthly > 0 ? (results.monthlyNetSalary / grossMonthly) * 100 : 0
+  const largestDeduction = [...data]
+    .filter((item) => item.name !== "Net Take-Home")
+    .sort((a, b) => b.value - a.value)[0]
 
   return (
     <Card className="bg-muted/30">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm">Gross Allocation</CardTitle>
+        <CardTitle className="text-sm">Monthly Mix</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-48">
@@ -47,24 +67,20 @@ export function TaxBreakdownChart({ results }: { results: CalculationResults }) 
                 outerRadius={80}
                 paddingAngle={3}
                 dataKey="value"
+                activeIndex={activeIndex}
+                onMouseEnter={(_, index) => setActiveIndex(index)}
+                onMouseLeave={() => setActiveIndex(0)}
               >
                 {data.map((_, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
                     stroke="transparent"
+                    opacity={activeIndex === index ? 1 : 0.75}
                   />
                 ))}
               </Pie>
-              <Tooltip
-                formatter={(value: number) => formatCurrency(value)}
-                contentStyle={{
-                  background: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "0.5rem",
-                  fontSize: "11px",
-                }}
-              />
+              <Tooltip content={<ChartTooltip />} />
               <Legend
                 iconType="circle"
                 iconSize={8}
@@ -72,6 +88,16 @@ export function TaxBreakdownChart({ results }: { results: CalculationResults }) 
               />
             </PieChart>
           </ResponsiveContainer>
+        </div>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <div className="rounded-lg border bg-background/60 p-3">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Take-home share</p>
+            <p className="mt-1 text-lg font-semibold text-primary">{takeHomeRate.toFixed(1)}%</p>
+          </div>
+          <div className="rounded-lg border bg-background/60 p-3">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Largest deduction</p>
+            <p className="mt-1 text-sm font-semibold">{largestDeduction?.name ?? "None"}</p>
+          </div>
         </div>
       </CardContent>
     </Card>

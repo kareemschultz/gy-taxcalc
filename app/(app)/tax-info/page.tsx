@@ -6,8 +6,8 @@ import { TimelineItem } from "@/components/changelog/TimelineItem"
 import { Separator } from "@/components/ui/separator"
 
 export const metadata = {
-  title: "Tax Guide 2026 — GY TaxCalc",
-  description: "Official-style 2026 tax guide and updates for GY TaxCalc.",
+  title: "Policy Guide 2026 — GY TaxCalc",
+  description: "Official-style 2026 policy guide and updates for GY TaxCalc.",
 }
 
 type TaxInfoEntry = {
@@ -200,13 +200,13 @@ export default function TaxInfoPage() {
       <section id="home" className="-mt-6 pt-6">
         <div className="space-y-4 px-4 py-8 text-center md:px-8 md:py-16">
           <Badge className="text-sm font-normal" variant="outline">
-            Tax Guide
+            Policy Guide
           </Badge>
           <h2 className="text-2xl font-semibold md:text-3xl lg:text-4xl">
-            Tax Guide 2026
+            Policy Guide 2026
           </h2>
           <p className="text-muted-foreground text-xl">
-            Official GRA rates and allowances for the 2026 tax year.
+            Official 2026 rates, allowances, and policy notes for GY TaxCalc.
           </p>
         </div>
       </section>

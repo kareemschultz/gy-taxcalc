@@ -18,6 +18,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  type TooltipProps,
 } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { formatCurrency, formatCurrencyCompact } from "@/lib/utils"
@@ -55,6 +56,24 @@ function ChartCard({
   )
 }
 
+function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null
+
+  return (
+    <div className="rounded-lg border bg-background/95 px-3 py-2 shadow-sm backdrop-blur">
+      <p className="text-xs font-semibold">{label}</p>
+      <div className="mt-1 space-y-1 text-sm">
+        {payload.map((entry) => (
+          <div key={entry.dataKey?.toString()} className="flex items-center justify-between gap-4">
+            <span className="text-muted-foreground">{entry.name || entry.dataKey}</span>
+            <span className="tabular-nums">{formatCurrency(Number(entry.value || 0))}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function LoanCharts({
   inputs,
   result,
@@ -89,9 +108,29 @@ export function LoanCharts({
     principal: Math.round(row.totalPrincipal),
     interest: Math.round(row.totalInterest),
   }))
+  const topBank = bankData.slice().sort((a, b) => a.interest - b.interest)[0]
+  const totalInterestPct =
+    result.totalPaid > 0 ? (result.totalInterest / result.totalPaid) * 100 : 0
 
   return (
     <div className="grid gap-4">
+      <div className="grid gap-2 sm:grid-cols-3">
+        <div className="rounded-lg border bg-background/60 p-3">
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Best lender in view</p>
+          <p className="mt-1 text-sm font-semibold">{topBank?.name ?? "N/A"}</p>
+        </div>
+        <div className="rounded-lg border bg-background/60 p-3">
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Interest share</p>
+          <p className="mt-1 text-sm font-semibold">{totalInterestPct.toFixed(1)}% of total paid</p>
+        </div>
+        <div className="rounded-lg border bg-background/60 p-3">
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Payoff style</p>
+          <p className="mt-1 text-sm font-semibold">
+            {inputs.paymentFrequency === "biweekly" ? "Faster with bi-weekly pay" : "Standard monthly"}
+          </p>
+        </div>
+      </div>
+
       <ChartCard title="Principal vs. Interest" description="How your payments are split across the loan">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -100,15 +139,7 @@ export function LoanCharts({
                 <Cell key={index} fill={COLORS[index % COLORS.length]} stroke="transparent" />
               ))}
             </Pie>
-            <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
-              contentStyle={{
-                background: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "0.5rem",
-                fontSize: "11px",
-              }}
-            />
+            <Tooltip content={<ChartTooltip />} />
             <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: "11px" }} />
           </PieChart>
         </ResponsiveContainer>
@@ -126,21 +157,14 @@ export function LoanCharts({
               axisLine={false}
               width={54}
             />
-            <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
-              contentStyle={{
-                background: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "0.5rem",
-                fontSize: "11px",
-              }}
-            />
+            <Tooltip content={<ChartTooltip />} />
             <Line
               type="monotone"
               dataKey="balance"
               stroke="var(--color-chart-1)"
               strokeWidth={2}
               dot={false}
+              activeDot={{ r: 5, strokeWidth: 0 }}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -158,15 +182,7 @@ export function LoanCharts({
               axisLine={false}
               width={54}
             />
-            <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
-              contentStyle={{
-                background: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "0.5rem",
-                fontSize: "11px",
-              }}
-            />
+            <Tooltip content={<ChartTooltip />} />
             <Bar dataKey="principal" stackId="a" fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} />
             <Bar dataKey="interest" stackId="a" fill="var(--color-chart-4)" radius={[4, 4, 0, 0]} />
           </ComposedChart>
@@ -183,15 +199,7 @@ export function LoanCharts({
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis type="number" tickFormatter={formatCurrencyCompact} tick={{ fontSize: 10 }} />
             <YAxis dataKey="name" type="category" tick={{ fontSize: 10 }} width={70} />
-            <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
-              contentStyle={{
-                background: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "0.5rem",
-                fontSize: "11px",
-              }}
-            />
+            <Tooltip content={<ChartTooltip />} />
             <Bar dataKey="interest" fill="var(--color-chart-2)" radius={[0, 4, 4, 0]} />
           </BarChart>
         </ResponsiveContainer>

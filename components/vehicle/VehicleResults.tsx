@@ -120,7 +120,7 @@ export function VehicleResults({
             Breakdown
           </TabsTrigger>
           <TabsTrigger value="rates" className="min-w-[100px] flex-none sm:flex-1">
-            Rate Info
+            Quick Reference
           </TabsTrigger>
         </TabsList>
 
@@ -129,9 +129,11 @@ export function VehicleResults({
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <BadgeDollarSign className="size-4 text-primary" />
-                Formula Used
+                How it was calculated
               </CardTitle>
-              <CardDescription>{result.formulaUsed}</CardDescription>
+              <CardDescription>
+                {result.formulaUsed} This is the rule path used for your selected vehicle.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-0">
               <Badge variant="outline" className="w-fit">
@@ -170,7 +172,7 @@ export function VehicleResults({
                   <Separator />
                   <div className="space-y-2">
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Notes
+                      What this means
                     </p>
                     <ul className="space-y-1 text-sm text-muted-foreground">
                       {result.notes.map((note) => (
@@ -189,42 +191,42 @@ export function VehicleResults({
 
         <TabsContent value="rates">
           <div className="grid gap-3 md:grid-cols-2">
-            <RateCard title="Gasoline < 4 Years" icon={<Landmark className="size-4 text-primary" />}>
+            <RateCard title="Gasoline under 4 years" icon={<Landmark className="size-4 text-primary" />}>
               <p>Duty and excise vary by engine size band.</p>
               <p>VAT is 14% unless a 2026 exemption applies.</p>
               <p>Under 1500cc under 4 years: VAT removed for private imports.</p>
             </RateCard>
-            <RateCard title="Gasoline 4+ Years" icon={<Landmark className="size-4 text-primary" />}>
+            <RateCard title="Gasoline 4+ years" icon={<Landmark className="size-4 text-primary" />}>
               <p>0-1500cc uses a flat GY$800,000 excise.</p>
               <p>Larger engines use formula-based excise by band.</p>
               <p>No duty, no VAT for 4+ year units.</p>
             </RateCard>
-            <RateCard title="Diesel < 4 Years" icon={<Landmark className="size-4 text-primary" />}>
+            <RateCard title="Diesel under 4 years" icon={<Landmark className="size-4 text-primary" />}>
               <p>Duty and excise are banded by displacement.</p>
               <p>VAT is 14% unless removed by 2026 policy.</p>
               <p>Hybrid and smaller private imports may qualify for VAT relief.</p>
             </RateCard>
-            <RateCard title="Diesel 4+ Years" icon={<Landmark className="size-4 text-primary" />}>
+            <RateCard title="Diesel 4+ years" icon={<Landmark className="size-4 text-primary" />}>
               <p>0-1500cc uses a flat GY$800,000 excise.</p>
               <p>Larger engines use formula-based excise by band.</p>
               <p>No duty, no VAT for 4+ year units.</p>
             </RateCard>
-            <RateCard title="2026 Budget Specials" icon={<ShieldCheck className="size-4 text-primary" />}>
+            <RateCard title="2026 rules highlights" icon={<ShieldCheck className="size-4 text-primary" />}>
               <p>Double-cab pickups have flat GY$2M or GY$3M total tax bands.</p>
               <p>ATVs and electric vehicles are fully exempt.</p>
               <p>Government plates use a flat US$2,000 excise-only rule.</p>
             </RateCard>
-            <RateCard title="Dealer / Franchise Rules" icon={<BookOpen className="size-4 text-primary" />}>
+            <RateCard title="Dealer and franchise" icon={<BookOpen className="size-4 text-primary" />}>
               <p>Dealer imports use 1.5x CIF as excise base.</p>
               <p>Franchise imports may use retail selling price as excise base.</p>
               <p>Returning nationals can remove duty and VAT under concession rules.</p>
             </RateCard>
-            <RateCard title="Electric & Special" icon={<ShieldAlert className="size-4 text-primary" />}>
+            <RateCard title="Electric, ATV, and motorcycle rules" icon={<ShieldAlert className="size-4 text-primary" />}>
               <p>Electric vehicles are fully exempt.</p>
               <p>ATVs are fully exempt under Budget 2026.</p>
               <p>Motorcycles follow a separate 20% duty rule and HP exemption guidance.</p>
             </RateCard>
-            <RateCard title="Formula Guide" icon={<Tags className="size-4 text-primary" />}>
+            <RateCard title="How to use this" icon={<Tags className="size-4 text-primary" />}>
               <p>Vehicle age is auto-classified from model year when provided.</p>
               <p>Use the FOB converter to derive CIF before calculating tax.</p>
               <p>Results update live when inputs change.</p>

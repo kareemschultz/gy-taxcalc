@@ -262,10 +262,10 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
         icon={<Briefcase className="size-3.5 text-muted-foreground" />}
         description="Pick a preset or enter your own salary and frequency."
       >
-        <div className="grid gap-3 md:grid-cols-2">
-              <Field label="Position Preset" hint="Choose a preset to prefill salary values.">
-                <Select value={inputs.position} onValueChange={applyPresetBreakdown}>
-                  <SelectTrigger className="w-full">
+        <div className="space-y-3">
+          <Field label="Position Preset" hint="Choose a preset to prefill salary values.">
+            <Select value={inputs.position} onValueChange={applyPresetBreakdown}>
+              <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select position..." />
               </SelectTrigger>
               <SelectContent>
@@ -279,28 +279,21 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
             </Select>
           </Field>
 
-              <Field label="Payment Frequency" hint="Use the period you are paid in.">
-                <div className="grid grid-cols-2 gap-1 sm:grid-cols-5">
+          <Field label="Payment Frequency" hint="Use the period you are paid in.">
+            <div className="flex flex-wrap gap-2">
               {(Object.keys(PAYMENT_FREQUENCIES) as PaymentFrequency[]).map((paymentFrequency) => (
                 <button
                   key={paymentFrequency}
                   type="button"
                   onClick={() => update({ paymentFrequency })}
                   className={cn(
-                    "rounded-lg border px-2 py-2 text-[11px] font-medium leading-tight transition-all sm:text-xs",
+                    "min-w-[88px] flex-1 rounded-lg border px-3 py-2 text-[11px] font-medium leading-tight transition-all sm:text-xs",
                     paymentFrequency === freq
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-border bg-background hover:bg-muted"
                   )}
                 >
-                  <span className="sm:hidden">
-                    {paymentFrequency === "fortnightly"
-                      ? "Fortnight"
-                      : PAYMENT_FREQUENCIES[paymentFrequency].label}
-                  </span>
-                  <span className="hidden sm:inline">
-                    {PAYMENT_FREQUENCIES[paymentFrequency].label}
-                  </span>
+                  {PAYMENT_FREQUENCIES[paymentFrequency].label}
                 </button>
               ))}
             </div>
@@ -323,13 +316,13 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
                 </span>
               }
             >
-              <CurrencyInput
-                prefix="GY$"
-                min={0}
-                value={inputs.basicSalary || ""}
-                onChange={(value) => update({ basicSalary: toNum(value) })}
-                placeholder="0"
-              />
+                <CurrencyInput
+                  prefix="GY$"
+                  min={0}
+                  value={inputs.basicSalary || ""}
+                  onChange={(value) => update({ basicSalary: toNum(value) })}
+                  placeholder="250,000"
+                />
             </Field>
 
               <Field label="Allowance Mode" hint="Detailed mode gives a full allowance breakdown.">
@@ -363,7 +356,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
                   min={0}
                   value={inputs.taxableAllowances || ""}
                   onChange={(value) => update({ taxableAllowances: toNum(value) })}
-                  placeholder="0"
+                  placeholder="50,000"
                 />
               </Field>
               <Field label="Non-Taxable Allowances" hint="Travel, telecom, station, and similar non-taxable items.">
@@ -372,7 +365,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
                   min={0}
                   value={inputs.nonTaxableAllowances || ""}
                   onChange={(value) => update({ nonTaxableAllowances: toNum(value) })}
-                  placeholder="0"
+                  placeholder="10,000"
                 />
               </Field>
               <Field label="Vacation Allowance" hint="Usually paid once or twice a year.">
@@ -381,7 +374,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
                   min={0}
                   value={inputs.vacationAllowance || ""}
                   onChange={(value) => update({ vacationAllowance: toNum(value) })}
-                  placeholder="0"
+                  placeholder="25,000"
                 />
               </Field>
             </div>
@@ -596,13 +589,13 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
       >
         <div className="grid gap-3 md:grid-cols-2">
           <Field label="Overtime" hint={`Max non-taxable: $${PAYMENT_FREQUENCIES[freq].overtimeMax.toLocaleString()}`}>
-            <CurrencyInput
-              prefix="GY$"
-              min={0}
-              value={inputs.overtimeIncome || ""}
-              onChange={(value) => update({ overtimeIncome: toNum(value) })}
-              placeholder="0"
-            />
+                <CurrencyInput
+                  prefix="GY$"
+                  min={0}
+                  value={inputs.overtimeIncome || ""}
+                  onChange={(value) => update({ overtimeIncome: toNum(value) })}
+                  placeholder="50,000"
+                />
           </Field>
           <Field
             label="Second Job"
@@ -613,7 +606,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
               min={0}
               value={inputs.secondJobIncome || ""}
               onChange={(value) => update({ secondJobIncome: toNum(value) })}
-              placeholder="0"
+              placeholder="50,000"
             />
           </Field>
         </div>
@@ -640,22 +633,22 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
             </Select>
           </Field>
           <Field label="Loan Payment">
-            <CurrencyInput
-              prefix="GY$"
-              min={0}
-              value={inputs.loanPayment || ""}
-              onChange={(value) => update({ loanPayment: toNum(value) })}
-              placeholder="0"
-            />
+              <CurrencyInput
+                prefix="GY$"
+                min={0}
+                value={inputs.loanPayment || ""}
+                onChange={(value) => update({ loanPayment: toNum(value) })}
+                placeholder="20,000"
+              />
           </Field>
           <Field label="Credit Union">
-            <CurrencyInput
-              prefix="GY$"
-              min={0}
-              value={inputs.creditUnionDeduction || ""}
-              onChange={(value) => update({ creditUnionDeduction: toNum(value) })}
-              placeholder="0"
-            />
+              <CurrencyInput
+                prefix="GY$"
+                min={0}
+                value={inputs.creditUnionDeduction || ""}
+                onChange={(value) => update({ creditUnionDeduction: toNum(value) })}
+                placeholder="5,000"
+              />
           </Field>
           <Field label="Health Insurance">
             <Select

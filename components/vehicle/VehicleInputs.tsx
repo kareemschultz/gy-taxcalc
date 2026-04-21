@@ -195,7 +195,7 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
               min={0}
               value={inputs.fobUSD || ""}
               onChange={(value) => update({ fobUSD: safeNum(value) })}
-              placeholder="0"
+              placeholder="5,000"
             />
           </Field>
           <Field
@@ -207,7 +207,7 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
               min={0}
               value={inputs.freightUSD || ""}
               onChange={(value) => update({ freightUSD: safeNum(value) })}
-              placeholder="0"
+              placeholder="1,500"
             />
           </Field>
           <Field label="Insurance (US$)">
@@ -216,7 +216,7 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
               min={0}
               value={inputs.insuranceUSD || ""}
               onChange={(value) => update({ insuranceUSD: safeNum(value) })}
-              placeholder="0"
+              placeholder="200"
             />
           </Field>
         </div>
@@ -263,20 +263,20 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
               min={0}
               value={inputs.cifUSD || ""}
               onChange={(value) => update({ cifUSD: safeNum(value) })}
-              placeholder="0"
+              placeholder="6,700"
             />
           </Field>
           <Field label="Exchange Rate">
-            <Input
-              type="number"
-              min={0}
-              step={0.01}
-              value={inputs.exchangeRate || ""}
-              onChange={(event) =>
-                update({ exchangeRate: safeNum(event.target.value, DEFAULT_EXCHANGE_RATE) })
-              }
-              placeholder={String(DEFAULT_EXCHANGE_RATE)}
-            />
+              <Input
+                type="number"
+                min={0}
+                step={0.01}
+                value={inputs.exchangeRate || ""}
+                onChange={(event) =>
+                  update({ exchangeRate: safeNum(event.target.value, DEFAULT_EXCHANGE_RATE) })
+                }
+                placeholder="218"
+              />
           </Field>
 
           <Field label="Vehicle Type">
@@ -356,23 +356,23 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
               step={100}
               value={inputs.engineCC || ""}
               onChange={(event) => update({ engineCC: safeNum(event.target.value) })}
-              placeholder="0"
+              placeholder="1,500"
             />
           </Field>
 
           <Field label="Model Year">
-            <Input
-              type="number"
-              min={1900}
-              max={new Date().getFullYear()}
-              value={inputs.modelYear || ""}
-              onChange={(event) =>
-                update({
-                  modelYear: event.target.value ? Math.trunc(safeNum(event.target.value)) : undefined,
-                })
-              }
-              placeholder="Optional"
-            />
+              <Input
+                type="number"
+                min={1900}
+                max={new Date().getFullYear()}
+                value={inputs.modelYear || ""}
+                onChange={(event) =>
+                  update({
+                    modelYear: event.target.value ? Math.trunc(safeNum(event.target.value)) : undefined,
+                  })
+                }
+                placeholder="2021"
+              />
           </Field>
 
           <Field label="Plate Type">
@@ -428,7 +428,7 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
                 min={0}
                 value={inputs.retailPriceUSD || ""}
                 onChange={(value) => update({ retailPriceUSD: safeNum(value) })}
-                placeholder="0"
+                placeholder="18,000"
               />
             </Field>
           ) : (

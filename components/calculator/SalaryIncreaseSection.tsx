@@ -80,6 +80,61 @@ export function SalaryIncreaseSection({ baseInputs }: SalaryIncreaseSectionProps
           >
             <Card className="rounded-t-none border-t-0 bg-muted/20">
               <CardContent className="pt-4 space-y-4">
+                <div className="rounded-xl border bg-background/80 p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Scenario preview
+                      </p>
+                      <p className="mt-1 text-sm font-medium">
+                        Current salary vs. new salary after the increase
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px]">
+                      +{pct}%
+                    </Badge>
+                  </div>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                    <div className="rounded-lg bg-muted/60 p-3">
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                        Current Basic
+                      </p>
+                      <p className="mt-1 text-sm font-semibold tabular-nums">
+                        {formatCurrency(baseInputs.basicSalary)}
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-muted/60 p-3">
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                        New Basic
+                      </p>
+                      <p className="mt-1 text-sm font-semibold tabular-nums">
+                        {results ? formatCurrency(results.basicSalary) : formatCurrency(baseInputs.basicSalary)}
+                      </p>
+                    </div>
+                    <div className="rounded-lg bg-muted/60 p-3">
+                      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                        Monthly Net Change
+                      </p>
+                      <p
+                        className={cn(
+                          "mt-1 text-sm font-semibold tabular-nums",
+                          results && results.monthlyNetDifference >= 0
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-destructive"
+                        )}
+                      >
+                        {results ? formatCurrency(results.monthlyNetDifference) : formatCurrency(0)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{ width: `${Math.min(100, Math.max(10, pct * 6))}%` }}
+                    />
+                  </div>
+                </div>
+
                 {/* Quick percentage picks */}
                 <div>
                   <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">
@@ -116,15 +171,15 @@ export function SalaryIncreaseSection({ baseInputs }: SalaryIncreaseSectionProps
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex items-center justify-between rounded-lg border px-3 py-2">
                     <div>
-                      <p className="text-xs font-medium">Taxable</p>
+                      <p className="text-xs font-medium">Taxable increase</p>
                       <p className="text-[10px] text-muted-foreground">Affects PAYE</p>
                     </div>
                     <Switch checked={isTaxable} onCheckedChange={setIsTaxable} />
                   </div>
                   <div className="flex items-center justify-between rounded-lg border px-3 py-2">
                     <div>
-                      <p className="text-xs font-medium">Gratuity Month</p>
-                      <p className="text-[10px] text-muted-foreground">Include lump</p>
+                      <p className="text-xs font-medium">Gratuity month</p>
+                      <p className="text-[10px] text-muted-foreground">Include lump payment</p>
                     </div>
                     <Switch checked={isGratuityMonth} onCheckedChange={setIsGratuityMonth} />
                   </div>
@@ -140,9 +195,12 @@ export function SalaryIncreaseSection({ baseInputs }: SalaryIncreaseSectionProps
                     max={24}
                     value={retroMonths || ""}
                     onChange={(e) => setRetroMonths(parseInt(e.target.value) || 0)}
-                    placeholder="0 — no back-pay"
+                    placeholder="0 = no back-pay"
                     className="h-8 text-sm"
                   />
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Use this if the raise is being applied after the fact.
+                  </p>
                 </div>
 
                 {results && (

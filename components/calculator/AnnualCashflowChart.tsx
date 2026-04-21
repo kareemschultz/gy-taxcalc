@@ -10,10 +10,39 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceLine,
+  type TooltipProps,
 } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { formatCurrencyCompact } from "@/lib/utils"
 import type { CalculationResults } from "@/lib/tax/types"
+
+function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null
+
+  const salary = payload.find((entry) => entry.dataKey === "salary")?.value as number | undefined
+  const bonus = payload.find((entry) => entry.dataKey === "bonus")?.value as number | undefined
+  const total = (salary || 0) + (bonus || 0)
+
+  return (
+    <div className="rounded-lg border bg-background/95 px-3 py-2 shadow-sm backdrop-blur">
+      <p className="text-xs font-semibold">{label}</p>
+      <div className="mt-1 space-y-1 text-sm">
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-muted-foreground">Net salary</span>
+          <span className="tabular-nums">{formatCurrencyCompact(salary || 0)}</span>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-muted-foreground">Bonus / gratuity</span>
+          <span className="tabular-nums">{formatCurrencyCompact(bonus || 0)}</span>
+        </div>
+        <div className="flex items-center justify-between gap-4 border-t pt-1">
+          <span className="font-medium">Month total</span>
+          <span className="font-semibold tabular-nums">{formatCurrencyCompact(total)}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function AnnualCashflowChart({ results }: { results: CalculationResults }) {
   const data = Array.from({ length: 12 }, (_, i) => {
@@ -32,6 +61,10 @@ export function AnnualCashflowChart({ results }: { results: CalculationResults }
       bonus: Math.round(extra),
     }
   })
+  const peakMonth = data.reduce((best, item) => {
+    const total = item.salary + item.bonus
+    return total > best.total ? { month: item.month, total } : best
+  }, { month: data[0]?.month ?? "Jan", total: 0 })
 
   return (
     <Card className="bg-muted/30">
@@ -59,18 +92,7 @@ export function AnnualCashflowChart({ results }: { results: CalculationResults }
                 axisLine={false}
                 width={54}
               />
-              <Tooltip
-                formatter={(value: number, name: string) => [
-                  formatCurrencyCompact(value),
-                  name === "salary" ? "Net Salary" : "Bonus",
-                ]}
-                contentStyle={{
-                  background: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "0.5rem",
-                  fontSize: "11px",
-                }}
-              />
+              <Tooltip content={<ChartTooltip />} />
               <Bar
                 dataKey="salary"
                 stackId="a"
@@ -91,6 +113,16 @@ export function AnnualCashflowChart({ results }: { results: CalculationResults }
               />
             </BarChart>
           </ResponsiveContainer>
+        </div>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <div className="rounded-lg border bg-background/60 p-3">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Peak month</p>
+            <p className="mt-1 text-sm font-semibold">{peakMonth.month}</p>
+          </div>
+          <div className="rounded-lg border bg-background/60 p-3">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Why it spikes</p>
+            <p className="mt-1 text-sm font-semibold">Gratuity in June and December</p>
+          </div>
         </div>
       </CardContent>
     </Card>

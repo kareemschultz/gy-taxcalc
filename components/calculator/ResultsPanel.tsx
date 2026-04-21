@@ -200,7 +200,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-sm">
             <BookOpen className="size-4 text-primary" />
-            Tax Guide &amp; Updates
+            Policy Guide &amp; Updates
           </CardTitle>
           <CardDescription>
             Keep up with 2026 rates, allowances, and release notes as the rules change.
@@ -237,7 +237,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
                 the government publishes new guidance.
               </p>
               <Button asChild size="sm" variant="secondary" className="mt-4 w-full">
-                <Link href="/tax-info">Open Tax Guide</Link>
+                <Link href="/tax-info">Open Policy Guide</Link>
               </Button>
             </div>
           </div>
@@ -252,7 +252,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           <TabsTrigger value="annual" className="min-w-[92px] flex-none sm:flex-1">Annual</TabsTrigger>
           <TabsTrigger value="charts" className="min-w-[92px] flex-none sm:flex-1">Charts</TabsTrigger>
           <TabsTrigger value="simulator" className="min-w-[92px] flex-none sm:flex-1">Simulator</TabsTrigger>
-          <TabsTrigger value="info" className="min-w-[92px] flex-none sm:flex-1">Info</TabsTrigger>
+          <TabsTrigger value="info" className="min-w-[92px] flex-none sm:flex-1">Quick Facts</TabsTrigger>
         </TabsList>
 
         {/* Breakdown tab */}
@@ -506,7 +506,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
                 <CardTitle className="text-sm">Tax Rates</CardTitle>
               </CardHeader>
               <CardContent className="pt-0 text-sm text-muted-foreground space-y-1">
-                <p>25% up to GY$280,000 of chargeable income.</p>
+                <p>25% up to GY$280,000 of taxable income.</p>
                 <p>35% above GY$280,000.</p>
                 <p>2026 reduced rates replaced the previous 28% / 40% bands.</p>
               </CardContent>

@@ -156,10 +156,10 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
   return (
     <div className="space-y-3">
       <Section
-        title="Loan Setup"
+        title="Loan Details"
         defaultOpen
         icon={<Landmark className="size-3.5 text-muted-foreground" />}
-        description="Set the lender, principal, term, rate, and payment frequency."
+        description="Set the lender, amount, term, rate, and payment frequency."
       >
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Loan Type">
@@ -210,7 +210,7 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
                   min={0}
                   value={inputs.purchasePrice || ""}
                   onChange={(value) => update({ purchasePrice: safeNum(value) })}
-                  placeholder="0"
+                  placeholder="2,500,000"
                 />
               </Field>
               <Field label="Down Payment (%)">
@@ -247,7 +247,7 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
                 min={0}
                 value={inputs.principalGYD || ""}
                 onChange={(value) => update({ principalGYD: safeNum(value) })}
-                placeholder="0"
+                placeholder={inputs.currencyMode === "usd" ? "15,000" : "1,000,000"}
               />
             </Field>
 
@@ -274,7 +274,7 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
                   step={0.01}
                   value={inputs.exchangeRate || ""}
                   onChange={(event) => update({ exchangeRate: safeNum(event.target.value, LOAN_DEFAULT_EXCHANGE_RATE) })}
-                  placeholder={String(LOAN_DEFAULT_EXCHANGE_RATE)}
+                  placeholder="218"
                 />
               </Field>
             ) : (
@@ -284,28 +284,28 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
             )}
           </div>
 
-          <Field label="Annual Interest Rate (%)">
+          <Field label="Interest Rate (%)">
             <Input
-              type="number"
-              min={0}
-              max={100}
-              step={0.01}
-              value={inputs.annualRatePct || ""}
-              onChange={(event) => update({ annualRatePct: safeNum(event.target.value) })}
-              placeholder="0"
-            />
+                type="number"
+                min={0}
+                max={100}
+                step={0.01}
+                value={inputs.annualRatePct || ""}
+                onChange={(event) => update({ annualRatePct: safeNum(event.target.value) })}
+                placeholder="9.5"
+              />
           </Field>
 
           <Field label="Loan Term (months)">
-            <Input
-              type="number"
-              min={1}
-              max={360}
-              step={1}
-              value={inputs.termMonths || ""}
-              onChange={(event) => update({ termMonths: Math.trunc(safeNum(event.target.value)) })}
-              placeholder="60"
-            />
+              <Input
+                type="number"
+                min={1}
+                max={360}
+                step={1}
+                value={inputs.termMonths || ""}
+                onChange={(event) => update({ termMonths: Math.trunc(safeNum(event.target.value)) })}
+                placeholder="60"
+              />
             <p className="text-[11px] text-muted-foreground">
               {Math.round(inputs.termMonths / 12)} years
             </p>
@@ -319,16 +319,16 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
             />
           </Field>
 
-          <Field label="Processing Fee (%)" hint={<Hint tip="One-time origination or processing fee." />}>
-            <Input
-              type="number"
-              min={0}
-              max={100}
-              step={0.1}
-              value={inputs.processingFeePct || ""}
-              onChange={(event) => update({ processingFeePct: safeNum(event.target.value) })}
-              placeholder="0"
-            />
+          <Field label="Upfront Fee (%)" hint={<Hint tip="One-time origination or processing fee." />}>
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                step={0.1}
+                value={inputs.processingFeePct || ""}
+                onChange={(event) => update({ processingFeePct: safeNum(event.target.value) })}
+                placeholder="1.0"
+              />
           </Field>
 
           <div className="md:col-span-2">
