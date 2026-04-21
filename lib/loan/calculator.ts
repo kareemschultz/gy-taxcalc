@@ -4,6 +4,8 @@ import type {
   BankComparison,
   LoanInputs,
   LoanResults,
+  LoanScenarioInsight,
+  LoanStrategySummary,
   YearlyRow,
 } from "./types"
 
@@ -241,4 +243,99 @@ export function calculateLoan(inputs: LoanInputs): LoanResults {
   result.yearlySchedule = aggregateYearly(activeSchedule)
 
   return result
+}
+
+function formatPayoffDateFromMonths(startDate: Date, months: number) {
+  const d = new Date(startDate)
+  d.setMonth(d.getMonth() + months)
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "long" })
+}
+
+export function buildLoanStrategySummary(
+  inputs: LoanInputs,
+  options?: {
+    scenarioAmounts?: number[]
+    frequencyMonths?: 3 | 6 | 12
+    startMonth?: number
+  }
+): LoanStrategySummary {
+  const scenarioAmounts = options?.scenarioAmounts ?? [200_000, 350_000, 500_000, 600_000, 750_000, 1_000_000, 1_500_000]
+  const frequencyMonths =
+    options?.frequencyMonths ??
+    (inputs.periodicLumpFrequency === "custom"
+      ? 6
+      : inputs.periodicLumpFrequency)
+  const startMonth = options?.startMonth ?? inputs.periodicLumpStartMonth ?? 2
+  const baseInputs: LoanInputs = {
+    ...inputs,
+    paymentFrequency: "monthly",
+    extraPaymentsEnabled: false,
+    additionalMonthly: 0,
+    lumpSumAmount: 0,
+    lumpSumAtMonth: 1,
+    periodicLumpAmount: 0,
+    periodicLumpFrequency: frequencyMonths,
+    periodicLumpCustomInterval: frequencyMonths,
+    periodicLumpStartMonth: startMonth,
+  }
+
+  const baseline = calculateLoan(baseInputs)
+  const startDate = inputs.firstPaymentDate ? new Date(inputs.firstPaymentDate) : new Date()
+
+  const scenarios: LoanScenarioInsight[] = scenarioAmounts.map((amount) => {
+    const scenario = calculateLoan({
+      ...baseInputs,
+      extraPaymentsEnabled: true,
+      periodicLumpAmount: amount,
+    })
+
+    const monthsLeft = scenario.amortizationSchedule.length
+    const monthsSaved = Math.max(0, baseline.amortizationSchedule.length - monthsLeft)
+    const interestSaved = Math.max(0, baseline.totalInterest - scenario.totalInterest)
+    const efficiencyScore = amount > 0 ? monthsSaved / amount : 0
+
+    return {
+      lumpSum: amount,
+      monthsLeft,
+      monthsSaved,
+      interestSaved,
+      payoffDate: formatPayoffDateFromMonths(startDate, monthsLeft),
+      efficiencyScore,
+    }
+  })
+
+  const bestByMonths = new Map<number, LoanScenarioInsight>()
+  for (const scenario of scenarios) {
+    const current = bestByMonths.get(scenario.monthsLeft)
+    if (!current || scenario.lumpSum < current.lumpSum) {
+      bestByMonths.set(scenario.monthsLeft, scenario)
+    }
+  }
+
+  for (const scenario of scenarios) {
+    const best = bestByMonths.get(scenario.monthsLeft)
+    if (best && best.lumpSum !== scenario.lumpSum) {
+      scenario.tiedWith = best.lumpSum
+    }
+  }
+
+  const selectedScenario =
+    scenarios
+      .slice()
+      .sort((a, b) => {
+        if (b.monthsSaved !== a.monthsSaved) return b.monthsSaved - a.monthsSaved
+        if (b.efficiencyScore !== a.efficiencyScore) return b.efficiencyScore - a.efficiencyScore
+        return a.lumpSum - b.lumpSum
+      })[0] ?? null
+
+  if (selectedScenario) {
+    selectedScenario.recommended = true
+  }
+
+  return {
+    baselineMonths: baseline.amortizationSchedule.length,
+    baselineInterest: baseline.totalInterest,
+    selectedScenario,
+    scenarios,
+  }
 }

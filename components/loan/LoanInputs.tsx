@@ -156,10 +156,10 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
   return (
     <div className="space-y-3">
       <Section
-        title="Loan Details"
+        title="Loan Setup"
         defaultOpen
         icon={<Landmark className="size-3.5 text-muted-foreground" />}
-        description="Set the lender, amount, term, rate, and payment frequency."
+        description="Pick the lender, amount, term, rate, and payment schedule."
       >
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Loan Type">
@@ -319,7 +319,7 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
             />
           </Field>
 
-          <Field label="Upfront Fee (%)" hint={<Hint tip="One-time origination or processing fee." />}>
+          <Field label="Processing Fee (%)" hint={<Hint tip="One-time origination or processing fee." />}>
               <Input
                 type="number"
                 min={0}

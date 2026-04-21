@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator"
 import { formatCurrency } from "@/lib/utils"
 import { compareBanks, resolveLoanPrincipal } from "@/lib/loan/calculator"
 import type { LoanInputs, LoanResults, YearlyRow, AmortizationRow } from "@/lib/loan/types"
+import { LoanIntelligence } from "@/components/loan/LoanIntelligence"
 import { LoanCharts } from "@/components/loan/LoanCharts"
 import { ResultActions } from "@/components/results/result-actions"
 
@@ -198,27 +199,30 @@ export function LoanResults({
           <TabsTrigger value="summary" className="min-w-[92px] flex-none sm:flex-1">
             Summary
           </TabsTrigger>
+          <TabsTrigger value="intelligence" className="min-w-[92px] flex-none sm:flex-1">
+            What If
+          </TabsTrigger>
           <TabsTrigger value="schedule" className="min-w-[92px] flex-none sm:flex-1">
-            Payment Schedule
+            Schedule
           </TabsTrigger>
           <TabsTrigger value="banks" className="min-w-[92px] flex-none sm:flex-1">
-            Compare Lenders
+            Bank Rates
           </TabsTrigger>
           <TabsTrigger value="charts" className="min-w-[92px] flex-none sm:flex-1">
-            Visual Summary
+            Charts
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="summary">
           <div className="space-y-4">
-            <Card className="bg-muted/20">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <BadgeDollarSign className="size-4 text-primary" />
-                  Loan Overview
-                </CardTitle>
-                <CardDescription>Key results for the selected loan setup.</CardDescription>
-              </CardHeader>
+              <Card className="bg-muted/20">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <BadgeDollarSign className="size-4 text-primary" />
+                    Loan Snapshot
+                  </CardTitle>
+                  <CardDescription>Quick summary of the selected loan setup.</CardDescription>
+                </CardHeader>
               <CardContent className="space-y-3 pt-0">
                 <div className="grid gap-2 md:grid-cols-2">
                   <StatCard label="Principal" value={formatCurrency(principal)} />
@@ -290,12 +294,16 @@ export function LoanResults({
           </div>
         </TabsContent>
 
+        <TabsContent value="intelligence">
+          <LoanIntelligence inputs={inputs} result={result} />
+        </TabsContent>
+
         <TabsContent value="schedule">
           <Card className="bg-muted/20">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <CalendarClock className="size-4 text-primary" />
-                Payment Schedule
+                Amortization Schedule
               </CardTitle>
               <CardDescription>Monthly or yearly view of each payment.</CardDescription>
             </CardHeader>
@@ -333,7 +341,10 @@ export function LoanResults({
                     </thead>
                     <tbody className="divide-y">
                       {pageRows.map((row) => (
-                        <tr key={row.period}>
+                        <tr
+                          key={row.period}
+                          className={row.period === "Month 1" ? "bg-primary/5" : undefined}
+                        >
                           <td className="px-3 py-2">{row.period}</td>
                           <td className="px-3 py-2 text-right tabular-nums">{formatCurrency(row.payment)}</td>
                           <td className="px-3 py-2 text-right tabular-nums">{formatCurrency(row.principal)}</td>
@@ -398,7 +409,7 @@ export function LoanResults({
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Landmark className="size-4 text-primary" />
-                  Lender Comparison
+                  Bank Rates
                 </CardTitle>
                 <CardDescription>Rate estimates as of April 2026.</CardDescription>
               </CardHeader>

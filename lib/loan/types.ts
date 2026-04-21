@@ -62,6 +62,24 @@ export interface LoanResults {
   biweeklyInterestSaved?: number
 }
 
+export interface LoanScenarioInsight {
+  lumpSum: number
+  monthsLeft: number
+  monthsSaved: number
+  interestSaved: number
+  payoffDate: string
+  efficiencyScore: number
+  tiedWith?: number
+  recommended?: boolean
+}
+
+export interface LoanStrategySummary {
+  baselineMonths: number
+  baselineInterest: number
+  selectedScenario: LoanScenarioInsight | null
+  scenarios: LoanScenarioInsight[]
+}
+
 export interface BankComparison {
   name: string
   shortName: string
