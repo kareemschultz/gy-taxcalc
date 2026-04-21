@@ -31,6 +31,15 @@ function copyText(text: string) {
   }
 }
 
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;")
+}
+
 export function ResultActions({ fileName, title, lines, subtitle, summary, sections }: ResultActionsProps) {
   const text = React.useMemo(() => [title, "", ...lines].join("\n"), [title, lines])
 
@@ -57,15 +66,15 @@ export function ResultActions({ fileName, title, lines, subtitle, summary, secti
 
   const print = () => {
     if (typeof window === "undefined") return
-    const w = window.open("", "_blank", "noopener,noreferrer,width=1100,height=1400")
-    if (!w) return
-
-    const safeSummary = summary ?? lines.slice(0, 4).map((line) => {
+    const safeSummary = (summary ?? lines.slice(0, 4).map((line) => {
       const [label, ...rest] = line.split(":")
       return { label: label || "Item", value: rest.join(":").trim() || line }
-    })
+    })).map((item) => ({
+      label: escapeHtml(item.label),
+      value: escapeHtml(item.value),
+    }))
 
-    const safeSections = sections ?? [
+    const safeSections = (sections ?? [
       {
         title: "Details",
         rows: lines.map((line) => {
@@ -73,14 +82,21 @@ export function ResultActions({ fileName, title, lines, subtitle, summary, secti
           return { label: label || "Item", value: rest.join(":").trim() || line }
         }),
       },
-    ]
+    ]).map((section) => ({
+      title: escapeHtml(section.title),
+      note: section.note ? escapeHtml(section.note) : undefined,
+      rows: section.rows.map((row) => ({
+        label: escapeHtml(row.label),
+        value: escapeHtml(row.value),
+      })),
+    }))
 
     const html = `<!doctype html>
       <html lang="en">
         <head>
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>${title}</title>
+          <title>${escapeHtml(title)}</title>
           <style>
             :root {
               color-scheme: light;
@@ -223,8 +239,8 @@ export function ResultActions({ fileName, title, lines, subtitle, summary, secti
           <div class="page">
             <section class="hero">
               <span class="eyebrow">GY TaxCalc</span>
-              <h1>${title}</h1>
-              ${subtitle ? `<p class="subtitle">${subtitle}</p>` : ""}
+              <h1>${escapeHtml(title)}</h1>
+              ${subtitle ? `<p class="subtitle">${escapeHtml(subtitle)}</p>` : ""}
               <div class="summary">
                 ${safeSummary
                   .map(
@@ -264,11 +280,37 @@ export function ResultActions({ fileName, title, lines, subtitle, summary, secti
         </body>
       </html>`
 
-    w.document.open()
-    w.document.write(html)
-    w.document.close()
-    w.focus()
-    setTimeout(() => w.print(), 250)
+    const iframe = document.createElement("iframe")
+    iframe.setAttribute("aria-hidden", "true")
+    iframe.style.position = "fixed"
+    iframe.style.right = "0"
+    iframe.style.bottom = "0"
+    iframe.style.width = "0"
+    iframe.style.height = "0"
+    iframe.style.border = "0"
+    iframe.style.visibility = "hidden"
+    iframe.srcdoc = html
+    document.body.appendChild(iframe)
+
+    const cleanup = () => {
+      window.setTimeout(() => {
+        iframe.remove()
+      }, 250)
+    }
+
+    iframe.addEventListener("load", () => {
+      const win = iframe.contentWindow
+      if (!win) {
+        cleanup()
+        return
+      }
+
+      win.addEventListener("afterprint", cleanup, { once: true })
+      win.focus()
+      window.setTimeout(() => {
+        win.print()
+      }, 300)
+    })
   }
 
   return (
