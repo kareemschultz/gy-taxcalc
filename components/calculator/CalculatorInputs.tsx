@@ -52,6 +52,11 @@ function sum(values: Record<string, number>) {
   return Object.values(values).reduce((total, current) => total + (current || 0), 0)
 }
 
+function sumMonthlyNonTaxable(values: DetailedNonTaxableAllowances) {
+  const { vacation, ...monthlyValues } = values
+  return sum(monthlyValues)
+}
+
 function toNum(value: string) {
   return Number.parseFloat(value) || 0
 }
@@ -210,7 +215,8 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
   const freq = inputs.paymentFrequency
   const childOptions = Array.from({ length: 11 }, (_, index) => index)
   const taxableTotal = sum(detailedTaxable)
-  const nonTaxableTotal = sum(detailedNonTaxable)
+  const nonTaxableTotal = sumMonthlyNonTaxable(detailedNonTaxable)
+  const vacationTotal = detailedNonTaxable.vacation
 
   const toggleDetailedMode = (mode: AllowanceMode) => {
     if (mode === allowanceMode) return
@@ -249,7 +255,10 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
   const updateDetailedNonTaxable = (field: keyof DetailedNonTaxableAllowances, value: number) => {
     setDetailedNonTaxable((prev) => {
       const next = { ...prev, [field]: value }
-      update({ nonTaxableAllowances: sum(next), vacationAllowance: next.vacation })
+      update({
+        nonTaxableAllowances: sumMonthlyNonTaxable(next),
+        vacationAllowance: next.vacation,
+      })
       return next
     })
   }
@@ -495,7 +504,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
                       placeholder="0"
                     />
                   </Field>
-                  <Field label="Vacation Allowance">
+                  <Field label="Vacation Allowance (Annual Lump Sum)">
                     <CurrencyInput
                       prefix="GY$"
                       min={0}
@@ -571,9 +580,15 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
                   </div>
                   <div className="rounded-md bg-muted p-3">
                     <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                      Non-Taxable Allowances
+                      Monthly Non-Taxable
                     </p>
                     <p className="mt-1 font-semibold">{nonTaxableTotal.toLocaleString("en-US")}</p>
+                  </div>
+                  <div className="rounded-md bg-muted p-3 md:col-span-2">
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                      Vacation Allowance
+                    </p>
+                    <p className="mt-1 font-semibold">{vacationTotal.toLocaleString("en-US")}</p>
                   </div>
                 </div>
               </div>

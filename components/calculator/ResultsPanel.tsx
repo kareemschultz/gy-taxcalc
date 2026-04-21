@@ -367,7 +367,16 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
                 <StatRow label="Taxable Allowances" value={results.taxableAllowances} />
               )}
               {nonTaxableAllowances > 0 && (
-                <StatRow label="Non-Taxable Allowances" value={nonTaxableAllowances} />
+                <StatRow
+                  label="Monthly Non-Taxable Allowances"
+                  value={nonTaxableAllowances}
+                />
+              )}
+              {vacationAllowance > 0 && (
+                <StatRow
+                  label="Vacation Allowance (Annual)"
+                  value={vacationAllowance}
+                />
               )}
               {results.overtimeIncome > 0 && (
                 <StatRow label="Overtime" value={results.overtimeIncome} />
