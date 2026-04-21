@@ -18,6 +18,7 @@ import { formatCurrency } from "@/lib/utils"
 import { compareBanks, resolveLoanPrincipal } from "@/lib/loan/calculator"
 import type { LoanInputs, LoanResults, YearlyRow, AmortizationRow } from "@/lib/loan/types"
 import { LoanCharts } from "@/components/loan/LoanCharts"
+import { ResultActions } from "@/components/results/result-actions"
 
 function Money({ amount, prefix = "GY$" }: { amount: number; prefix?: string }) {
   return <span className="tabular-nums">{formatCurrency(amount).replace("$", prefix)}</span>
@@ -154,6 +155,17 @@ export function LoanResults({
           value={result.processingFee > 0 ? formatCurrency(result.processingFee) : "None"}
         />
       </div>
+
+      <ResultActions
+        fileName="loan-summary.txt"
+        title="Loan Summary"
+        lines={[
+          `Monthly payment: ${formatCurrency(result.monthlyPayment)}`,
+          `Total interest: ${formatCurrency(result.totalInterest)}`,
+          `Total paid: ${formatCurrency(result.totalPaid)}`,
+          `Payoff date: ${result.payoffDate}`,
+        ]}
+      />
 
       <Tabs defaultValue="summary" className="space-y-3">
         <TabsList className="w-full justify-start overflow-x-auto">

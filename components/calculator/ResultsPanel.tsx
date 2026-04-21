@@ -25,6 +25,7 @@ import { TaxBreakdownChart } from "./TaxBreakdownChart"
 import { AnnualCashflowChart } from "./AnnualCashflowChart"
 import type { CalculatorInputs as TCalcInputs } from "@/lib/tax/types"
 import { SalaryIncreaseSection } from "./SalaryIncreaseSection"
+import { ResultActions } from "@/components/results/result-actions"
 
 /* ── animated number ──────────────────────────────────── */
 function AnimatedCurrency({ value }: { value: number }) {
@@ -203,6 +204,17 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           </CardContent>
         </Card>
       </motion.div>
+
+      <ResultActions
+        fileName="salary-summary.txt"
+        title="Salary Summary"
+        lines={[
+          `Net take-home: ${formatCurrency(monthlyNetSalary)}`,
+          `Gross income: ${formatCurrency(regularMonthlyGrossIncome)}`,
+          `PAYE: ${formatCurrency(incomeTax)}`,
+          `Annual package: ${formatCurrency(annualTotal)}`,
+        ]}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}

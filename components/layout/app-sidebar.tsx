@@ -3,14 +3,18 @@
 import * as React from "react"
 import Link from "next/link"
 import {
+  LayoutDashboard,
   Calculator,
   Car,
   Landmark,
   BookOpen,
+  HelpCircle,
   ScrollText,
   TrendingUp,
   Info,
   ExternalLink,
+  GitCompareArrows,
+  CalendarRange,
 } from "lucide-react"
 import {
   Sidebar,
@@ -28,6 +32,11 @@ import { Badge } from "@/components/ui/badge"
 
 const mainNav = [
   {
+    title: "Overview",
+    url: "/overview",
+    icon: LayoutDashboard,
+  },
+  {
     title: "Tax Calculator",
     url: "/dashboard",
     icon: Calculator,
@@ -42,6 +51,16 @@ const mainNav = [
     url: "/loan",
     icon: Landmark,
   },
+  {
+    title: "Compare Scenarios",
+    url: "/compare",
+    icon: GitCompareArrows,
+  },
+  {
+    title: "Annual Planner",
+    url: "/planner",
+    icon: CalendarRange,
+  },
 ]
 
 const updatesNav = [
@@ -49,6 +68,11 @@ const updatesNav = [
     title: "Policy Guide",
     url: "/tax-info",
     icon: BookOpen,
+  },
+  {
+    title: "Help / FAQ",
+    url: "/faq",
+    icon: HelpCircle,
   },
   {
     title: "Release Notes",

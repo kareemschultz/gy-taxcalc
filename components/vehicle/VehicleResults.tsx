@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { formatCurrency } from "@/lib/utils"
 import type { VehicleInputs, VehicleTaxResult } from "@/lib/vehicle/types"
+import { ResultActions } from "@/components/results/result-actions"
 
 function Money({ amount, prefix = "GY$" }: { amount: number; prefix?: string }) {
   return <span className="tabular-nums">{formatCurrency(amount).replace("$", prefix)}</span>
@@ -113,6 +114,17 @@ export function VehicleResults({
         <HeroCard title="Total Import Tax" gyd={result.totalTax} usd={result.totalTaxUSD} accent />
         <HeroCard title="Total Landed Cost" gyd={result.totalLandedCost} usd={result.totalLandedCostUSD} />
       </div>
+
+      <ResultActions
+        fileName="vehicle-summary.txt"
+        title="Vehicle Summary"
+        lines={[
+          `Formula used: ${result.formulaUsed}`,
+          `Total tax: ${formatCurrency(result.totalTax).replace("$", "GY$")}`,
+          `Total landed cost: ${formatCurrency(result.totalLandedCost).replace("$", "GY$")}`,
+          `CIF: ${formatCurrency(result.cifGYD).replace("$", "GY$")}`,
+        ]}
+      />
 
       <Tabs defaultValue="breakdown" className="space-y-3">
         <TabsList className="w-full justify-start overflow-x-auto">

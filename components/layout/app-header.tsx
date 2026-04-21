@@ -9,6 +9,10 @@ import { Badge } from "@/components/ui/badge"
 import { ModeToggle } from "@/components/mode-toggle"
 
 const breadcrumbMap: Record<string, { label: string; description: string }> = {
+  "/overview": {
+    label: "Overview",
+    description: "Quick launch and tool guide",
+  },
   "/dashboard": {
     label: "Tax Calculator",
     description: "Guyana 2026 income tax & payroll calculator",
@@ -20,6 +24,18 @@ const breadcrumbMap: Record<string, { label: string; description: string }> = {
   "/loan": {
     label: "Loan Calculator",
     description: "Amortization, extra payments & lender comparison",
+  },
+  "/compare": {
+    label: "Compare Scenarios",
+    description: "Side-by-side comparisons across the toolkit",
+  },
+  "/planner": {
+    label: "Annual Planner",
+    description: "Year-round payroll and policy reminders",
+  },
+  "/faq": {
+    label: "Help / FAQ",
+    description: "Common questions and guidance",
   },
   "/changelog": {
     label: "Changelog",
