@@ -37,10 +37,6 @@ const breadcrumbMap: Record<string, { label: string; description: string }> = {
     label: "Insights",
     description: "Reference signals and quick takeaways",
   },
-  "/intelligence": {
-    label: "Intelligence",
-    description: "Decision tools and what-if guidance",
-  },
   "/analytics": {
     label: "Analytics",
     description: "Trend-focused dashboards and summaries",

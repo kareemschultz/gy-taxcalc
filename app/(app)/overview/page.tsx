@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, BookOpen, Calculator, Car, GitCompareArrows, Landmark, ScrollText, CalendarRange, Radar, Sparkles, Activity } from "lucide-react"
+import { ArrowRight, BookOpen, Calculator, Car, GitCompareArrows, Landmark, ScrollText, CalendarRange, Radar, Activity } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +11,6 @@ const quickLinks = [
   { title: "Compare Scenarios", href: "/compare", icon: GitCompareArrows, description: "Compare offers side-by-side before you commit." },
   { title: "Annual Planner", href: "/planner", icon: CalendarRange, description: "Track gratuity, bonuses, and key planning moments." },
   { title: "Insights", href: "/insights", icon: Radar, description: "Quick reference takeaways for the main calculators." },
-  { title: "Intelligence", href: "/intelligence", icon: Sparkles, description: "What-if tools, decision tips, and strategy shortcuts." },
   { title: "Analytics", href: "/analytics", icon: Activity, description: "Trend-heavy summaries and visual snapshots." },
   { title: "Policy Guide", href: "/tax-info", icon: BookOpen, description: "Read the 2026 rules and quick references." },
 ]
