@@ -8,7 +8,6 @@ import {
   Car,
   Landmark,
   BookOpen,
-  HelpCircle,
   ScrollText,
   TrendingUp,
   Info,
@@ -98,11 +97,6 @@ const updatesNav = [
     icon: BookOpen,
   },
   {
-    title: "Help / FAQ",
-    url: "/faq",
-    icon: HelpCircle,
-  },
-  {
     title: "Release Notes",
     url: "/changelog",
     icon: ScrollText,
@@ -136,7 +130,6 @@ const resourceSections: ResourceSection[] = [
       { title: "Intelligence", url: "/intelligence", icon: Sparkles },
       { title: "Analytics", url: "/analytics", icon: Activity },
       { title: "Policy Guide", url: "/tax-info", icon: BookOpen },
-      { title: "Help / FAQ", url: "/faq", icon: HelpCircle },
       { title: "Release Notes", url: "/changelog", icon: ScrollText },
     ],
   },
