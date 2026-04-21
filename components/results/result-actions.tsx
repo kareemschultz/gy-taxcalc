@@ -40,12 +40,67 @@ function escapeHtml(value: string) {
     .replaceAll("'", "&#39;")
 }
 
+function buildRows(lines: string[]) {
+  return lines.map((line) => {
+    const [label, ...rest] = line.split(":")
+    return { label: label || "Item", value: rest.join(":").trim() || line }
+  })
+}
+
 export function ResultActions({ fileName, title, lines, subtitle, summary, sections }: ResultActionsProps) {
-  const text = React.useMemo(() => [title, "", ...lines].join("\n"), [title, lines])
+  const reportText = React.useMemo(() => {
+    const parts = [title, ""]
+    if (subtitle) parts.push(subtitle, "")
+    if (summary?.length) {
+      parts.push("Summary")
+      summary.forEach((row) => parts.push(`${row.label}: ${row.value}`))
+      parts.push("")
+    }
+    if (sections?.length) {
+      sections.forEach((section) => {
+        parts.push(section.title)
+        section.rows.forEach((row) => parts.push(`${row.label}: ${row.value}`))
+        if (section.note) parts.push(section.note)
+        parts.push("")
+      })
+    }
+    parts.push(...lines)
+    return parts.join("\n")
+  }, [title, subtitle, summary, sections, lines])
+
+  const safeSummary = React.useMemo(
+    () =>
+      (summary ?? lines.slice(0, 4).map((line) => {
+        const [label, ...rest] = line.split(":")
+        return { label: label || "Item", value: rest.join(":").trim() || line }
+      })).map((item) => ({
+        label: escapeHtml(item.label),
+        value: escapeHtml(item.value),
+      })),
+    [summary, lines]
+  )
+
+  const safeSections = React.useMemo(
+    () =>
+      (sections ?? [
+        {
+          title: "Details",
+          rows: buildRows(lines),
+        },
+      ]).map((section) => ({
+        title: escapeHtml(section.title),
+        note: section.note ? escapeHtml(section.note) : undefined,
+        rows: section.rows.map((row) => ({
+          label: escapeHtml(row.label),
+          value: escapeHtml(row.value),
+        })),
+      })),
+    [sections, lines]
+  )
 
   const save = () => {
     if (typeof window === "undefined") return
-    const blob = new Blob([text], { type: "text/plain;charset=utf-8" })
+    const blob = new Blob([reportText], { type: "text/plain;charset=utf-8" })
     const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
     link.href = url
@@ -56,42 +111,84 @@ export function ResultActions({ fileName, title, lines, subtitle, summary, secti
 
   const share = async () => {
     if (typeof navigator === "undefined") return
-    const shareData = { title, text }
+    const shareData = { title, text: reportText }
     if (navigator.share) {
+      if (typeof File !== "undefined" && navigator.canShare?.({ files: [] })) {
+        const html = buildReportHtml(title, subtitle, safeSummary, safeSections)
+        const htmlFile = new File([html], fileName.replace(/\.[^.]+$/, ".html"), { type: "text/html" })
+        if (navigator.canShare({ files: [htmlFile] })) {
+          await navigator.share({ title, text: reportText, files: [htmlFile] })
+          return
+        }
+      }
       await navigator.share(shareData)
       return
     }
-    copyText(text)
+    copyText(reportText)
   }
 
   const print = () => {
     if (typeof window === "undefined") return
-    const safeSummary = (summary ?? lines.slice(0, 4).map((line) => {
-      const [label, ...rest] = line.split(":")
-      return { label: label || "Item", value: rest.join(":").trim() || line }
-    })).map((item) => ({
-      label: escapeHtml(item.label),
-      value: escapeHtml(item.value),
-    }))
+    const html = buildReportHtml(title, subtitle, safeSummary, safeSections)
 
-    const safeSections = (sections ?? [
-      {
-        title: "Details",
-        rows: lines.map((line) => {
-          const [label, ...rest] = line.split(":")
-          return { label: label || "Item", value: rest.join(":").trim() || line }
-        }),
-      },
-    ]).map((section) => ({
-      title: escapeHtml(section.title),
-      note: section.note ? escapeHtml(section.note) : undefined,
-      rows: section.rows.map((row) => ({
-        label: escapeHtml(row.label),
-        value: escapeHtml(row.value),
-      })),
-    }))
+    const iframe = document.createElement("iframe")
+    iframe.setAttribute("aria-hidden", "true")
+    iframe.style.position = "fixed"
+    iframe.style.right = "0"
+    iframe.style.bottom = "0"
+    iframe.style.width = "0"
+    iframe.style.height = "0"
+    iframe.style.border = "0"
+    iframe.style.visibility = "hidden"
+    iframe.srcdoc = html
+    document.body.appendChild(iframe)
 
-    const html = `<!doctype html>
+    const cleanup = () => {
+      window.setTimeout(() => {
+        iframe.remove()
+      }, 250)
+    }
+
+    iframe.addEventListener("load", () => {
+      const win = iframe.contentWindow
+      if (!win) {
+        cleanup()
+        return
+      }
+
+      win.addEventListener("afterprint", cleanup, { once: true })
+      win.focus()
+      window.setTimeout(() => {
+        win.print()
+      }, 300)
+    })
+  }
+
+  return (
+    <div className="flex flex-wrap gap-2 print:hidden">
+      <Button type="button" size="sm" variant="outline" onClick={save}>
+        <Download className="size-3.5" />
+        Save
+      </Button>
+      <Button type="button" size="sm" variant="outline" onClick={share}>
+        <Share2 className="size-3.5" />
+        Share
+      </Button>
+      <Button type="button" size="sm" variant="outline" onClick={print}>
+        <Printer className="size-3.5" />
+        Print
+      </Button>
+    </div>
+  )
+}
+
+function buildReportHtml(
+  title: string,
+  subtitle: string | undefined,
+  safeSummary: Array<{ label: string; value: string }>,
+  safeSections: Array<{ title: string; note?: string; rows: Array<{ label: string; value: string }> }>
+) {
+  return `<!doctype html>
       <html lang="en">
         <head>
           <meta charset="utf-8" />
@@ -279,54 +376,4 @@ export function ResultActions({ fileName, title, lines, subtitle, summary, secti
           </div>
         </body>
       </html>`
-
-    const iframe = document.createElement("iframe")
-    iframe.setAttribute("aria-hidden", "true")
-    iframe.style.position = "fixed"
-    iframe.style.right = "0"
-    iframe.style.bottom = "0"
-    iframe.style.width = "0"
-    iframe.style.height = "0"
-    iframe.style.border = "0"
-    iframe.style.visibility = "hidden"
-    iframe.srcdoc = html
-    document.body.appendChild(iframe)
-
-    const cleanup = () => {
-      window.setTimeout(() => {
-        iframe.remove()
-      }, 250)
-    }
-
-    iframe.addEventListener("load", () => {
-      const win = iframe.contentWindow
-      if (!win) {
-        cleanup()
-        return
-      }
-
-      win.addEventListener("afterprint", cleanup, { once: true })
-      win.focus()
-      window.setTimeout(() => {
-        win.print()
-      }, 300)
-    })
   }
-
-  return (
-    <div className="flex flex-wrap gap-2 print:hidden">
-      <Button type="button" size="sm" variant="outline" onClick={save}>
-        <Download className="size-3.5" />
-        Save
-      </Button>
-      <Button type="button" size="sm" variant="outline" onClick={share}>
-        <Share2 className="size-3.5" />
-        Share
-      </Button>
-      <Button type="button" size="sm" variant="outline" onClick={print}>
-        <Printer className="size-3.5" />
-        Print
-      </Button>
-    </div>
-  )
-}
