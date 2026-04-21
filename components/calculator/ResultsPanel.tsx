@@ -167,6 +167,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
     overtimeAllowance,
     secondJobAllowance,
     nonTaxableAllowances,
+    qualificationAllowance,
   } = results
 
   const freqLabel = PAYMENT_FREQUENCIES[paymentFrequency].periodLabel
@@ -275,9 +276,11 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
             rows: [
               { label: "Basic Salary", value: formatCurrency(results.basicSalary) },
               { label: "Taxable Allowances", value: formatCurrency(results.taxableAllowances) },
+              { label: "Qualification Allowance", value: formatCurrency(qualificationAllowance) },
               { label: "Non-Taxable Allowances", value: formatCurrency(nonTaxableAllowances) },
               { label: "Personal Allowance", value: formatCurrency(-personalAllowance) },
               { label: "NIS", value: formatCurrency(-nisContribution) },
+              { label: "Child Allowance", value: formatCurrency(-childAllowance) },
               { label: "Income Tax (PAYE)", value: formatCurrency(-incomeTax) },
               { label: "Monthly Net", value: formatCurrency(monthlyNetSalary) },
             ],
@@ -294,10 +297,12 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           },
         ]}
         lines={[
-          `Net take-home: ${formatCurrency(monthlyNetSalary)}`,
-          `Gross income: ${formatCurrency(regularMonthlyGrossIncome)}`,
-          `PAYE: ${formatCurrency(incomeTax)}`,
-          `Annual package: ${formatCurrency(resolvedAnnualTotal)}`,
+              `Net take-home: ${formatCurrency(monthlyNetSalary)}`,
+              `Gross income: ${formatCurrency(regularMonthlyGrossIncome)}`,
+              `Qualification allowance: ${formatCurrency(qualificationAllowance)}`,
+              `Child allowance: ${formatCurrency(-childAllowance)}`,
+              `PAYE: ${formatCurrency(incomeTax)}`,
+              `Annual package: ${formatCurrency(resolvedAnnualTotal)}`,
         ]}
       />
 
@@ -435,6 +440,9 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               <StatRow label="Basic Salary" value={results.basicSalary} />
               {results.taxableAllowances > 0 && (
                 <StatRow label="Taxable Allowances" value={results.taxableAllowances} />
+              )}
+              {qualificationAllowance > 0 && (
+                <StatRow label="Qualification Allowance" value={qualificationAllowance} />
               )}
               {nonTaxableAllowances > 0 && (
                 <StatRow
