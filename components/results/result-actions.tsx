@@ -112,19 +112,23 @@ export function ResultActions({ fileName, title, lines, subtitle, summary, secti
   const share = async () => {
     if (typeof navigator === "undefined") return
     const shareData = { title, text: reportText }
-    if (navigator.share) {
-      if (typeof File !== "undefined" && navigator.canShare?.({ files: [] })) {
-        const html = buildReportHtml(title, subtitle, safeSummary, safeSections)
-        const htmlFile = new File([html], fileName.replace(/\.[^.]+$/, ".html"), { type: "text/html" })
-        if (navigator.canShare({ files: [htmlFile] })) {
+    const html = buildReportHtml(title, subtitle, safeSummary, safeSections)
+    const shareName = fileName.replace(/\.[^.]+$/, ".html")
+
+    try {
+      if (navigator.share && typeof File !== "undefined") {
+        const htmlFile = new File([html], shareName, { type: "text/html" })
+        if (typeof navigator.canShare !== "function" || navigator.canShare({ files: [htmlFile] })) {
           await navigator.share({ title, text: reportText, files: [htmlFile] })
           return
         }
+        await navigator.share(shareData)
+        return
       }
-      await navigator.share(shareData)
-      return
+      copyText(reportText)
+    } catch {
+      copyText(reportText)
     }
-    copyText(reportText)
   }
 
   const print = () => {
