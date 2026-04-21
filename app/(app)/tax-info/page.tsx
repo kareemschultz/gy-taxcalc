@@ -1,6 +1,9 @@
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { BadgeAccordion } from "@/components/changelog/BadgeAccordion"
 import { TimelineItem } from "@/components/changelog/TimelineItem"
+import { Separator } from "@/components/ui/separator"
 
 export const metadata = {
   title: "Tax Guide 2026 — GY TaxCalc",
@@ -138,6 +141,48 @@ const taxInfoEntries: TaxInfoEntry[] = [
       },
     ],
   },
+  {
+    version: "2026.8",
+    date: "2026-01-01",
+    title: "Vehicle Import Quick Reference",
+    sections: [
+      {
+        type: "new",
+        items: [
+          "Use CIF, engine size, vehicle age, plate type, and importer type to estimate duty and excise.",
+          "Electric vehicles and ATVs are fully exempt in the current calculator rules.",
+        ],
+      },
+      {
+        type: "updates",
+        items: [
+          "Private under-1500cc imports may qualify for VAT relief in the Budget 2026 ruleset.",
+          "Returning nationals and G-plates are surfaced as special concessions in the vehicle calculator.",
+        ],
+      },
+    ],
+  },
+  {
+    version: "2026.9",
+    date: "2026-01-01",
+    title: "Loan & Credit Quick Reference",
+    sections: [
+      {
+        type: "new",
+        items: [
+          "Choose a lender preset, enter principal, rate, term, and payment frequency.",
+          "Add extra payments to model faster payoff and interest savings.",
+        ],
+      },
+      {
+        type: "updates",
+        items: [
+          "Bi-weekly payment mode is available for borrowers who want a faster payoff path.",
+          "Use the schedule and bank comparison views to compare the total cost of each option.",
+        ],
+      },
+    ],
+  },
 ]
 
 function formatDate(dateStr: string) {
@@ -166,6 +211,32 @@ export default function TaxInfoPage() {
         </div>
       </section>
 
+      <section className="px-4 md:px-8">
+        <Card className="mx-auto max-w-4xl border-dashed bg-muted/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm">Quick Navigation</CardTitle>
+            <CardDescription>
+              Jump to the section you need without scrolling through the whole guide.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex flex-wrap gap-2">
+              {taxInfoEntries.map((entry) => (
+                <Button
+                  key={entry.version}
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="h-auto whitespace-normal text-left"
+                >
+                  <a href={`#${entry.version.toLowerCase()}`}>{entry.title}</a>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
       <section>
         <div className="mx-auto max-w-4xl px-4 py-10 md:px-8 md:py-16">
           <div className="flex flex-col items-start">
@@ -174,6 +245,7 @@ export default function TaxInfoPage() {
                 key={entry.version}
                 version={`v ${entry.version}`}
                 date={formatDate(entry.date)}
+                id={entry.version.toLowerCase()}
               >
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
@@ -187,6 +259,23 @@ export default function TaxInfoPage() {
             ))}
           </div>
         </div>
+      </section>
+
+      <section className="px-4 pb-10 md:px-8 md:pb-16">
+        <Card className="mx-auto max-w-4xl bg-muted/20">
+          <CardContent className="space-y-3 pt-6 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Use this guide as a reference, not advice.</p>
+            <p>
+              Based on 2026 Guyana tax regulations. Not affiliated with GRA. Consult a tax
+              professional for official advice.
+            </p>
+            <Separator />
+            <p>
+              Built with care by Kareem Schultz. Check release notes for fixes, policy updates,
+              and interface improvements.
+            </p>
+          </CardContent>
+        </Card>
       </section>
     </>
   )

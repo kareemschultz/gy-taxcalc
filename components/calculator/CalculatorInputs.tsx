@@ -256,12 +256,17 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
 
   return (
     <div className="space-y-3">
-      <Section title="Quick Start" defaultOpen icon={<Briefcase className="size-3.5 text-muted-foreground" />}>
+      <Section
+        title="Quick Start"
+        defaultOpen
+        icon={<Briefcase className="size-3.5 text-muted-foreground" />}
+        description="Pick a preset or enter your own salary and frequency."
+      >
         <div className="grid gap-3 md:grid-cols-2">
-          <Field label="Position Preset">
-            <Select value={inputs.position} onValueChange={applyPresetBreakdown}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select position..." />
+              <Field label="Position Preset" hint="Choose a preset to prefill salary values.">
+                <Select value={inputs.position} onValueChange={applyPresetBreakdown}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select position..." />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="custom">Custom / Enter manually</SelectItem>
@@ -274,8 +279,8 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
             </Select>
           </Field>
 
-          <Field label="Payment Frequency">
-            <div className="grid grid-cols-2 gap-1 sm:grid-cols-5">
+              <Field label="Payment Frequency" hint="Use the period you are paid in.">
+                <div className="grid grid-cols-2 gap-1 sm:grid-cols-5">
               {(Object.keys(PAYMENT_FREQUENCIES) as PaymentFrequency[]).map((paymentFrequency) => (
                 <button
                   key={paymentFrequency}
@@ -303,7 +308,11 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
         </div>
       </Section>
 
-      <Section title="Income" defaultOpen>
+      <Section
+        title="Income"
+        defaultOpen
+        description="Enter basic pay and allowances. Switch to detailed mode for itemized allowances."
+      >
         <div className="space-y-4">
           <div className="grid gap-3 md:grid-cols-2">
             <Field
@@ -323,7 +332,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
               />
             </Field>
 
-            <Field label="Allowance Mode">
+              <Field label="Allowance Mode" hint="Detailed mode gives a full allowance breakdown.">
               <div className="grid grid-cols-2 gap-2">
                 <Button
                   type="button"
@@ -348,7 +357,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
 
           {allowanceMode === "simple" ? (
             <div className="grid gap-3 md:grid-cols-3">
-              <Field label="Taxable Allowances">
+              <Field label="Taxable Allowances" hint="Simple total if you do not need itemized entries.">
                 <CurrencyInput
                   prefix="GY$"
                   min={0}
@@ -357,7 +366,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
                   placeholder="0"
                 />
               </Field>
-              <Field label="Non-Taxable Allowances" hint="Travel, telecom, station, etc.">
+              <Field label="Non-Taxable Allowances" hint="Travel, telecom, station, and similar non-taxable items.">
                 <CurrencyInput
                   prefix="GY$"
                   min={0}
@@ -366,7 +375,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
                   placeholder="0"
                 />
               </Field>
-              <Field label="Vacation Allowance" hint="Annual lump sum">
+              <Field label="Vacation Allowance" hint="Usually paid once or twice a year.">
                 <CurrencyInput
                   prefix="GY$"
                   min={0}
@@ -580,7 +589,11 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
         </div>
       </Section>
 
-      <Section title="Additional Income" defaultOpen={false}>
+      <Section
+        title="Additional Income"
+        defaultOpen={false}
+        description="Add overtime or second-job income that may qualify for the monthly exemption."
+      >
         <div className="grid gap-3 md:grid-cols-2">
           <Field label="Overtime" hint={`Max non-taxable: $${PAYMENT_FREQUENCIES[freq].overtimeMax.toLocaleString()}`}>
             <CurrencyInput
@@ -606,8 +619,12 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
         </div>
       </Section>
 
-      <Section title="Deductions & Benefits" defaultOpen={false}>
-        <div className="grid gap-3 md:grid-cols-2">
+      <Section
+        title="Deductions & Benefits"
+        defaultOpen={false}
+        description="Have children, insurance, or loan/credit union deductions? These can reduce taxable income."
+      >
+            <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Children" hint="$10,000 allowance each">
             <Select value={String(inputs.childCount)} onValueChange={(value) => update({ childCount: toInt(value) })}>
               <SelectTrigger>
@@ -670,7 +687,11 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
         </div>
       </Section>
 
-      <Section title="Qualification Allowance" defaultOpen={false}>
+      <Section
+        title="Qualification Allowance"
+        defaultOpen={false}
+        description="Extra allowance for ACCA, Master's, or PhD credentials."
+      >
         <div className="grid grid-cols-2 gap-2">
           {(["none", "acca", "masters", "phd"] as QualificationType[]).map((qualificationType) => {
             const labels = {
@@ -703,7 +724,11 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
         </div>
       </Section>
 
-      <Section title="Gratuity & Advanced" defaultOpen={false}>
+      <Section
+        title="Gratuity & Advanced"
+        defaultOpen={false}
+        description="Gratuity timing and pay period settings for contracts that accrue it."
+      >
         <div className="grid gap-3 md:grid-cols-2">
           <Field label="Gratuity Rate (%)" hint="Default: 22.5% of basic salary">
             <Input

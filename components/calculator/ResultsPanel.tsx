@@ -246,13 +246,13 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
 
       {/* Detailed tabs */}
       <Tabs defaultValue="breakdown">
-        <TabsList className="w-full">
-          <TabsTrigger value="breakdown" className="flex-1">Breakdown</TabsTrigger>
-          <TabsTrigger value="special" className="flex-1">Special Months</TabsTrigger>
-          <TabsTrigger value="annual" className="flex-1">Annual</TabsTrigger>
-          <TabsTrigger value="charts" className="flex-1">Charts</TabsTrigger>
-          <TabsTrigger value="simulator" className="flex-1">Simulator</TabsTrigger>
-          <TabsTrigger value="info" className="flex-1">Info</TabsTrigger>
+        <TabsList className="w-full justify-start overflow-x-auto">
+          <TabsTrigger value="breakdown" className="min-w-[92px] flex-none sm:flex-1">Breakdown</TabsTrigger>
+          <TabsTrigger value="special" className="min-w-[92px] flex-none sm:flex-1">Special Months</TabsTrigger>
+          <TabsTrigger value="annual" className="min-w-[92px] flex-none sm:flex-1">Annual</TabsTrigger>
+          <TabsTrigger value="charts" className="min-w-[92px] flex-none sm:flex-1">Charts</TabsTrigger>
+          <TabsTrigger value="simulator" className="min-w-[92px] flex-none sm:flex-1">Simulator</TabsTrigger>
+          <TabsTrigger value="info" className="min-w-[92px] flex-none sm:flex-1">Info</TabsTrigger>
         </TabsList>
 
         {/* Breakdown tab */}

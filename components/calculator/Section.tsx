@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 interface SectionProps {
   title: string
   icon?: React.ReactNode
+  description?: React.ReactNode
   defaultOpen?: boolean
   children: React.ReactNode
   className?: string
@@ -17,6 +18,7 @@ interface SectionProps {
 export function Section({
   title,
   icon,
+  description,
   defaultOpen = true,
   children,
   className,
@@ -28,15 +30,22 @@ export function Section({
       <button
         type="button"
         onClick={() => setOpen((state) => !state)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-muted/40"
+        className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-muted/40"
       >
-        <span className="flex items-center gap-2">
-          {icon}
-          {title}
+        <span className="flex min-w-0 flex-col gap-1">
+          <span className="flex items-center gap-2">
+            {icon}
+            <span className="truncate">{title}</span>
+          </span>
+          {description ? (
+            <span className="text-xs font-normal leading-snug text-muted-foreground">
+              {description}
+            </span>
+          ) : null}
         </span>
         <ChevronDown
           className={cn(
-            "size-4 text-muted-foreground transition-transform duration-200",
+            "mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform duration-200",
             open && "rotate-180"
           )}
         />

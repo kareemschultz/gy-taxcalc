@@ -156,17 +156,17 @@ export function LoanResults({
       </div>
 
       <Tabs defaultValue="summary" className="space-y-3">
-        <TabsList className="w-full">
-          <TabsTrigger value="summary" className="flex-1">
+        <TabsList className="w-full justify-start overflow-x-auto">
+          <TabsTrigger value="summary" className="min-w-[92px] flex-none sm:flex-1">
             Summary
           </TabsTrigger>
-          <TabsTrigger value="schedule" className="flex-1">
+          <TabsTrigger value="schedule" className="min-w-[92px] flex-none sm:flex-1">
             Schedule
           </TabsTrigger>
-          <TabsTrigger value="banks" className="flex-1">
+          <TabsTrigger value="banks" className="min-w-[92px] flex-none sm:flex-1">
             Banks
           </TabsTrigger>
-          <TabsTrigger value="charts" className="flex-1">
+          <TabsTrigger value="charts" className="min-w-[92px] flex-none sm:flex-1">
             Charts
           </TabsTrigger>
         </TabsList>

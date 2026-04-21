@@ -4,12 +4,15 @@ import { Badge } from "@/components/ui/badge"
 type TimelineItemProps = {
   date: string
   version: string
+  id?: string
   children: ReactNode
 }
 
-export function TimelineItem({ date, version, children }: TimelineItemProps) {
+export function TimelineItem({ date, version, id, children }: TimelineItemProps) {
+  const anchorId = id ?? version.toLowerCase().replace(/\s+/g, "-")
+
   return (
-    <div id={version} className="relative flex scroll-mt-18 justify-end gap-2">
+    <div id={anchorId} className="relative flex scroll-mt-18 justify-end gap-2">
       {/* Sticky left: version + date (desktop only) */}
       <div className="sticky top-19 flex w-36 flex-col items-end gap-2 self-start pb-4 max-md:hidden">
         <Badge className="flex size-6 w-auto justify-end rounded-sm text-sm font-medium">

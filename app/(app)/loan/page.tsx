@@ -32,7 +32,7 @@ export default function LoanPage() {
       </div>
 
       {result && inputs ? (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 backdrop-blur-sm lg:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-3 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur-sm lg:hidden">
           <div className="mx-auto flex max-w-7xl items-center gap-2">
             <div className="grid flex-1 grid-cols-3 gap-2 text-center text-xs">
               <div className="rounded-lg bg-muted px-2 py-2">

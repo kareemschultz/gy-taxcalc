@@ -155,8 +155,13 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
 
   return (
     <div className="space-y-3">
-      <Section title="Loan Setup" defaultOpen icon={<Landmark className="size-3.5 text-muted-foreground" />}>
-        <div className="grid gap-3 md:grid-cols-2">
+      <Section
+        title="Loan Setup"
+        defaultOpen
+        icon={<Landmark className="size-3.5 text-muted-foreground" />}
+        description="Set the lender, principal, term, rate, and payment frequency."
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Loan Type">
             <Select
               value={inputs.loanType}
@@ -351,6 +356,7 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
         title="Extra Payments"
         defaultOpen={false}
         icon={<SlidersHorizontal className="size-3.5 text-muted-foreground" />}
+        description="Model additional monthly, lump-sum, or recurring payments."
       >
         <div className="space-y-4">
           <div className="flex items-start gap-3 rounded-lg border bg-muted/20 p-3">
@@ -370,7 +376,7 @@ export function LoanInputs({ onChange }: LoanInputsProps) {
           </div>
 
           {inputs.extraPaymentsEnabled ? (
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Additional Monthly Payment">
                 <CurrencyInput
                   prefix="GY$"

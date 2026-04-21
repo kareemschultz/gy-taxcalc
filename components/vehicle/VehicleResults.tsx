@@ -115,11 +115,11 @@ export function VehicleResults({
       </div>
 
       <Tabs defaultValue="breakdown" className="space-y-3">
-        <TabsList className="w-full">
-          <TabsTrigger value="breakdown" className="flex-1">
+        <TabsList className="w-full justify-start overflow-x-auto">
+          <TabsTrigger value="breakdown" className="min-w-[100px] flex-none sm:flex-1">
             Breakdown
           </TabsTrigger>
-          <TabsTrigger value="rates" className="flex-1">
+          <TabsTrigger value="rates" className="min-w-[100px] flex-none sm:flex-1">
             Rate Info
           </TabsTrigger>
         </TabsList>

@@ -186,6 +186,7 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
         title="FOB to CIF Converter"
         defaultOpen
         icon={<CircleDollarSign className="size-3.5 text-muted-foreground" />}
+        description="Start with the purchase price, freight, and insurance to estimate CIF."
       >
         <div className="grid gap-3 md:grid-cols-3">
           <Field label="FOB (US$)">
@@ -242,8 +243,13 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
         </div>
       </Section>
 
-      <Section title="Vehicle Details" defaultOpen icon={<CarFront className="size-3.5 text-muted-foreground" />}>
-        <div className="grid gap-3 md:grid-cols-2">
+      <Section
+        title="Vehicle Details"
+        defaultOpen
+        icon={<CarFront className="size-3.5 text-muted-foreground" />}
+        description="Choose vehicle type, age, engine size, plate type, and importer type."
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field
             label={
               <span className="inline-flex items-center gap-2">
@@ -482,8 +488,9 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
         title="Outboard Engine Import"
         defaultOpen={false}
         icon={<Shield className="size-3.5 text-muted-foreground" />}
+        description="Quick check for the 150 HP exemption rule."
       >
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Engine HP">
             <StepperField value={outboardHp} min={0} max={1000} onChange={setOutboardHp} />
           </Field>

@@ -31,18 +31,31 @@ export function AppHeader() {
   const current = breadcrumbMap[pathname] ?? { label: "GY TaxCalc", description: "" }
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 backdrop-blur-sm px-4 lg:px-6">
-      <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mx-2 h-4" />
+    <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur-sm lg:px-6">
+      <div className="flex items-center gap-2 md:hidden">
+        <SidebarTrigger className="-ml-1" />
+      </div>
 
-      <div className="flex flex-1 items-center gap-3 min-w-0">
+      <div className="hidden min-w-0 flex-1 items-center gap-3 md:flex">
+        <SidebarTrigger className="-ml-1" />
+        <Separator orientation="vertical" className="mx-2 h-4" />
         <div className="min-w-0">
-          <h1 className="text-sm font-semibold truncate">{current.label}</h1>
+          <h1 className="truncate text-sm font-semibold">{current.label}</h1>
           {current.description && (
-            <p className="text-xs text-muted-foreground hidden sm:block truncate">
+            <p className="hidden truncate text-xs text-muted-foreground sm:block">
               {current.description}
             </p>
           )}
+        </div>
+      </div>
+
+      <div className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2 md:hidden">
+        <span className="flex size-7 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
+          GY
+        </span>
+        <div className="text-center">
+          <h1 className="text-sm font-semibold leading-none">{current.label}</h1>
+          <p className="text-[11px] text-muted-foreground">Guyana&apos;s Tax Toolkit</p>
         </div>
       </div>
 
