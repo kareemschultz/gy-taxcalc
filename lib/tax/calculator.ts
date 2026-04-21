@@ -42,7 +42,12 @@ export function performCalculations(inputs: CalculatorInputs): CalculationResult
 
   // Gross income at selected frequency
   const regularMonthlyGrossIncome =
-    basicSalary + taxableAllowances + nonTaxableAllowances + overtimeIncome + secondJobIncome
+    basicSalary +
+    taxableAllowances +
+    qualificationAllowance +
+    nonTaxableAllowances +
+    overtimeIncome +
+    secondJobIncome
 
   // NIS
   const nisContribution = Math.min(
@@ -170,25 +175,31 @@ export function calculateSalaryIncrease(
   const { increasePercentage, isTaxable, retroactiveMonths, isGratuityMonth } = increase
   const freq = baseResults.frequencyConfig
 
-  const monthlyBasicIncreaseAmount = baseResults.basicSalary * (increasePercentage / 100)
+  const increasedBasicSalaryForFrequency = baseResults.basicSalary * (1 + increasePercentage / 100)
+  const monthlyBasicIncreaseAmount =
+    convertToMonthly(increasedBasicSalaryForFrequency, baseResults.paymentFrequency) -
+    baseResults.monthlyBasicSalary
+  const increaseAmountForFrequency = increasedBasicSalaryForFrequency - baseResults.basicSalary
 
   // Deep copy and apply increase
   const newResults = { ...baseResults }
 
   if (isTaxable) {
-    newResults.basicSalary = baseResults.basicSalary + monthlyBasicIncreaseAmount
+    newResults.basicSalary = increasedBasicSalaryForFrequency
   } else {
-    newResults.nonTaxableAllowances = baseResults.nonTaxableAllowances + monthlyBasicIncreaseAmount
+    newResults.nonTaxableAllowances = baseResults.nonTaxableAllowances + increaseAmountForFrequency
   }
 
   // Recalculate gratuity
-  newResults.monthlyGratuityAccrual = newResults.basicSalary * (newResults.gratuityRate / 100)
+  newResults.monthlyBasicSalary = convertToMonthly(newResults.basicSalary, baseResults.paymentFrequency)
+  newResults.monthlyGratuityAccrual = newResults.monthlyBasicSalary * (newResults.gratuityRate / 100)
   newResults.sixMonthGratuity = newResults.monthlyGratuityAccrual * 6
 
   // New gross
   newResults.regularMonthlyGrossIncome =
     newResults.basicSalary +
     newResults.taxableAllowances +
+    newResults.qualificationAllowance +
     newResults.nonTaxableAllowances +
     newResults.overtimeIncome +
     newResults.secondJobIncome
@@ -217,6 +228,7 @@ export function calculateSalaryIncrease(
     newResults.nonTaxableAllowances -
     newResults.overtimeAllowance -
     newResults.secondJobAllowance
+  newResults.grossIncomeForTaxableCalculation = grossIncomeForTaxable
 
   // Personal allowance
   newResults.personalAllowance = Math.max(freq.personalAllowance, grossIncomeForTaxable / 3)
@@ -262,8 +274,8 @@ export function calculateSalaryIncrease(
     retroactiveMonthlyIncrease = monthlyBasicIncreaseAmount
     totalRetroactiveLumpSum = monthlyBasicIncreaseAmount * retroactiveMonths
 
-    const oldMonthlyGratuity = baseResults.basicSalary * (baseResults.gratuityRate / 100)
-    const newMonthlyGratuity = newResults.basicSalary * (newResults.gratuityRate / 100)
+    const oldMonthlyGratuity = baseResults.monthlyBasicSalary * (baseResults.gratuityRate / 100)
+    const newMonthlyGratuity = newResults.monthlyBasicSalary * (newResults.gratuityRate / 100)
     retroGratuityDifferential = (newMonthlyGratuity - oldMonthlyGratuity) * retroactiveMonths
 
     totalRetroGross = totalRetroactiveLumpSum + retroGratuityDifferential
