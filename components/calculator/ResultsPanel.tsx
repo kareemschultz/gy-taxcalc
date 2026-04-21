@@ -508,8 +508,12 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               <CardContent className="pt-0">
                 <StatRow label="Monthly Net Salary" value={monthlyNetSalary} />
                 <StatRow label="6-Month Gratuity" value={sixMonthGratuity} />
-                {vacationAllowance > 0 && (
+                {vacationAllowance > 0 ? (
                   <StatRow label="Vacation Allowance" value={vacationAllowance} />
+                ) : (
+                  <p className="text-[11px] text-muted-foreground/60 italic py-1">
+                    No vacation allowance set — use the <span className="font-medium text-primary">Auto</span> button in Income to fill it
+                  </p>
                 )}
                 <Separator className="my-2" />
                 <div className="flex items-baseline justify-between">

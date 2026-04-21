@@ -185,7 +185,7 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
         basicSalary: Math.round(convertFromMonthly(preset.baseSalary, freq)),
         taxableAllowances: taxable,
         nonTaxableAllowances: nonTaxable,
-        vacationAllowance: 0,
+        vacationAllowance: Math.round(preset.baseSalary + preset.totalTaxableAllowances + preset.totalNonTaxableAllowances),
       })
 
       setDetailedTaxable((prev) => ({
@@ -368,14 +368,33 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
                   placeholder="10,000"
                 />
               </Field>
-              <Field label="Vacation Allowance" hint="Usually paid once or twice a year.">
-                <CurrencyInput
-                  prefix="GY$"
-                  min={0}
-                  value={inputs.vacationAllowance || ""}
-                  onChange={(value) => update({ vacationAllowance: toNum(value) })}
-                  placeholder="25,000"
-                />
+              <Field label="Vacation Allowance" hint="Annual lump sum paid in Month 12. Typically 1× monthly gross.">
+                <div className="flex gap-1.5">
+                  <CurrencyInput
+                    prefix="GY$"
+                    min={0}
+                    value={inputs.vacationAllowance || ""}
+                    onChange={(value) => update({ vacationAllowance: toNum(value) })}
+                    placeholder="25,000"
+                    className="flex-1"
+                  />
+                  {inputs.basicSalary > 0 && inputs.vacationAllowance === 0 && (
+                    <button
+                      type="button"
+                      title="Auto-fill with 1× monthly gross (basic + allowances)"
+                      onClick={() =>
+                        update({
+                          vacationAllowance: Math.round(
+                            inputs.basicSalary + inputs.taxableAllowances + inputs.nonTaxableAllowances
+                          ),
+                        })
+                      }
+                      className="shrink-0 rounded-md border border-dashed border-primary/50 px-2 text-[10px] text-primary hover:bg-primary/10 transition-colors"
+                    >
+                      Auto
+                    </button>
+                  )}
+                </div>
               </Field>
             </div>
           ) : (
