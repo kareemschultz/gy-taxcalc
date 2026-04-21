@@ -46,15 +46,15 @@ const mainNav = [
 
 const updatesNav = [
   {
-    title: "Tax Information",
+    title: "Tax Guide",
     url: "/tax-info",
     icon: BookOpen,
   },
   {
-    title: "Tax Updates",
+    title: "Release Notes",
     url: "/changelog",
     icon: ScrollText,
-    badge: "Track",
+    badge: "History",
   },
 ]
 

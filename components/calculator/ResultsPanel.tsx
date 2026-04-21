@@ -200,7 +200,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-sm">
             <BookOpen className="size-4 text-primary" />
-            Tax Info &amp; Updates
+            Tax Guide &amp; Updates
           </CardTitle>
           <CardDescription>
             Keep up with 2026 rates, allowances, and release notes as the rules change.
@@ -221,7 +221,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
                 </Badge>
               </div>
               <ul className="space-y-1.5 text-sm text-muted-foreground">
-                <li>25% PAYE on chargeable income up to GYD 280,000 per month.</li>
+                <li>25% PAYE on taxable income up to GYD 280,000 per month.</li>
                 <li>35% PAYE above the GYD 280,000 threshold.</li>
                 <li>Personal allowance remains GYD 140,000 monthly or one-third of balance.</li>
                 <li>Qualification allowances now include ACCA, Master&apos;s, and PhD.</li>
@@ -237,7 +237,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
                 the government publishes new guidance.
               </p>
               <Button asChild size="sm" variant="secondary" className="mt-4 w-full">
-                <Link href="/changelog">Open Tax Updates</Link>
+                <Link href="/tax-info">Open Tax Guide</Link>
               </Button>
             </div>
           </div>
@@ -261,7 +261,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <BadgeDollarSign className="size-4 text-primary" />
-                Pay Statement
+                Salary Breakdown
               </CardTitle>
               <CardDescription>
                 {PAYMENT_FREQUENCIES[paymentFrequency].label} — calculated{" "}
@@ -287,7 +287,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
                 <StatRow label="Second Job" value={results.secondJobIncome} />
               )}
               <StatRow
-                label="Total Gross"
+                label="Gross Income Total"
                 value={regularMonthlyGrossIncome}
                 variant="total"
               />
@@ -300,7 +300,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               </p>
               {(overtimeAllowance > 0 || secondJobAllowance > 0) && (
                 <StatRow
-                  label="Statutory OT/2nd-Job Allowance"
+                  label="Overtime / Second Job Exemption"
                   value={-(overtimeAllowance + secondJobAllowance)}
                   variant="deduction"
                 />
@@ -332,7 +332,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
                 />
               )}
               <StatRow
-                label="Chargeable Income"
+                label="Taxable Income"
                 value={taxableIncome}
                 variant="total"
               />
@@ -440,7 +440,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <TrendingUp className="size-4 text-primary" />
-                Annual Summary
+                Yearly Summary
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
@@ -463,13 +463,13 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               </div>
               <div className="grid grid-cols-2 gap-2 mt-4">
                 <div className="rounded-lg bg-muted p-3 text-center">
-                  <p className="text-[10px] text-muted-foreground uppercase">Effective Tax Rate</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Tax Rate</p>
                   <p className="text-lg font-bold text-primary mt-0.5">
                     {formatPercent(effectiveTaxRate)}
                   </p>
                 </div>
                 <div className="rounded-lg bg-muted p-3 text-center">
-                  <p className="text-[10px] text-muted-foreground uppercase">Take-Home Rate</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">Net Pay Rate</p>
                   <p className="text-lg font-bold text-primary mt-0.5">
                     {formatPercent(takeHomeRate)}
                   </p>

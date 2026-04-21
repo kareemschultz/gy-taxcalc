@@ -3,8 +3,8 @@ import { BadgeAccordion } from "@/components/changelog/BadgeAccordion"
 import { TimelineItem } from "@/components/changelog/TimelineItem"
 
 export const metadata = {
-  title: "Tax Information 2026 — GY TaxCalc",
-  description: "Official-style 2026 tax information and updates for GY TaxCalc.",
+  title: "Tax Guide 2026 — GY TaxCalc",
+  description: "Official-style 2026 tax guide and updates for GY TaxCalc.",
 }
 
 type TaxInfoEntry = {
@@ -155,10 +155,10 @@ export default function TaxInfoPage() {
       <section id="home" className="-mt-6 pt-6">
         <div className="space-y-4 px-4 py-8 text-center md:px-8 md:py-16">
           <Badge className="text-sm font-normal" variant="outline">
-            Updates
+            Tax Guide
           </Badge>
           <h2 className="text-2xl font-semibold md:text-3xl lg:text-4xl">
-            Tax Information 2026
+            Tax Guide 2026
           </h2>
           <p className="text-muted-foreground text-xl">
             Official GRA rates and allowances for the 2026 tax year.
