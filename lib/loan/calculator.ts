@@ -121,7 +121,27 @@ export interface BiweeklyResult {
   months: number
 }
 
-export function calculateBiweekly(principal: number, annualRate: number, termMonths: number): BiweeklyResult {
+function monthsToBiweeklyPeriods(months: number) {
+  return Math.max(1, Math.round((months * 26) / 12))
+}
+
+function convertMonthlyToBiweekly(amount: number) {
+  return amount * (12 / 26)
+}
+
+function buildBiweeklyPaymentSummary(
+  principal: number,
+  annualRate: number,
+  termMonths: number,
+  extraPayments?: {
+    additionalMonthly?: number
+    lumpSumAmount?: number
+    lumpSumAtMonth?: number
+    periodicLumpAmount?: number
+    periodicLumpFrequency?: number
+    periodicLumpStartMonth?: number
+  }
+): BiweeklyResult {
   const ratePerPeriod = annualRate / 100 / 26
   const periods = Math.round((termMonths * 26) / 12)
   const payment =
@@ -134,7 +154,31 @@ export function calculateBiweekly(principal: number, annualRate: number, termMon
 
   for (let period = 1; period <= periods; period += 1) {
     const interest = balance * ratePerPeriod
-    const principalPaid = period === periods ? balance : payment - interest
+    const scheduledPrincipal = payment - interest
+    let extra = 0
+
+    if (extraPayments) {
+      extra += convertMonthlyToBiweekly(extraPayments.additionalMonthly ?? 0)
+
+      if (
+        extraPayments.lumpSumAmount &&
+        extraPayments.lumpSumAtMonth &&
+        period === monthsToBiweeklyPeriods(extraPayments.lumpSumAtMonth)
+      ) {
+        extra += extraPayments.lumpSumAmount
+      }
+
+      if (extraPayments.periodicLumpAmount && extraPayments.periodicLumpFrequency) {
+        const startMonths = extraPayments.periodicLumpStartMonth || extraPayments.periodicLumpFrequency
+        const startPeriod = monthsToBiweeklyPeriods(startMonths)
+        const frequencyPeriod = monthsToBiweeklyPeriods(extraPayments.periodicLumpFrequency)
+        if (period >= startPeriod && (period - startPeriod) % frequencyPeriod === 0) {
+          extra += extraPayments.periodicLumpAmount
+        }
+      }
+    }
+
+    const principalPaid = Math.min(scheduledPrincipal + extra, balance)
     const actualPayment = principalPaid + interest
     balance = Math.max(0, balance - principalPaid)
     schedule.push({ period, payment: actualPayment, principal: principalPaid, interest, balance })
@@ -146,6 +190,10 @@ export function calculateBiweekly(principal: number, annualRate: number, termMon
   const months = Math.round((schedule.length * 12) / 26)
 
   return { payment, schedule, totalInterest, totalPaid, months }
+}
+
+export function calculateBiweekly(principal: number, annualRate: number, termMonths: number): BiweeklyResult {
+  return buildBiweeklyPaymentSummary(principal, annualRate, termMonths)
 }
 
 function calculatePayoffDate(startDate: Date, months: number) {
@@ -171,29 +219,55 @@ export function resolveLoanPrincipal(inputs: LoanInputs) {
 }
 
 export function calculateLoan(inputs: LoanInputs): LoanResults {
-  const exchangeRate = inputs.exchangeRate || LOAN_DEFAULT_EXCHANGE_RATE
   const principal = resolveLoanPrincipal(inputs)
   const annualRate = inputs.annualRatePct
   const startDate = inputs.firstPaymentDate ? new Date(inputs.firstPaymentDate) : new Date()
-
-  const baseSchedule =
-    inputs.paymentFrequency === "biweekly"
-      ? calculateBiweekly(principal, annualRate, inputs.termMonths).schedule
-      : buildAmortizationSchedule(principal, annualRate, inputs.termMonths)
-
   const monthlyBaseSchedule = buildAmortizationSchedule(principal, annualRate, inputs.termMonths)
-  const biweekly = calculateBiweekly(principal, annualRate, inputs.termMonths)
-  let activeSchedule = baseSchedule
+  const monthlyBaseInterest = monthlyBaseSchedule.reduce((sum, row) => sum + row.interest, 0)
+  const biweeklyBase = calculateBiweekly(principal, annualRate, inputs.termMonths)
+  const hasExtraPayments =
+    inputs.extraPaymentsEnabled &&
+    (inputs.additionalMonthly > 0 || inputs.lumpSumAmount > 0 || inputs.periodicLumpAmount > 0)
 
-  const totalPaid = activeSchedule.reduce((sum, row) => sum + row.payment, 0)
-  const totalInterest = activeSchedule.reduce((sum, row) => sum + row.interest, 0)
+  const extraConfig = hasExtraPayments
+    ? {
+        additionalMonthly: inputs.additionalMonthly,
+        lumpSumAmount: inputs.lumpSumAmount,
+        lumpSumAtMonth: inputs.lumpSumAtMonth,
+        periodicLumpAmount: inputs.periodicLumpAmount,
+        periodicLumpFrequency:
+          inputs.periodicLumpFrequency === "custom"
+            ? inputs.periodicLumpCustomInterval
+            : inputs.periodicLumpFrequency,
+        periodicLumpStartMonth: inputs.periodicLumpStartMonth,
+      }
+    : undefined
+
+  const monthlyWithExtras = extraConfig
+    ? buildAmortizationSchedule(principal, annualRate, inputs.termMonths, extraConfig)
+    : monthlyBaseSchedule
+  const biweeklyWithExtras = extraConfig
+    ? buildBiweeklyPaymentSummary(principal, annualRate, inputs.termMonths, extraConfig)
+    : biweeklyBase
+
+  const activeSummary =
+    inputs.paymentFrequency === "biweekly" ? biweeklyWithExtras : {
+      payment: calculateMonthlyPayment(principal, annualRate, inputs.termMonths),
+      schedule: monthlyWithExtras,
+      totalInterest: monthlyWithExtras.reduce((sum, row) => sum + row.interest, 0),
+      totalPaid: monthlyWithExtras.reduce((sum, row) => sum + row.payment, 0),
+      months: monthlyWithExtras.length,
+    }
+  const activeSchedule = activeSummary.schedule
+  const totalPaid = activeSummary.totalPaid
+  const totalInterest = activeSummary.totalInterest
   const effectiveRate = principal > 0 ? (totalInterest / principal) * 100 : 0
   const processingFee = principal * (inputs.processingFeePct / 100)
-  const payoffMonths = inputs.paymentFrequency === "biweekly" ? biweekly.months : activeSchedule.length
+  const payoffMonths = activeSummary.months
 
   const result: LoanResults = {
     monthlyPayment: calculateMonthlyPayment(principal, annualRate, inputs.termMonths),
-    biweeklyPayment: biweekly.payment,
+    biweeklyPayment: biweeklyBase.payment,
     totalInterest,
     totalPaid: totalPaid + processingFee,
     payoffDate: calculatePayoffDate(startDate, payoffMonths),
@@ -205,41 +279,23 @@ export function calculateLoan(inputs: LoanInputs): LoanResults {
     baseSchedule: monthlyBaseSchedule,
   }
 
-  if (inputs.extraPaymentsEnabled && (inputs.additionalMonthly > 0 || inputs.lumpSumAmount > 0 || inputs.periodicLumpAmount > 0)) {
-    const extraSchedule = buildAmortizationSchedule(principal, annualRate, inputs.termMonths, {
-      additionalMonthly: inputs.additionalMonthly,
-      lumpSumAmount: inputs.lumpSumAmount,
-      lumpSumAtMonth: inputs.lumpSumAtMonth,
-      periodicLumpAmount: inputs.periodicLumpAmount,
-      periodicLumpFrequency:
-        inputs.periodicLumpFrequency === "custom"
-          ? inputs.periodicLumpCustomInterval
-          : inputs.periodicLumpFrequency,
-      periodicLumpStartMonth: inputs.periodicLumpStartMonth,
-    })
-
-    const monthsSaved = activeSchedule.length - extraSchedule.length
-    const extraInterest = extraSchedule.reduce((sum, row) => sum + row.interest, 0)
-
-    result.extraSchedule = extraSchedule
-    result.monthsSaved = monthsSaved > 0 ? monthsSaved : 0
-    result.interestSaved = totalInterest - extraInterest
-    result.newPayoffDate = calculatePayoffDate(startDate, extraSchedule.length)
-    if (inputs.paymentFrequency === "monthly") {
-      activeSchedule = extraSchedule
+  if (extraConfig) {
+    const baseline = inputs.paymentFrequency === "biweekly" ? biweeklyBase : {
+      schedule: monthlyBaseSchedule,
+      totalInterest: monthlyBaseInterest,
     }
+
+    result.extraSchedule = activeSchedule
+    result.monthsSaved = Math.max(0, baseline.schedule.length - activeSchedule.length)
+    result.interestSaved = Math.max(0, baseline.totalInterest - totalInterest)
+    result.newPayoffDate = calculatePayoffDate(startDate, activeSchedule.length)
   }
 
   if (inputs.paymentFrequency === "biweekly") {
-    const monthlySummary = calculateLoan({ ...inputs, paymentFrequency: "monthly" })
-    result.biweeklyMonthsSaved = Math.max(
-      0,
-      monthlySummary.amortizationSchedule.length - result.amortizationSchedule.length
-    )
-    result.biweeklyInterestSaved = monthlySummary.totalInterest - result.totalInterest
+    result.biweeklyMonthsSaved = Math.max(0, monthlyBaseSchedule.length - activeSchedule.length)
+    result.biweeklyInterestSaved = Math.max(0, monthlyBaseInterest - totalInterest)
   }
 
-  result.amortizationSchedule = activeSchedule
   result.yearlySchedule = aggregateYearly(activeSchedule)
 
   return result

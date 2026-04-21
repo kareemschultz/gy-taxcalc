@@ -76,11 +76,15 @@ function StatCard({ label, value }: { label: string; value: string }) {
   )
 }
 
-function rowForView(row: AmortizationRow | YearlyRow, view: "monthly" | "yearly") {
+function rowForView(
+  row: AmortizationRow | YearlyRow,
+  view: "monthly" | "yearly",
+  paymentFrequency: "monthly" | "biweekly"
+) {
   if (view === "monthly") {
     const monthly = row as AmortizationRow
     return {
-      period: `Month ${monthly.period}`,
+      period: paymentFrequency === "biweekly" ? `Bi-weekly Period ${monthly.period}` : `Month ${monthly.period}`,
       payment: monthly.payment,
       principal: monthly.principal,
       interest: monthly.interest,
@@ -124,7 +128,7 @@ export function LoanResults({
       : result.monthlyPayment
   const paymentLabel = inputs.paymentFrequency === "biweekly" ? "Bi-weekly Payment" : "Monthly Payment"
   const rows = (view === "monthly" ? result.amortizationSchedule : result.yearlySchedule).map((row) =>
-    rowForView(row, view)
+    rowForView(row, view, inputs.paymentFrequency)
   )
   const pageSize = 24
   const totalPages = Math.max(1, Math.ceil(rows.length / pageSize))
@@ -340,10 +344,10 @@ export function LoanResults({
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {pageRows.map((row) => (
+                    {pageRows.map((row, index) => (
                         <tr
                           key={row.period}
-                          className={row.period === "Month 1" ? "bg-primary/5" : undefined}
+                          className={page === 0 && index === 0 ? "bg-primary/5" : undefined}
                         >
                           <td className="px-3 py-2">{row.period}</td>
                           <td className="px-3 py-2 text-right tabular-nums">{formatCurrency(row.payment)}</td>

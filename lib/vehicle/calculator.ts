@@ -29,6 +29,14 @@ function formatGyd(amount: number) {
   return `GY$${Math.round(amount).toLocaleString("en-US")}`
 }
 
+function toUsd(amountGyd: number, rate: number) {
+  return rate > 0 ? amountGyd / rate : 0
+}
+
+function toGyd(amountUsd: number, rate: number) {
+  return amountUsd * rate
+}
+
 function findBracket<T extends VehicleBracket | Vehicle4PlusBracket>(cc: number, table: T[]) {
   for (const bracket of table) {
     if (cc >= bracket.min && cc <= bracket.max) return bracket
@@ -56,20 +64,20 @@ function buildBreakdown(result: {
     { label: "CIF Value", gyd: result.cifGYD, usd: result.cifUSD },
     {
       label: "Import Duty",
-      gyd: result.importDuty * rate,
-      usd: result.importDuty,
+      gyd: result.importDuty,
+      usd: toUsd(result.importDuty, rate),
       rate: `${(result.importDutyRate * 100).toFixed(0)}%`,
     },
     {
       label: "Excise Tax",
-      gyd: result.exciseTax * rate,
-      usd: result.exciseTax,
+      gyd: result.exciseTax,
+      usd: toUsd(result.exciseTax, rate),
       rate: result.exciseTaxRate,
     },
     {
       label: "VAT",
-      gyd: result.vat * rate,
-      usd: result.vat,
+      gyd: result.vat,
+      usd: toUsd(result.vat, rate),
       rate: `${(result.vatRate * 100).toFixed(0)}%`,
     },
     { label: "Total Tax", gyd: result.totalTax, usd: result.totalTaxUSD },
@@ -124,14 +132,15 @@ export function getVehicleAgeInfo(modelYear: number, importYear = new Date().get
 function applyRemigrantConcession(result: VehicleTaxResult, returningNational: boolean) {
   if (!returningNational) return result
 
+  const rate = result.exchangeRate
   result.importDuty = 0
   result.importDutyRate = 0
   result.vat = 0
   result.vatRate = 0
   result.totalTax = result.exciseTax
-  result.totalTaxUSD = result.exciseTax
+  result.totalTaxUSD = toUsd(result.exciseTax, rate)
   result.totalLandedCost = result.cifGYD + result.exciseTax
-  result.totalLandedCostUSD = result.cifUSD + result.exciseTax
+  result.totalLandedCostUSD = result.cifUSD + result.totalTaxUSD
   result.notes.unshift("Returning National concession applied: customs duty and VAT exempted.")
   result.notes.push(
     "Excise tax on re-migrant vehicles is conservatively retained in this calculator."
@@ -150,11 +159,11 @@ function calculateMotorcycleTax(
 ): VehicleTaxResult {
   const bracket = findBracket(inputs.engineCC, MOTORCYCLE_RATES)
   const dealerMultiplier = inputs.importerType === "dealer" ? 1.5 : 1
-  const effectiveCif = inputs.cifUSD * dealerMultiplier
+  const effectiveCif = base.cifGYD * dealerMultiplier
 
-  const importDuty = bracket.duty * inputs.cifUSD
+  const importDuty = bracket.duty * base.cifGYD
   const exciseTax = bracket.excise * (effectiveCif + importDuty)
-  const vat = bracket.vat * (inputs.cifUSD + importDuty + exciseTax)
+  const vat = bracket.vat * (base.cifGYD + importDuty + exciseTax)
 
   base.importDutyRate = bracket.duty
   base.exciseTaxRate = `${(bracket.excise * 100).toFixed(0)}%`
@@ -163,7 +172,7 @@ function calculateMotorcycleTax(
   base.exciseTax = exciseTax
   base.vat = vat
   base.totalTax = importDuty + exciseTax + vat
-  base.totalTaxUSD = base.totalTax
+  base.totalTaxUSD = toUsd(base.totalTax, rate)
   base.totalLandedCost = base.cifGYD + base.totalTax
   base.totalLandedCostUSD = base.cifUSD + base.totalTaxUSD
   base.notes.push(
@@ -191,17 +200,17 @@ function calculateStandardVehicleTax(
     const bracket = findBracket(inputs.engineCC, table) as VehicleBracket
     const effectiveCif =
       inputs.importerType === "franchise" && (inputs.retailPriceUSD ?? 0) > 0
-        ? (inputs.retailPriceUSD ?? 0)
+        ? toGyd(inputs.retailPriceUSD ?? 0, rate)
         : inputs.importerType === "dealer"
-          ? inputs.cifUSD * 1.5
-          : inputs.cifUSD
+          ? base.cifGYD * 1.5
+          : base.cifGYD
 
-    const importDuty = bracket.duty * inputs.cifUSD
+    const importDuty = bracket.duty * base.cifGYD
     const exciseTax = bracket.excise * (effectiveCif + importDuty)
     const vatRemoved2026 =
       (inputs.use2026Rates ?? true) &&
       (inputs.engineCC <= 1500 || (inputs.fuelType === "hybrid" && inputs.engineCC <= 2000))
-    const vat = vatRemoved2026 ? 0 : bracket.vat * (inputs.cifUSD + importDuty + exciseTax)
+    const vat = vatRemoved2026 ? 0 : bracket.vat * (base.cifGYD + importDuty + exciseTax)
 
     base.importDutyRate = bracket.duty
     base.exciseTaxRate = `${(bracket.excise * 100).toFixed(0)}%`
@@ -210,7 +219,7 @@ function calculateStandardVehicleTax(
     base.exciseTax = exciseTax
     base.vat = vat
     base.totalTax = importDuty + exciseTax + vat
-    base.totalTaxUSD = base.totalTax
+    base.totalTaxUSD = toUsd(base.totalTax, rate)
     base.totalLandedCost = base.cifGYD + base.totalTax
     base.totalLandedCostUSD = base.cifUSD + base.totalTaxUSD
 
@@ -246,7 +255,7 @@ function calculateStandardVehicleTax(
     base.vat = 0
     base.vatRate = 0
     base.totalTax = exciseTax
-    base.totalTaxUSD = exciseTax / rate
+    base.totalTaxUSD = toUsd(exciseTax, rate)
     base.totalLandedCost = base.cifGYD + exciseTax
     base.totalLandedCostUSD = base.cifUSD + base.totalTaxUSD
     base.notes.push(`4+ years, ${inputs.engineCC}cc: flat excise ${formatGyd(exciseTax)}.`)
@@ -256,7 +265,8 @@ function calculateStandardVehicleTax(
     return applyRemigrantConcession(base, inputs.returningNational)
   }
 
-  const exciseTax = ((inputs.cifUSD + (bracket.addon ?? 0)) * (bracket.rate ?? 0)) + (bracket.addon ?? 0)
+  const addon = bracket.addon ?? 0
+  const exciseTax = ((base.cifGYD + addon) * (bracket.rate ?? 0)) + addon
   base.importDuty = 0
   base.importDutyRate = 0
   base.exciseTax = exciseTax
@@ -264,9 +274,9 @@ function calculateStandardVehicleTax(
   base.vat = 0
   base.vatRate = 0
   base.totalTax = exciseTax
-  base.totalTaxUSD = exciseTax
+  base.totalTaxUSD = toUsd(exciseTax, rate)
   base.totalLandedCost = base.cifGYD + exciseTax
-  base.totalLandedCostUSD = base.cifUSD + exciseTax
+  base.totalLandedCostUSD = base.cifUSD + base.totalTaxUSD
   base.notes.push(`4+ years, ${inputs.fuelType}, ${inputs.engineCC}cc: formula-based excise.`)
   base.notes.push("No duty, no VAT for 4+ year vehicles.")
   base.formulaUsed = `4+ years formula`
@@ -313,12 +323,12 @@ export function calculateVehicleTax(inputs: VehicleInputs): VehicleTaxResult {
   }
 
   if (inputs.plateType === "government") {
-    base.exciseTax = 2000
+    base.exciseTax = toGyd(2000, rate)
     base.exciseTaxRate = "flat"
-    base.totalTax = 2000
-    base.totalTaxUSD = 2000
-    base.totalLandedCost = cifGYD + 2000 * rate
-    base.totalLandedCostUSD = cifUSD + 2000
+    base.totalTax = base.exciseTax
+    base.totalTaxUSD = toUsd(base.exciseTax, rate)
+    base.totalLandedCost = cifGYD + base.totalTax
+    base.totalLandedCostUSD = cifUSD + base.totalTaxUSD
     base.notes.push("Government plate: flat excise US$2,000, no duty, no VAT.")
     base.formulaUsed = "G-Plate: flat excise US$2,000"
     base.breakdown = buildBreakdown(base)
@@ -329,7 +339,7 @@ export function calculateVehicleTax(inputs: VehicleInputs): VehicleTaxResult {
     if (inputs.engineCC <= 2000) {
       base.exciseTax = 2_000_000
       base.totalTax = 2_000_000
-      base.totalTaxUSD = 2_000_000 / rate
+      base.totalTaxUSD = toUsd(2_000_000, rate)
       base.totalLandedCost = cifGYD + 2_000_000
       base.totalLandedCostUSD = cifUSD + base.totalTaxUSD
       base.notes.push("Budget 2026: double-cab under 2000cc flat GY$2,000,000.")
@@ -340,7 +350,7 @@ export function calculateVehicleTax(inputs: VehicleInputs): VehicleTaxResult {
     if (inputs.engineCC <= 2500) {
       base.exciseTax = 3_000_000
       base.totalTax = 3_000_000
-      base.totalTaxUSD = 3_000_000 / rate
+      base.totalTaxUSD = toUsd(3_000_000, rate)
       base.totalLandedCost = cifGYD + 3_000_000
       base.totalLandedCostUSD = cifUSD + base.totalTaxUSD
       base.notes.push("Budget 2026: double-cab 2000-2500cc flat GY$3,000,000.")

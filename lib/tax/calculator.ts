@@ -264,10 +264,7 @@ export function calculateSalaryIncrease(
     const newMonthlyGratuity = newResults.basicSalary * (newResults.gratuityRate / 100)
     retroGratuityDifferential = (newMonthlyGratuity - oldMonthlyGratuity) * retroactiveMonths
 
-    const vacationAllowanceIncrease = (baseResults.vacationAllowance || 0) * (increasePercentage / 100)
-    retroVacationAllowance = vacationAllowanceIncrease
-
-    totalRetroGross = totalRetroactiveLumpSum + retroGratuityDifferential + retroVacationAllowance
+    totalRetroGross = totalRetroactiveLumpSum + retroGratuityDifferential
 
     const grossForRetroMonth = newResults.regularMonthlyGrossIncome + totalRetroactiveLumpSum
     const retroGrossForTaxable =
@@ -321,7 +318,6 @@ export function calculateSalaryIncrease(
       const netEffectOfBackpay = netPayWithRetroactiveLumpSum - newResults.monthlyNetSalary
       calculatedTotal += netEffectOfBackpay
       calculatedTotal += retroGratuityDifferential
-      calculatedTotal += retroVacationAllowance
     }
 
     gratuityMonthNetPay = newResults.monthlyNetSalary
@@ -340,7 +336,7 @@ export function calculateSalaryIncrease(
 
   if (retroactiveMonths > 0) {
     const annualNetBackpayEffect = netPayWithRetroactiveLumpSum - newResults.monthlyNetSalary
-    newResults.annualTotal += annualNetBackpayEffect + retroGratuityDifferential + retroVacationAllowance
+    newResults.annualTotal += annualNetBackpayEffect + retroGratuityDifferential
   }
 
   newResults.monthSixTotal = newResults.monthlyNetSalary + newResults.sixMonthGratuity
