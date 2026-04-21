@@ -98,95 +98,6 @@ const updatesNav = [
   },
 ]
 
-type ResourceLink = {
-  title: string
-  url: string
-  icon: React.ComponentType<{ className?: string }>
-  external?: boolean
-}
-
-type ResourceSection = {
-  label: string
-  items: ResourceLink[]
-}
-
-const resourceSections: ResourceSection[] = [
-  {
-    label: "App Resources",
-    items: [
-      { title: "Overview", url: "/overview", icon: LayoutDashboard },
-      { title: "Tax Calculator", url: "/dashboard", icon: Calculator },
-      { title: "Vehicle Import", url: "/vehicle", icon: Car },
-      { title: "Loan Calculator", url: "/loan", icon: Landmark },
-      { title: "Compare Scenarios", url: "/compare", icon: GitCompareArrows },
-      { title: "Annual Planner", url: "/planner", icon: CalendarRange },
-      { title: "Insights", url: "/insights", icon: Radar },
-      { title: "Analytics", url: "/analytics", icon: Activity },
-      { title: "Policy Guide", url: "/tax-info", icon: BookOpen },
-      { title: "Release Notes", url: "/changelog", icon: ScrollText },
-    ],
-  },
-  {
-    label: "Official Guyana",
-    items: [
-      { title: "GRA Home", url: "https://www.gra.gov.gy", icon: Globe, external: true },
-      { title: "Vehicle Tax Guide", url: "https://www.gra.gov.gy/imports/motor-vehicle/", icon: FileText, external: true },
-      { title: "Vehicle Registration", url: "https://www.gra.gov.gy/vehicles/register-your-motor-vehicle/", icon: Car, external: true },
-      { title: "Registration Guide", url: "https://www.gra.gov.gy/simplified-procedures-for-registration-of-vehicles-expanded/", icon: FileText, external: true },
-      { title: "Re-migrant Policy", url: "https://www.gra.gov.gy/tax-exemption-policy-for-qualifying-re-migrants-settlers-and-returning-students-2/", icon: Shield, external: true },
-      { title: "Vehicle Exemptions", url: "https://www.gra.gov.gy/exemptions/", icon: Shield, external: true },
-      { title: "Budget 2026", url: "https://finance.gov.gy/budget-at-a-glance-2026/", icon: TrendingUp, external: true },
-      { title: "VAT Fishing Policy", url: "https://www.gra.gov.gy/policy-17-vat-and-fishing-sector/", icon: FileText, external: true },
-    ],
-  },
-  {
-    label: "Loan & Finance",
-    items: [
-      { title: "GPSCCU Home", url: "https://mygpsccu.com/", icon: CircleDollarSign, external: true },
-      { title: "GBTI Home", url: "https://www.gbtibank.com/", icon: Banknote, external: true },
-      { title: "BoB Vehicle Loan", url: "https://www.bankofbaroda.gy/products/financing-facilities/vehicle-loan", icon: Car, external: true },
-      { title: "BoB Personal Loan", url: "https://www.bankofbaroda.gy/products/financing-facilities/personal-loans", icon: Landmark, external: true },
-      { title: "Republic Retail", url: "https://www.republicguyana.com/personal/retail-loans", icon: Banknote, external: true },
-      { title: "Citizens Calculator", url: "https://www.citizensbankgy.com/calculators/", icon: Calculator, external: true },
-      { title: "Demerara Credit", url: "https://demerarabank.com/credit-facilities/", icon: Landmark, external: true },
-      { title: "Demerara Calculator", url: "https://demerarabank.com/loan-repayment-calculator/", icon: Calculator, external: true },
-    ],
-  },
-]
-
-function ResourcesMenu() {
-  return (
-    <>
-      {resourceSections.map((section, index) => (
-        <SidebarGroup key={section.label}>
-          <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
-          <SidebarMenuSub>
-            {section.items.map((item) => (
-              <SidebarMenuSubItem key={item.title}>
-                <SidebarMenuSubButton asChild>
-                  {item.external ? (
-                    <a href={item.url} title={item.title} target="_blank" rel="noopener noreferrer">
-                      <item.icon />
-                      <span>{item.title}</span>
-                      <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
-                    </a>
-                  ) : (
-                    <Link href={item.url} title={item.title}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  )}
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            ))}
-          </SidebarMenuSub>
-          {index < resourceSections.length - 1 ? <SidebarSeparator /> : null}
-        </SidebarGroup>
-      ))}
-    </>
-  )
-}
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -217,7 +128,221 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarSeparator />
         <NavMain label="Updates" items={updatesNav} />
         <SidebarSeparator />
-        <ResourcesMenu />
+        <SidebarGroup>
+          <SidebarGroupLabel>Official Guyana</SidebarGroupLabel>
+          <SidebarMenuSub>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a href="https://www.gra.gov.gy" title="GRA Home" target="_blank" rel="noopener noreferrer">
+                  <Globe />
+                  <span>GRA Home</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://www.gra.gov.gy/imports/motor-vehicle/"
+                  title="Vehicle Tax Guide"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FileText />
+                  <span>Vehicle Tax Guide</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://www.gra.gov.gy/vehicles/register-your-motor-vehicle/"
+                  title="Vehicle Registration"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Car />
+                  <span>Vehicle Registration</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://www.gra.gov.gy/simplified-procedures-for-registration-of-vehicles-expanded/"
+                  title="Registration Guide"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FileText />
+                  <span>Registration Guide</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://www.gra.gov.gy/tax-exemption-policy-for-qualifying-re-migrants-settlers-and-returning-students-2/"
+                  title="Re-migrant Policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Shield />
+                  <span>Re-migrant Policy</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://www.gra.gov.gy/exemptions/"
+                  title="Vehicle Exemptions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Shield />
+                  <span>Vehicle Exemptions</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a href="https://finance.gov.gy/budget-at-a-glance-2026/" title="Budget 2026" target="_blank" rel="noopener noreferrer">
+                  <TrendingUp />
+                  <span>Budget 2026</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://www.gra.gov.gy/policy-17-vat-and-fishing-sector/"
+                  title="VAT Fishing Policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FileText />
+                  <span>VAT Fishing Policy</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+          </SidebarMenuSub>
+        </SidebarGroup>
+        <SidebarSeparator />
+        <SidebarGroup>
+          <SidebarGroupLabel>Loan &amp; Finance</SidebarGroupLabel>
+          <SidebarMenuSub>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a href="https://mygpsccu.com/" title="GPSCCU Home" target="_blank" rel="noopener noreferrer">
+                  <CircleDollarSign />
+                  <span>GPSCCU Home</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a href="https://www.gbtibank.com/" title="GBTI Home" target="_blank" rel="noopener noreferrer">
+                  <Banknote />
+                  <span>GBTI Home</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://www.bankofbaroda.gy/products/financing-facilities/vehicle-loan"
+                  title="BoB Vehicle Loan"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Car />
+                  <span>BoB Vehicle Loan</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://www.bankofbaroda.gy/products/financing-facilities/personal-loans"
+                  title="BoB Personal Loan"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Landmark />
+                  <span>BoB Personal Loan</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://www.republicguyana.com/personal/retail-loans"
+                  title="Republic Retail"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Banknote />
+                  <span>Republic Retail</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://www.citizensbankgy.com/calculators/"
+                  title="Citizens Calculator"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Calculator />
+                  <span>Citizens Calculator</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://demerarabank.com/credit-facilities/"
+                  title="Demerara Credit"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Landmark />
+                  <span>Demerara Credit</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <SidebarMenuSubButton asChild className="items-start py-2 text-left [&>span]:whitespace-normal [&>span]:leading-tight">
+                <a
+                  href="https://demerarabank.com/loan-repayment-calculator/"
+                  title="Demerara Calculator"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Calculator />
+                  <span>Demerara Calculator</span>
+                  <ExternalLink className="ml-auto size-3.5 text-muted-foreground" />
+                </a>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+          </SidebarMenuSub>
+        </SidebarGroup>
       </SidebarContent>
 
       {/* Footer */}

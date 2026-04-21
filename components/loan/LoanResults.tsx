@@ -13,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Separator } from "@/components/ui/separator"
 import { formatCurrency } from "@/lib/utils"
 import { compareBanks, resolveLoanPrincipal } from "@/lib/loan/calculator"
 import type { LoanInputs, LoanResults, YearlyRow, AmortizationRow } from "@/lib/loan/types"
@@ -43,35 +42,19 @@ function EmptyState() {
   )
 }
 
-function HeroCard({
+function Metric({
   label,
   value,
-  sub,
-  text,
-  accent = false,
+  valueClassName,
 }: {
   label: string
-  value: number
-  sub?: string
-  text?: string
-  accent?: boolean
+  value: React.ReactNode
+  valueClassName?: string
 }) {
   return (
-    <Card className={accent ? "border-primary/30 bg-primary/5" : "bg-muted/20"}>
-      <CardContent className="pt-5">
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-        {text ? <p className="mt-2 text-2xl font-bold">{text}</p> : <p className="mt-2 text-2xl font-bold"><Money amount={value} /></p>}
-        {sub ? <p className="mt-1 text-sm text-muted-foreground">{sub}</p> : null}
-      </CardContent>
-    </Card>
-  )
-}
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border bg-muted/20 p-3">
+    <div className="min-w-0">
       <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-sm font-semibold">{value}</p>
+      <div className={valueClassName || "mt-1 text-sm font-semibold"}>{value}</div>
     </div>
   )
 }
@@ -133,7 +116,6 @@ export function LoanResults({
   const pageSize = 24
   const totalPages = Math.max(1, Math.ceil(rows.length / pageSize))
   const pageRows = rows.slice(page * pageSize, page * pageSize + pageSize)
-
   const savingsMonths = result.monthsSaved ?? result.biweeklyMonthsSaved ?? 0
   const savingsInterest = result.interestSaved ?? result.biweeklyInterestSaved ?? 0
 
@@ -145,20 +127,32 @@ export function LoanResults({
       transition={{ duration: 0.28 }}
       className="space-y-4"
     >
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <HeroCard label={paymentLabel} value={displayPayment} accent />
-        <HeroCard label="Total Interest" value={result.totalInterest} />
-        <HeroCard label="Total Paid" value={result.totalPaid} />
-        <HeroCard label="Payoff Date" value={0} text={result.payoffDate} />
-      </div>
-
-      <div className="grid gap-2 sm:grid-cols-3">
-        <StatCard label="Rate" value={`${result.effectiveRate.toFixed(2)}% effective`} />
-        <StatCard label="Loan Term" value={`${result.termMonths} months`} />
-        <StatCard
-          label="Upfront Fee"
-          value={result.processingFee > 0 ? formatCurrency(result.processingFee) : "None"}
-        />
+      <div className="rounded-xl border bg-muted/10 p-4">
+        <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr] lg:items-end">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{paymentLabel}</p>
+            <p className="mt-1 text-3xl font-bold tabular-nums">{formatCurrency(displayPayment)}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Principal {formatCurrency(principal)} · Payoff {result.payoffDate}
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Metric
+              label="Total Interest"
+              value={<span className="tabular-nums">{formatCurrency(result.totalInterest)}</span>}
+            />
+            <Metric
+              label="Total Paid"
+              value={<span className="tabular-nums">{formatCurrency(result.totalPaid)}</span>}
+            />
+            <Metric label="Payoff Date" value={<span className="font-medium">{result.payoffDate}</span>} />
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-4 border-t pt-3 text-sm text-muted-foreground">
+          <span>Rate {result.effectiveRate.toFixed(2)}%</span>
+          <span>Term {result.termMonths} months</span>
+          <span>Upfront fee {result.processingFee > 0 ? formatCurrency(result.processingFee) : "None"}</span>
+        </div>
       </div>
 
       <ResultActions
@@ -219,81 +213,86 @@ export function LoanResults({
 
         <TabsContent value="summary">
           <div className="space-y-4">
-              <Card className="bg-muted/20">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <BadgeDollarSign className="size-4 text-primary" />
-                    Loan Snapshot
-                  </CardTitle>
-                  <CardDescription>Quick summary of the selected loan setup.</CardDescription>
-                </CardHeader>
-              <CardContent className="space-y-3 pt-0">
-                <div className="grid gap-2 md:grid-cols-2">
-                  <StatCard label="Principal" value={formatCurrency(principal)} />
-                  <StatCard label="Payoff Date" value={result.payoffDate} />
-                </div>
-                <Separator />
-                <div className="grid gap-2 md:grid-cols-2">
-                  <StatCard label="Total Interest" value={formatCurrency(result.totalInterest)} />
-                  <StatCard label="Total Paid" value={formatCurrency(result.totalPaid)} />
-                </div>
-              </CardContent>
-            </Card>
+            <div className="rounded-xl border bg-muted/10 p-4">
+              <div className="flex items-center gap-2 text-sm font-semibold">
+                <BadgeDollarSign className="size-4 text-primary" />
+                Loan Snapshot
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">Quick summary of the selected loan setup.</p>
+              <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <Metric
+                  label="Principal"
+                  value={<span className="tabular-nums">{formatCurrency(principal)}</span>}
+                />
+                <Metric label="Payoff Date" value={<span className="font-medium">{result.payoffDate}</span>} />
+                <Metric
+                  label="Total Interest"
+                  value={<span className="tabular-nums">{formatCurrency(result.totalInterest)}</span>}
+                />
+                <Metric
+                  label="Total Paid"
+                  value={<span className="tabular-nums">{formatCurrency(result.totalPaid)}</span>}
+                />
+              </div>
+            </div>
 
             {result.monthsSaved !== undefined || result.biweeklyMonthsSaved !== undefined ? (
-              <Card className="bg-muted/20">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <PiggyBank className="size-4 text-primary" />
-                    Savings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="grid gap-2 md:grid-cols-4">
-                    <StatCard label="Months Saved" value={String(savingsMonths)} />
-                    <StatCard label="Interest Saved" value={formatCurrency(savingsInterest)} />
-                    <StatCard label="New Payoff Date" value={result.newPayoffDate || result.payoffDate} />
-                    <StatCard
-                      label="New Payment"
-                      value={
-                        result.extraSchedule?.length
-                          ? formatCurrency(
-                              result.extraSchedule[0]?.payment || result.monthlyPayment
-                            )
-                          : formatCurrency(displayPayment)
-                      }
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="rounded-xl border bg-muted/10 p-4">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <PiggyBank className="size-4 text-primary" />
+                  Savings
+                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-4">
+                  <Metric label="Months Saved" value={<span>{String(savingsMonths)}</span>} />
+                  <Metric
+                    label="Interest Saved"
+                    value={<span className="tabular-nums">{formatCurrency(savingsInterest)}</span>}
+                  />
+                  <Metric
+                    label="New Payoff Date"
+                    value={<span className="font-medium">{result.newPayoffDate || result.payoffDate}</span>}
+                  />
+                  <Metric
+                    label="New Payment"
+                    value={
+                      <span className="tabular-nums">
+                        {result.extraSchedule?.length
+                          ? formatCurrency(result.extraSchedule[0]?.payment || result.monthlyPayment)
+                          : formatCurrency(displayPayment)}
+                      </span>
+                    }
+                  />
+                </div>
+              </div>
             ) : null}
 
             {inputs.paymentFrequency === "biweekly" && result.biweeklyPayment ? (
-              <Card className="bg-muted/20">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <TrendingDown className="size-4 text-primary" />
-                    Bi-weekly vs Monthly
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="grid gap-2 md:grid-cols-3">
-                    <StatCard label="Bi-weekly Payment" value={formatCurrency(result.biweeklyPayment)} />
-                    <StatCard
-                      label="Interest Saved"
-                      value={
-                        result.biweeklyInterestSaved !== undefined
+              <div className="rounded-xl border bg-muted/10 p-4">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <TrendingDown className="size-4 text-primary" />
+                  Bi-weekly vs Monthly
+                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-3">
+                  <Metric
+                    label="Bi-weekly Payment"
+                    value={<span className="tabular-nums">{formatCurrency(result.biweeklyPayment)}</span>}
+                  />
+                  <Metric
+                    label="Interest Saved"
+                    value={
+                      <span className="tabular-nums">
+                        {result.biweeklyInterestSaved !== undefined
                           ? formatCurrency(result.biweeklyInterestSaved)
-                          : "—"
-                      }
-                    />
-                    <StatCard
-                      label="Months Saved"
-                      value={result.biweeklyMonthsSaved !== undefined ? String(result.biweeklyMonthsSaved) : "—"}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+                          : "—"}
+                      </span>
+                    }
+                  />
+                  <Metric
+                    label="Months Saved"
+                    value={<span>{result.biweeklyMonthsSaved !== undefined ? String(result.biweeklyMonthsSaved) : "—"}</span>}
+                  />
+                </div>
+              </div>
             ) : null}
           </div>
         </TabsContent>
@@ -344,7 +343,7 @@ export function LoanResults({
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                    {pageRows.map((row, index) => (
+                      {pageRows.map((row, index) => (
                         <tr
                           key={row.period}
                           className={page === 0 && index === 0 ? "bg-primary/5" : undefined}

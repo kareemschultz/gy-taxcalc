@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { motion } from "framer-motion"
 import {
   BadgeDollarSign,
@@ -41,53 +40,27 @@ function EmptyState() {
   )
 }
 
-function HeroCard({
-  title,
+function Metric({
+  label,
   gyd,
   usd,
-  accent = false,
+  highlight = false,
 }: {
-  title: string
+  label: string
   gyd: number
   usd: number
-  accent?: boolean
+  highlight?: boolean
 }) {
   return (
-    <Card className={accent ? "border-primary/30 bg-primary/5" : "bg-muted/20"}>
-      <CardContent className="pt-5">
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">{title}</p>
-        <div className="mt-2 space-y-1">
-          <p className="text-2xl font-bold">
-            <Money amount={gyd} />
-          </p>
-          <p className="text-sm text-muted-foreground">
-            <Money amount={usd} prefix="US$" />
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function RateCard({
-  title,
-  children,
-  icon,
-}: {
-  title: string
-  children: React.ReactNode
-  icon: React.ReactNode
-}) {
-  return (
-    <Card className="bg-muted/20">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          {icon}
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2 pt-0 text-sm text-muted-foreground">{children}</CardContent>
-    </Card>
+    <div className={highlight ? "rounded-lg bg-primary/5 p-4" : "rounded-lg p-4"}>
+      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-1 text-2xl font-bold">
+        <Money amount={gyd} />
+      </p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        <Money amount={usd} prefix="US$" />
+      </p>
+    </div>
   )
 }
 
@@ -110,9 +83,30 @@ export function VehicleResults({
       transition={{ duration: 0.28 }}
       className="space-y-4"
     >
-      <div className="grid gap-3 md:grid-cols-2">
-        <HeroCard title="Total Import Tax" gyd={result.totalTax} usd={result.totalTaxUSD} accent />
-        <HeroCard title="Total Landed Cost" gyd={result.totalLandedCost} usd={result.totalLandedCostUSD} />
+      <div className="rounded-xl border bg-muted/10 p-4">
+        <div className="grid gap-4 md:grid-cols-[1fr_auto_1fr] md:items-end">
+          <Metric label="Total Import Tax" gyd={result.totalTax} usd={result.totalTaxUSD} highlight />
+          <div className="hidden h-16 w-px bg-border md:block" />
+          <Metric label="Total Landed Cost" gyd={result.totalLandedCost} usd={result.totalLandedCostUSD} />
+        </div>
+        <div className="mt-4 grid gap-3 border-t pt-3 sm:grid-cols-3">
+          <div>
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Import Duty</p>
+            <p className="mt-1 text-sm font-medium tabular-nums">
+              <Money amount={result.importDuty} />
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Excise / VAT</p>
+            <p className="mt-1 text-sm font-medium tabular-nums">
+              <Money amount={result.exciseTax} /> / <Money amount={result.vat} />
+            </p>
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Formula</p>
+            <p className="mt-1 text-sm font-medium">{result.formulaUsed}</p>
+          </div>
+        </div>
       </div>
 
       <ResultActions
@@ -223,46 +217,95 @@ export function VehicleResults({
 
         <TabsContent value="rates">
           <div className="grid gap-3 md:grid-cols-2">
-            <RateCard title="Gasoline under 4 years" icon={<Landmark className="size-4 text-primary" />}>
-              <p>Duty and excise vary by engine size band.</p>
-              <p>VAT is 14% unless a 2026 exemption applies.</p>
-              <p>Under 1500cc under 4 years: VAT removed for private imports.</p>
-            </RateCard>
-            <RateCard title="Gasoline 4+ years" icon={<Landmark className="size-4 text-primary" />}>
-              <p>0-1500cc uses a flat GY$800,000 excise.</p>
-              <p>Larger engines use formula-based excise by band.</p>
-              <p>No duty, no VAT for 4+ year units.</p>
-            </RateCard>
-            <RateCard title="Diesel under 4 years" icon={<Landmark className="size-4 text-primary" />}>
-              <p>Duty and excise are banded by displacement.</p>
-              <p>VAT is 14% unless removed by 2026 policy.</p>
-              <p>Hybrid and smaller private imports may qualify for VAT relief.</p>
-            </RateCard>
-            <RateCard title="Diesel 4+ years" icon={<Landmark className="size-4 text-primary" />}>
-              <p>0-1500cc uses a flat GY$800,000 excise.</p>
-              <p>Larger engines use formula-based excise by band.</p>
-              <p>No duty, no VAT for 4+ year units.</p>
-            </RateCard>
-            <RateCard title="2026 rules highlights" icon={<ShieldCheck className="size-4 text-primary" />}>
-              <p>Double-cab pickups have flat GY$2M or GY$3M total tax bands.</p>
-              <p>ATVs and electric vehicles are fully exempt.</p>
-              <p>Government plates use a flat US$2,000 excise-only rule.</p>
-            </RateCard>
-            <RateCard title="Dealer and franchise" icon={<BookOpen className="size-4 text-primary" />}>
-              <p>Dealer imports use 1.5x CIF as excise base.</p>
-              <p>Franchise imports may use retail selling price as excise base.</p>
-              <p>Returning nationals can remove duty and VAT under concession rules.</p>
-            </RateCard>
-            <RateCard title="Electric, ATV, and motorcycle rules" icon={<ShieldAlert className="size-4 text-primary" />}>
-              <p>Electric vehicles are fully exempt.</p>
-              <p>ATVs are fully exempt under Budget 2026.</p>
-              <p>Motorcycles follow a separate 20% duty rule and HP exemption guidance.</p>
-            </RateCard>
-            <RateCard title="How to use this" icon={<Tags className="size-4 text-primary" />}>
-              <p>Vehicle age is auto-classified from model year when provided.</p>
-              <p>Use the FOB converter to derive CIF before calculating tax.</p>
-              <p>Results update live when inputs change.</p>
-            </RateCard>
+            {[
+              {
+                title: "Gasoline under 4 years",
+                icon: <Landmark className="size-4 text-primary" />,
+                lines: [
+                  "Duty and excise vary by engine size band.",
+                  "VAT is 14% unless a 2026 exemption applies.",
+                  "Under 1500cc under 4 years: VAT removed for private imports.",
+                ],
+              },
+              {
+                title: "Gasoline 4+ years",
+                icon: <Landmark className="size-4 text-primary" />,
+                lines: [
+                  "0-1500cc uses a flat GY$800,000 excise.",
+                  "Larger engines use formula-based excise by band.",
+                  "No duty, no VAT for 4+ year units.",
+                ],
+              },
+              {
+                title: "Diesel under 4 years",
+                icon: <Landmark className="size-4 text-primary" />,
+                lines: [
+                  "Duty and excise are banded by displacement.",
+                  "VAT is 14% unless removed by 2026 policy.",
+                  "Hybrid and smaller private imports may qualify for VAT relief.",
+                ],
+              },
+              {
+                title: "Diesel 4+ years",
+                icon: <Landmark className="size-4 text-primary" />,
+                lines: [
+                  "0-1500cc uses a flat GY$800,000 excise.",
+                  "Larger engines use formula-based excise by band.",
+                  "No duty, no VAT for 4+ year units.",
+                ],
+              },
+              {
+                title: "2026 rules highlights",
+                icon: <ShieldCheck className="size-4 text-primary" />,
+                lines: [
+                  "Double-cab pickups have flat GY$2M or GY$3M total tax bands.",
+                  "ATVs and electric vehicles are fully exempt.",
+                  "Government plates use a flat US$2,000 excise-only rule.",
+                ],
+              },
+              {
+                title: "Dealer and franchise",
+                icon: <BookOpen className="size-4 text-primary" />,
+                lines: [
+                  "Dealer imports use 1.5x CIF as excise base.",
+                  "Franchise imports may use retail selling price as excise base.",
+                  "Returning nationals can remove duty and VAT under concession rules.",
+                ],
+              },
+              {
+                title: "Electric, ATV, and motorcycle rules",
+                icon: <ShieldAlert className="size-4 text-primary" />,
+                lines: [
+                  "Electric vehicles are fully exempt.",
+                  "ATVs are fully exempt under Budget 2026.",
+                  "Motorcycles follow a separate 20% duty rule and HP exemption guidance.",
+                ],
+              },
+              {
+                title: "How to use this",
+                icon: <Tags className="size-4 text-primary" />,
+                lines: [
+                  "Vehicle age is auto-classified from model year when provided.",
+                  "Use the FOB converter to derive CIF before calculating tax.",
+                  "Results update live when inputs change.",
+                ],
+              },
+            ].map((item) => (
+              <div key={item.title} className="rounded-lg border bg-muted/10 p-4">
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  {item.icon}
+                  <span>{item.title}</span>
+                </div>
+                <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                  {item.lines.map((line) => (
+                    <li key={line} className="flex gap-2">
+                      <span className="mt-1 size-1.5 rounded-full bg-primary/70" />
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </TabsContent>
       </Tabs>
