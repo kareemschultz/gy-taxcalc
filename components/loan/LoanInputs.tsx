@@ -61,11 +61,11 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center justify-between gap-3">
-        <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="flex flex-col gap-1">
+        <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground leading-tight">
           {label}
         </Label>
-        {hint ? <div className="shrink-0">{hint}</div> : null}
+        {hint ? <div className="text-[11px] leading-snug text-muted-foreground">{hint}</div> : null}
       </div>
       {children}
     </div>

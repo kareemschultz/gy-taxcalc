@@ -71,11 +71,11 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center justify-between gap-3">
-        <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="flex flex-col gap-1">
+        <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground leading-tight">
           {label}
         </Label>
-        {hint ? <div className="shrink-0">{hint}</div> : null}
+        {hint ? <div className="text-[11px] leading-snug text-muted-foreground">{hint}</div> : null}
       </div>
       {children}
     </div>
@@ -275,20 +275,27 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
           </Field>
 
           <Field label="Payment Frequency">
-            <div className="grid grid-cols-5 gap-1">
+            <div className="grid grid-cols-2 gap-1 sm:grid-cols-5">
               {(Object.keys(PAYMENT_FREQUENCIES) as PaymentFrequency[]).map((paymentFrequency) => (
                 <button
                   key={paymentFrequency}
                   type="button"
                   onClick={() => update({ paymentFrequency })}
                   className={cn(
-                    "rounded-lg border py-1.5 text-xs font-medium transition-all",
+                    "rounded-lg border px-2 py-2 text-[11px] font-medium leading-tight transition-all sm:text-xs",
                     paymentFrequency === freq
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-border bg-background hover:bg-muted"
                   )}
                 >
-                  {PAYMENT_FREQUENCIES[paymentFrequency].label.slice(0, 3)}
+                  <span className="sm:hidden">
+                    {paymentFrequency === "fortnightly"
+                      ? "Fortnight"
+                      : PAYMENT_FREQUENCIES[paymentFrequency].label}
+                  </span>
+                  <span className="hidden sm:inline">
+                    {PAYMENT_FREQUENCIES[paymentFrequency].label}
+                  </span>
                 </button>
               ))}
             </div>
