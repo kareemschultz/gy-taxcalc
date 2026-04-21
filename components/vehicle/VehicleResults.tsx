@@ -118,6 +118,26 @@ export function VehicleResults({
       <ResultActions
         fileName="vehicle-summary.txt"
         title="Vehicle Summary"
+        subtitle="A clean export of the import tax result and the key calculation notes."
+        summary={[
+          { label: "Total Tax", value: formatCurrency(result.totalTax).replace("$", "GY$") },
+          { label: "Landed Cost", value: formatCurrency(result.totalLandedCost).replace("$", "GY$") },
+          { label: "Import Duty", value: formatCurrency(result.importDuty).replace("$", "GY$") },
+          { label: "Excise / VAT", value: `${formatCurrency(result.exciseTax).replace("$", "GY$")} / ${formatCurrency(result.vat).replace("$", "GY$")}` },
+        ]}
+        sections={[
+          {
+            title: "How it was calculated",
+            rows: result.breakdown.map((row) => ({
+              label: row.label,
+              value: `${row.rate ? `${row.rate} • ` : ""}${formatCurrency(row.gyd).replace("$", "GY$")}`,
+            })),
+          },
+          {
+            title: "What this means",
+            rows: result.notes.map((note, index) => ({ label: `Note ${index + 1}`, value: note })),
+          },
+        ]}
         lines={[
           `Formula used: ${result.formulaUsed}`,
           `Total tax: ${formatCurrency(result.totalTax).replace("$", "GY$")}`,

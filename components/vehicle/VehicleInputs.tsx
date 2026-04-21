@@ -74,6 +74,16 @@ const FUEL_OPTIONS: Array<{ value: FuelType; label: string }> = [
   { value: "hybrid", label: "Hybrid" },
 ]
 
+const ENGINE_PRESETS = [
+  { value: "1000", label: "1,000 cc" },
+  { value: "1500", label: "1,500 cc" },
+  { value: "1800", label: "1,800 cc" },
+  { value: "2000", label: "2,000 cc" },
+  { value: "2500", label: "2,500 cc" },
+  { value: "3000", label: "3,000 cc" },
+  { value: "custom", label: "Custom" },
+]
+
 function Field({
   label,
   hint,
@@ -146,6 +156,7 @@ interface VehicleInputsProps {
 export function VehicleInputs({ onChange }: VehicleInputsProps) {
   const [inputs, setInputs] = React.useState<TVehicleInputs>(DEFAULT_INPUTS)
   const [outboardHp, setOutboardHp] = React.useState(0)
+  const [enginePreset, setEnginePreset] = React.useState("custom")
 
   const update = React.useCallback((patch: Partial<TVehicleInputs>) => {
     setInputs((prev) => {
@@ -178,6 +189,7 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
   const reset = () => {
     setInputs(DEFAULT_INPUTS)
     setOutboardHp(0)
+    setEnginePreset("custom")
   }
 
   return (
@@ -348,16 +360,39 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
 
           <Field
             label="Engine Size (CC)"
-            hint={<Hint tip="Used to select the correct duty and excise bracket." />}
+            hint={<Hint tip="Choose a common displacement preset or enter a custom size." />}
           >
-            <Input
-              type="number"
-              min={0}
-              step={100}
-              value={inputs.engineCC || ""}
-              onChange={(event) => update({ engineCC: safeNum(event.target.value) })}
-              placeholder="1,500"
-            />
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Select
+                value={enginePreset}
+                onValueChange={(value) => {
+                  setEnginePreset(value)
+                  if (value === "custom") return
+                  update({ engineCC: Number(value) })
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ENGINE_PRESETS.map((preset) => (
+                    <SelectItem key={preset.value} value={preset.value}>
+                      {preset.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {enginePreset === "custom" ? (
+                <Input
+                  type="number"
+                  min={0}
+                  step={100}
+                  value={inputs.engineCC || ""}
+                  onChange={(event) => update({ engineCC: safeNum(event.target.value) })}
+                  placeholder="1,750"
+                />
+              ) : null}
+            </div>
           </Field>
 
           <Field label="Model Year">

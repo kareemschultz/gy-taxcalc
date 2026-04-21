@@ -208,6 +208,37 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
       <ResultActions
         fileName="salary-summary.txt"
         title="Salary Summary"
+        subtitle="A clean export of the current salary, deductions, and package estimate."
+        summary={[
+          { label: "Monthly Net", value: formatCurrency(monthlyNetSalary) },
+          { label: "Gross Income", value: formatCurrency(regularMonthlyGrossIncome) },
+          { label: "PAYE", value: formatCurrency(incomeTax) },
+          { label: "Annual Package", value: formatCurrency(annualTotal) },
+        ]}
+        sections={[
+          {
+            title: "Breakdown",
+            rows: [
+              { label: "Basic Salary", value: formatCurrency(results.basicSalary) },
+              { label: "Taxable Allowances", value: formatCurrency(results.taxableAllowances) },
+              { label: "Non-Taxable Allowances", value: formatCurrency(nonTaxableAllowances) },
+              { label: "Personal Allowance", value: formatCurrency(-personalAllowance) },
+              { label: "NIS", value: formatCurrency(-nisContribution) },
+              { label: "Income Tax (PAYE)", value: formatCurrency(-incomeTax) },
+              { label: "Monthly Net", value: formatCurrency(monthlyNetSalary) },
+            ],
+          },
+          {
+            title: "Yearly Package",
+            rows: [
+              { label: "Annual Gross", value: formatCurrency(annualGrossIncome) },
+              { label: "Annual NIS", value: formatCurrency(-annualNisContribution) },
+              { label: "Annual Tax", value: formatCurrency(-annualTaxPayable) },
+              { label: "Annual Gratuity", value: formatCurrency(annualGratuityTotal) },
+              { label: "Total Annual Package", value: formatCurrency(annualTotal) },
+            ],
+          },
+        ]}
         lines={[
           `Net take-home: ${formatCurrency(monthlyNetSalary)}`,
           `Gross income: ${formatCurrency(regularMonthlyGrossIncome)}`,

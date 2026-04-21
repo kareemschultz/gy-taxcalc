@@ -159,6 +159,32 @@ export function LoanResults({
       <ResultActions
         fileName="loan-summary.txt"
         title="Loan Summary"
+        subtitle="A clean export of the current loan scenario with payment and payoff details."
+        summary={[
+          { label: "Monthly Payment", value: formatCurrency(result.monthlyPayment) },
+          { label: "Total Interest", value: formatCurrency(result.totalInterest) },
+          { label: "Total Paid", value: formatCurrency(result.totalPaid) },
+          { label: "Payoff Date", value: result.payoffDate },
+        ]}
+        sections={[
+          {
+            title: "Loan Overview",
+            rows: [
+              { label: "Principal", value: formatCurrency(principal) },
+              { label: "Interest Rate", value: `${result.effectiveRate.toFixed(2)}% effective` },
+              { label: "Loan Term", value: `${result.termMonths} months` },
+              { label: "Upfront Fee", value: result.processingFee > 0 ? formatCurrency(result.processingFee) : "None" },
+            ],
+          },
+          {
+            title: "Savings and Comparison",
+            rows: [
+              { label: "Months Saved", value: String(savingsMonths) },
+              { label: "Interest Saved", value: formatCurrency(savingsInterest) },
+              { label: "New Payoff Date", value: result.newPayoffDate || result.payoffDate },
+            ],
+          },
+        ]}
         lines={[
           `Monthly payment: ${formatCurrency(result.monthlyPayment)}`,
           `Total interest: ${formatCurrency(result.totalInterest)}`,
