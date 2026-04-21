@@ -193,191 +193,280 @@ function buildReportHtml(
   safeSections: Array<{ title: string; note?: string; rows: Array<{ label: string; value: string }> }>
 ) {
   return `<!doctype html>
-      <html lang="en">
-        <head>
-          <meta charset="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>${escapeHtml(title)}</title>
-          <style>
-            :root {
-              color-scheme: light;
-              --bg: #f8fafc;
-              --panel: #ffffff;
-              --text: #0f172a;
-              --muted: #64748b;
-              --border: rgba(15, 23, 42, 0.12);
-              --accent: #16a34a;
-              --accent-soft: rgba(22, 163, 74, 0.12);
-            }
-            * { box-sizing: border-box; }
-            body {
-              margin: 0;
-              font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-              background:
-                radial-gradient(circle at top left, rgba(22, 163, 74, 0.16), transparent 28%),
-                radial-gradient(circle at bottom right, rgba(6, 182, 212, 0.12), transparent 30%),
-                var(--bg);
-              color: var(--text);
-            }
-            .page {
-              max-width: 1100px;
-              margin: 0 auto;
-              padding: 28px;
-            }
-            .hero {
-              border: 1px solid var(--border);
-              border-radius: 24px;
-              background: linear-gradient(135deg, #0f172a 0%, #111827 48%, #0f172a 100%);
-              color: white;
-              padding: 28px;
-              box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
-            }
-            .eyebrow {
-              display: inline-flex;
-              align-items: center;
-              gap: 8px;
-              border-radius: 999px;
-              padding: 6px 12px;
-              background: rgba(255,255,255,0.12);
-              color: rgba(255,255,255,0.88);
-              font-size: 12px;
-              letter-spacing: .08em;
-              text-transform: uppercase;
-            }
-            h1 {
-              margin: 16px 0 8px;
-              font-size: 32px;
-              line-height: 1.1;
-            }
-            .subtitle {
-              margin: 0;
-              color: rgba(255,255,255,0.78);
-              max-width: 72ch;
-            }
-            .summary {
-              display: grid;
-              grid-template-columns: repeat(4, minmax(0, 1fr));
-              gap: 12px;
-              margin-top: 20px;
-            }
-            .summary-card, .section-card {
-              border: 1px solid var(--border);
-              border-radius: 18px;
-              background: var(--panel);
-              padding: 16px;
-            }
-            .summary-card {
-              background: rgba(255,255,255,0.08);
-              border-color: rgba(255,255,255,0.14);
-              color: white;
-            }
-            .summary-label, .section-title {
-              font-size: 11px;
-              letter-spacing: .08em;
-              text-transform: uppercase;
-              color: var(--muted);
-            }
-            .summary-card .summary-label { color: rgba(255,255,255,0.7); }
-            .summary-value {
-              margin-top: 8px;
-              font-size: 20px;
-              font-weight: 700;
-              line-height: 1.15;
-            }
-            .sections {
-              display: grid;
-              gap: 14px;
-              margin-top: 18px;
-            }
-            .section-grid {
-              display: grid;
-              gap: 10px;
-            }
-            .row {
-              display: flex;
-              justify-content: space-between;
-              gap: 16px;
-              padding: 10px 0;
-              border-bottom: 1px solid var(--border);
-            }
-            .row:last-child {
-              border-bottom: 0;
-              padding-bottom: 0;
-            }
-            .row-label {
-              color: var(--muted);
-              font-size: 14px;
-            }
-            .row-value {
-              font-weight: 600;
-              text-align: right;
-            }
-            .note {
-              margin-top: 10px;
-              padding: 10px 12px;
-              border-radius: 12px;
-              background: var(--accent-soft);
-              color: #166534;
-              font-size: 13px;
-            }
-            .footer {
-              margin-top: 18px;
-              color: var(--muted);
-              font-size: 12px;
-              text-align: center;
-            }
-            @media print {
-              body { background: white; }
-              .page { padding: 0; }
-              .hero { box-shadow: none; }
-            }
-            @media (max-width: 900px) {
-              .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="page">
-            <section class="hero">
-              <span class="eyebrow">GY TaxCalc</span>
-              <h1>${escapeHtml(title)}</h1>
-              ${subtitle ? `<p class="subtitle">${escapeHtml(subtitle)}</p>` : ""}
-              <div class="summary">
-                ${safeSummary
-                  .map(
-                    (item) => `
-                    <div class="summary-card">
-                      <div class="summary-label">${item.label}</div>
-                      <div class="summary-value">${item.value}</div>
-                    </div>`
-                  )
-                  .join("")}
-              </div>
-            </section>
-            <section class="sections">
-              ${safeSections
-                .map(
-                  (section) => `
-                    <div class="section-card">
-                      <div class="section-title">${section.title}</div>
-                      <div class="section-grid">
-                        ${section.rows
-                          .map(
-                            (row) => `
-                              <div class="row">
-                                <div class="row-label">${row.label}</div>
-                                <div class="row-value">${row.value}</div>
-                              </div>`
-                          )
-                          .join("")}
-                      </div>
-                      ${section.note ? `<div class="note">${section.note}</div>` : ""}
-                    </div>`
-                )
-                .join("")}
-            </section>
-            <div class="footer">Generated by GY TaxCalc. Save this page as PDF from the print dialog.</div>
-          </div>
-        </body>
-      </html>`
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(title)}</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f3f7fb;
+        --panel: #ffffff;
+        --panel-soft: #f8fafc;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: rgba(15, 23, 42, 0.1);
+        --shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+        --emerald: #16a34a;
+        --sky: #0284c7;
+        --lime: #65a30d;
+        --amber: #d97706;
+        --accent-soft: rgba(22, 163, 74, 0.12);
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(22, 163, 74, 0.14), transparent 28%),
+          radial-gradient(circle at top right, rgba(2, 132, 199, 0.12), transparent 28%),
+          linear-gradient(180deg, #f8fafc 0%, #eef4f9 100%);
+      }
+      @page {
+        size: A4 portrait;
+        margin: 12mm;
+      }
+      .page {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        color: white;
+        padding: 28px;
+        background:
+          radial-gradient(circle at top left, rgba(34, 197, 94, 0.25), transparent 30%),
+          radial-gradient(circle at top right, rgba(14, 165, 233, 0.22), transparent 30%),
+          linear-gradient(135deg, #0f172a 0%, #111827 48%, #0f172a 100%);
+        box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        right: -6rem;
+        bottom: -7rem;
+        width: 18rem;
+        height: 18rem;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(132, 204, 22, 0.26), transparent 68%);
+        filter: blur(18px);
+        pointer-events: none;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 6px 12px;
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--emerald);
+        box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.14);
+      }
+      h1 {
+        margin: 16px 0 8px;
+        font-size: 34px;
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+      }
+      .subtitle {
+        margin: 0;
+        max-width: 70ch;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.55;
+        font-size: 15px;
+      }
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+        position: relative;
+        z-index: 1;
+      }
+      .summary-card,
+      .section-card {
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--panel);
+        padding: 16px;
+      }
+      .summary-card {
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.05)),
+          rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.16);
+        color: white;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      }
+      .summary-card:nth-child(1) { border-top: 3px solid var(--emerald); }
+      .summary-card:nth-child(2) { border-top: 3px solid var(--sky); }
+      .summary-card:nth-child(3) { border-top: 3px solid var(--lime); }
+      .summary-card:nth-child(4) { border-top: 3px solid var(--amber); }
+      .summary-label,
+      .section-title {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .summary-card .summary-label { color: rgba(255, 255, 255, 0.72); }
+      .summary-value {
+        margin-top: 8px;
+        font-size: 21px;
+        font-weight: 800;
+        line-height: 1.12;
+        word-break: break-word;
+      }
+      .sections {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+      }
+      .section-card {
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98)),
+          var(--panel);
+        box-shadow: var(--shadow);
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .section-grid {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .row:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+      .row-label {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .row-value {
+        font-weight: 600;
+        text-align: right;
+        line-height: 1.45;
+        word-break: break-word;
+      }
+      .note {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: var(--accent-soft);
+        color: #166534;
+        font-size: 13px;
+      }
+      .footer {
+        margin-top: 20px;
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+      }
+      .page-break {
+        break-before: page;
+        page-break-before: always;
+      }
+      @media print {
+        body {
+          background: white;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .page { padding: 0; }
+        .hero { box-shadow: none; }
+        .summary-card,
+        .section-card {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+      }
+      @media (max-width: 900px) {
+        .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 640px) {
+        .page { padding: 0; }
+        .hero { padding: 22px; border-radius: 22px; }
+        h1 { font-size: 28px; }
+        .summary { grid-template-columns: 1fr; }
+        .row { flex-direction: column; gap: 6px; }
+        .row-value { text-align: left; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <section class="hero">
+        <span class="eyebrow">GY TaxCalc Report</span>
+        <h1>${escapeHtml(title)}</h1>
+        ${subtitle ? `<p class="subtitle">${escapeHtml(subtitle)}</p>` : ""}
+        <div class="summary">
+          ${safeSummary
+            .map(
+              (item) => `
+                <div class="summary-card">
+                  <div class="summary-label">${item.label}</div>
+                  <div class="summary-value">${item.value}</div>
+                </div>`
+            )
+            .join("")}
+        </div>
+      </section>
+
+      <section class="sections page-break">
+        ${safeSections
+          .map(
+            (section) => `
+              <div class="section-card">
+                <div class="section-title">${section.title}</div>
+                <div class="section-grid">
+                  ${section.rows
+                    .map(
+                      (row) => `
+                        <div class="row">
+                          <div class="row-label">${row.label}</div>
+                          <div class="row-value">${row.value}</div>
+                        </div>`
+                    )
+                    .join("")}
+                </div>
+                ${section.note ? `<div class="note">${section.note}</div>` : ""}
+              </div>`
+          )
+          .join("")}
+      </section>
+
+      <div class="footer">Generated by GY TaxCalc. Save this page as PDF from the print dialog.</div>
+    </div>
+  </body>
+</html>`
   }
