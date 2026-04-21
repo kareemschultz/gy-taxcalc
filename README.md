@@ -1,273 +1,164 @@
-# 🇬🇾 GY TaxCalc
+# GY TaxCalc
 
 <div align="center">
 
-![Guyana Tax Calculator](https://img.shields.io/badge/🇬🇾-Guyana%20Tax%20Calculator-009739?style=for-the-badge)
+![GY TaxCalc](https://img.shields.io/badge/GY%20TaxCalc-Guyana%27s%20Tax%20Toolkit-16a34a?style=for-the-badge)
+![Next.js](https://img.shields.io/badge/Next.js-15.3-black?style=for-the-badge&logo=nextdotjs)
+![React](https://img.shields.io/badge/React-19-61dafb?style=for-the-badge&logo=react&logoColor=black)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-v4-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/shadcn/ui-components-111827?style=for-the-badge)
+![Framer Motion](https://img.shields.io/badge/Framer%20Motion-11-000000?style=for-the-badge)
+![Recharts](https://img.shields.io/badge/Recharts-2-ef4444?style=for-the-badge)
+![Static Export](https://img.shields.io/badge/Static%20Export-enabled-0f766e?style=for-the-badge)
 
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen?style=flat-square&logo=github)](https://kareemschultz.github.io/gy-taxcalc/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Budget 2026](https://img.shields.io/badge/Budget-2026%20Updated-blue?style=flat-square)](https://demerarawaves.com/2026/01/26/new-tax-regime-for-vehicles-outboard-engines/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![Made in Guyana](https://img.shields.io/badge/Made%20in-Guyana%20🇬🇾-009739?style=flat-square)]()
-
-**Guyana's Tax Toolkit** — Free, open-source tax calculators built for Guyanese, by Guyanese.
-
-🔗 **[Launch Calculator →](https://kareemschultz.github.io/gy-taxcalc/)**
-
-[Features](#-features) • [Tax Formulas](#-tax-formulas) • [Tech Stack](#%EF%B8%8F-tech-stack) • [Contributing](#-contributing)
+[Live Demo](https://kareemschultz.github.io/gy-taxcalc/) · [Changelog](./CHANGELOG.md) · [Policy Guide](./app/(app)/tax-info/page.tsx) · [GitHub](https://github.com/kareemschultz/gy-taxcalc)
 
 </div>
 
----
+<p align="center">
+  <img src="./public/readme-hero.svg" alt="GY TaxCalc preview" width="100%" />
+</p>
 
-## 📋 Overview
+## Overview
 
-GY TaxCalc is a suite of tax calculators covering the most common tax questions in Guyana. No sign-up, no ads, no nonsense — just accurate calculations based on the latest GRA-published formulas and **Budget 2026** regulations.
+GY TaxCalc is a Guyana-focused tax toolkit built with Next.js 15, shadcn/ui, Tailwind CSS v4, Framer Motion, and Recharts.
 
-```
-┌──────────────────────┬───────────────────────┬──────────────────────────┐
-│  💰 Income & Salary  │  🚗 Vehicle Import Tax │  🏦 Loan Calculator      │
-│  Calculator          │  Calculator            │                          │
-├──────────────────────┼───────────────────────┼──────────────────────────┤
-│ • Gross-to-net       │ • Gas/Diesel/EV/Hybrid │ • Amortization schedule  │
-│ • NIS deductions     │ • Under 4yr & 4yr+     │ • Extra payment savings  │
-│ • Income tax 25%/35% │ • Duty + Excise + VAT  │ • 6 Guyanese lenders     │
-│ • Allowances &       │ • G-Plate & Dealer     │ • GYD/USD dual currency  │
-│   gratuity           │ • USD/GYD currency     │ • Bank comparison        │
-│ • PDF export         │                        │ • 4 interactive charts   │
-└──────────────────────┴───────────────────────┴──────────────────────────┘
-```
+It currently ships as a static-export friendly app with:
 
----
+- Salary and PAYE calculations
+- Vehicle import tax calculations
+- Loan amortization and payoff intelligence
+- Scenario comparison
+- Policy, FAQ, analytics, and reference hubs
 
-## ✨ Features
+## Routes
 
-### 💰 Income & Salary Calculator
+| Route | Purpose |
+| --- | --- |
+| `/overview` | Start page and launcher |
+| `/dashboard` | Salary / tax calculator |
+| `/vehicle` | Vehicle import calculator |
+| `/loan` | Loan calculator |
+| `/compare` | Side-by-side scenario comparison |
+| `/planner` | Annual planning helper |
+| `/insights` | Reference-style insights hub |
+| `/intelligence` | Decision-focused what-if hub |
+| `/analytics` | Trend and chart hub |
+| `/tax-info` | Policy guide and 2026 reference notes |
+| `/faq` | Common questions |
+| `/changelog` | Release history |
 
-<details>
-<summary><b>Click to expand full feature list</b></summary>
+## Highlights
 
-| Feature | Description |
-|---------|-------------|
-| 📊 **Salary Calculation** | Gross-to-net across all frequencies (daily, weekly, fortnightly, monthly, yearly) |
-| 📈 **2026 Tax Rates** | 25% on first $280,000 of chargeable income, 35% above |
-| 🏦 **Tax Allowance** | max($140,000/month, gross ÷ 3) — whichever is greater |
-| 🛡️ **NIS Contributions** | 5.6% rate with $280,000 ceiling |
-| 🎖️ **Gratuity** | 22.5% calculation for public servants |
-| 💼 **Allowances** | Duty, acting, housing, travel, station (taxable/non-taxable) |
-| ⏰ **Overtime** | Second job income with $50,000 non-taxable allowance |
-| 🎓 **Qualifications** | ACCA, Master's, PhD allowance support |
-| 🏠 **Deductions** | Life insurance & mortgage interest |
-| 👶 **Child Allowance** | $10,000 per child |
-| 📈 **Salary Simulator** | Increase and retroactive pay calculations |
-| 👔 **Job Presets** | Pre-loaded government positions (ICT, Admin, Teaching, Nursing, Police) |
-| 📊 **Visual Charts** | 11 interactive charts — income doughnuts, tax gauge, waterfall, cash flow, cumulative earnings, and more |
-| 📄 **PDF Export** | Professional reports with employee name |
+### Salary Calculator
 
-</details>
+- 5 payment frequencies: daily, weekly, fortnightly, monthly, yearly
+- Detailed or simple allowance entry
+- Taxable and non-taxable allowance breakdowns
+- Overtime and second-job exclusions
+- Child, insurance, loan, and credit union deductions
+- Qualification allowances: ACCA, Masters, PhD
+- Gratuity support and salary increase simulator
+- Breakdown, annual, charts, simulator, and info tabs
+- Mobile sticky result bar
+- PDF-ready export view
 
-### 🏦 Loan Calculator
+### Vehicle Import
 
-<details>
-<summary><b>Click to expand full feature list</b></summary>
+- FOB to CIF converter
+- Vehicle age, plate type, importer type, and fuel type controls
+- CC preset dropdown with custom CC entry
+- Budget 2026 rules surfaced in the UI
+- Breakdown table and quick reference info cards
+- Mobile sticky result bar
 
-| Feature | Description |
-|---------|-------------|
-| 📐 **Amortization Engine** | Standard formula `M = P[r(1+r)^n]/[(1+r)^n-1]` — accurate to the cent |
-| 💸 **Extra Payment Simulator** | See how additional monthly payments or a one-time lump sum reduce interest and shorten your loan |
-| 🏛️ **6 Lender Presets** | GPSCCU, GBTI, Republic Bank, Bank of Baroda, Citizens Bank, Demerara Bank — with current rate ranges |
-| 💱 **Dual Currency** | GYD and USD input with editable exchange rate (default: GY$218) |
-| 📅 **Payoff Date** | Exact calendar date you'll be debt-free |
-| 🔄 **Monthly/Yearly Toggle** | Switch amortization table between monthly detail and yearly summary |
-| 📊 **4 Charts** | Payment split doughnut, balance-over-time line, principal/interest stacked bar, bank comparison |
-| 🏪 **Bank Comparison** | Side-by-side total interest and monthly payment across top Guyanese lenders |
-| ⚡ **Auto-Calculate** | Real-time updates on input change (300ms debounce) |
-| ⚠️ **Rate Disclaimer** | Rates verified April 2026 — always contact your bank for current offers |
+### Loan Calculator
 
-</details>
+- Auto, personal, mortgage, and custom loan modes
+- Lender presets and interest ranges
+- GYD / USD principal support
+- Extra monthly, one-time, and periodic lump sums
+- Amortization schedule with pagination
+- Bank comparison cards
+- Loan intelligence tab:
+  - what-if lump sum matrix
+  - tie / optimal-value detection
+  - payoff timeline
+  - interest saved summary
+  - progress ring
+- 4 loan charts powered by Recharts
+- Mobile sticky result bar
 
-### 🚗 Vehicle Import Tax Calculator
+### Reference and Discovery Hubs
 
-<details>
-<summary><b>Click to expand full feature list</b></summary>
+- `Insights` for quick reference takeaways
+- `Intelligence` for decision tools and shortcuts
+- `Analytics` for visual summaries and trends
+- `Policy Guide` for 2026 rates and reference notes
+- `FAQ` and `Changelog` for support and release history
 
-| Feature | Description |
-|---------|-------------|
-| ⛽ **Fuel Types** | Gasoline, Diesel, Electric, Hybrid |
-| 📅 **Age Brackets** | Under 4 years & 4+ years old |
-| 🔧 **Engine CC** | Full bracket support (0-1000, 1001-1500, 1501-1800, 1801-2000, 2001-3000, 3000+) |
-| 🚙 **Vehicle Types** | Car, SUV, Van, Bus, Single/Double Cab, Motorcycle, ATV |
-| 🏛️ **G-Plate** | Government plate flat rate support |
-| 🏪 **Dealer Mode** | 1.5x CIF for excise calculation |
-| 💱 **Dual Currency** | USD and GYD with editable exchange rate (default: GY$218) |
-| ⚡ **Auto-Calculate** | Real-time calculation on input change |
-| 📖 **Rate Guide** | GRA reference rates included |
+## Tech Stack
 
-</details>
+- Next.js 15.3 App Router
+- React 19 client components
+- Tailwind CSS v4
+- shadcn/ui
+- Framer Motion 11
+- Recharts 2
+- Lucide React
+- next-themes
 
-#### Budget 2026 Updates ✅
+## Architecture Notes
 
-| Change | Details |
-|--------|---------|
-| 🛻 Double-cab pickups | GY$2M flat (under 2000cc), GY$3M flat (2000-2500cc) |
-| 🚗 VAT removed | Vehicles under 1500cc, less than 4 years old |
-| 🔋 Hybrid VAT removed | Hybrid vehicles under 2000cc |
-| 🏍️ ATV tax-free | All taxes and duties removed on ATVs |
+- Static export is enabled in `next.config.ts`
+- Calculator logic lives in `lib/`
+- Pages and components stay client-side where interactive state is needed
+- The app uses reusable shared primitives:
+  - `Hint`
+  - `CurrencyInput`
+  - `Section`
+  - `ResultCard`
+  - `InfoCard`
+  - `StickyResultsBar`
 
----
-
-## 📐 Tax Formulas
-
-### Income Tax (2026)
-
-```
-        Monthly Gross Income
-                │
-                ▼
-  Tax Allowance = max($140,000, Gross ÷ 3)
-  (1/3 kicks in above $420,000/month gross)
-                │
-                ▼
-  Chargeable Income = Gross − Tax Allowance − NIS − other deductions
-                │
-        ┌───────┴────────┐
-        ▼                ▼
-  ≤ $280,000        > $280,000
-     25%          25% on first $280,000
-                  35% on the remainder
-```
-
-| Component | Rule |
-|-----------|------|
-| **Tax Allowance** | `max($140,000/month, Gross ÷ 3)` — whichever is greater |
-| **Chargeable Income** | Gross − Tax Allowance − NIS − child/insurance deductions |
-| **25% bracket** | First **$280,000** of chargeable income |
-| **35% bracket** | Chargeable income **above $280,000** |
-
-**Example — $450,000/month gross:**
-- Tax allowance = max($140,000, $450,000 ÷ 3) = **$150,000**
-- Chargeable income = $450,000 − $150,000 = **$300,000**
-- Tax = ($280,000 × 25%) + ($20,000 × 35%) = $70,000 + $7,000 = **$77,000**
-
-### Vehicle Import Tax Calculation Flow
-
-```
-┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
-│   CIF    │───►│  + Duty  │───►│ + Excise │───►│  + VAT   │
-│  Value   │    │  (rate%) │    │  (rate%) │    │  (14%)   │
-└──────────┘    └──────────┘    └──────────┘    └──────────┘
-                    │               │               │
-                    ▼               ▼               ▼
-              CIF × rate    (CIF+Duty) × rate  (CIF+Duty+Excise) × 14%
-```
-
-### Under 4 Years — Gasoline
-
-| CC Range | 🏛️ Duty | 📊 Excise | 💰 VAT |
-|----------|---------|----------|--------|
-| 0 – 1000cc | 35% | 0% | 14% |
-| 1001 – 1500cc | 35% | 0% | **0%** ✨ |
-| 1501 – 1800cc | 45% | 10% | 14% |
-| 1801 – 2000cc | 45% | 10% | 14% |
-| 2001 – 3000cc | 45% | 110% | 14% |
-| 3000cc+ | 45% | 140% | 14% |
-
-### 4 Years & Older — Gasoline
-
-| CC Range | Excise Formula |
-|----------|---------------|
-| 0 – 1500cc | **GY$800,000 flat** |
-| 1501 – 1800cc | (CIF + US$6,000) × 30% + US$6,000 |
-| 1801 – 2000cc | (CIF + US$6,500) × 30% + US$6,500 |
-| 2001 – 3000cc | (CIF + US$13,500) × 70% + US$13,500 |
-| 3000cc+ | (CIF + US$14,500) × 100% + US$14,500 |
-
-> ⚠️ **Note:** No duty, no VAT — excise only for 4+ year vehicles.
-
-### ⚡ Electric Vehicles
-
-```
-╔═══════════════════════════════════════════╗
-║   ELECTRIC VEHICLES — ALL CATEGORIES      ║
-║                                           ║
-║   🏛️ Duty:    0%                          ║
-║   📊 Excise:  0%                          ║
-║   💰 VAT:     0%                          ║
-║                                           ║
-║   Any power rating • Any age              ║
-╚═══════════════════════════════════════════╝
-```
-
----
-
-## 🛠️ Tech Stack
-
-<div align="center">
-
-| Technology | Purpose |
-|------------|---------|
-| ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) | Structure |
-| ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white) | Styling |
-| ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black) | Logic |
-| ![Bootstrap](https://img.shields.io/badge/Bootstrap_5.3-7952B3?style=flat-square&logo=bootstrap&logoColor=white) | Layout |
-| ![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=flat-square&logo=chartdotjs&logoColor=white) | Visualizations |
-| ![Font Awesome](https://img.shields.io/badge/Font_Awesome-528DD7?style=flat-square&logo=fontawesome&logoColor=white) | Icons |
-| ![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222222?style=flat-square&logo=github&logoColor=white) | Hosting |
-
-</div>
-
-**No frameworks. No build step. No dependencies.** Just clean, maintainable vanilla code.
-
----
-
-## 📚 Data Sources
-
-| Source | Description |
-|--------|-------------|
-| 📋 [GRA Motor Vehicle Guide](https://www.gra.gov.gy/imports/motor-vehicle/) | Official duty/tax calculation reference |
-| 📊 [GRA Income Tax Rates](https://www.gra.gov.gy/) | Official income tax brackets |
-| 📰 [Budget 2026 — Vehicles](https://demerarawaves.com/2026/01/26/new-tax-regime-for-vehicles-outboard-engines/) | Vehicle tax changes |
-| 📰 [Budget 2026 — Income Tax](https://www.stabroeknews.com/2026/01/26/news/guyana/budget-2026/) | $140,000 threshold announcement |
-
----
-
-## ⚠️ Disclaimer
-
-> This tool is **not affiliated** with the Guyana Revenue Authority (GRA). It is an independent calculator using publicly available formulas. Always consult a licensed customs broker or tax professional for official advice.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how you can help:
-
-1. 🐛 **Found a bug?** [Open an issue](https://github.com/kareemschultz/gy-taxcalc/issues)
-2. 💡 **Have a suggestion?** [Start a discussion](https://github.com/kareemschultz/gy-taxcalc/issues)
-3. 🔧 **Want to contribute?** Fork the repo and submit a PR
+## Local Development
 
 ```bash
-# Clone the repository
-git clone https://github.com/kareemschultz/gy-taxcalc.git
-
-# Open in browser (no build needed!)
-open index.html
+npm install
+npm run dev
 ```
 
----
+## Build
 
-## 📄 License
+```bash
+npm run build
+```
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+## Deployment
 
----
+The repo is configured for GitHub Pages style static hosting. The current branch is:
 
-<div align="center">
+- `claude/nextjs-shadcn-refactor-nU58h`
 
-Built with ❤️ by **[Kareem Schultz](https://github.com/kareemschultz)** | **[KareTech Solutions](https://karetech.gy)**
+## Notes
 
-[![GitHub](https://img.shields.io/badge/GitHub-kareemschultz-181717?style=flat-square&logo=github)](https://github.com/kareemschultz)
-[![Website](https://img.shields.io/badge/Website-karetech.gy-009739?style=flat-square&logo=google-chrome&logoColor=white)](https://karetech.gy)
+- Vehicle charts were intentionally skipped.
+- No localStorage persistence is used for inputs; theme persistence is handled by `next-themes`.
+- The policy guide centralizes long-form tax and vehicle reference content so the calculator screens stay cleaner.
 
-**🇬🇾 Made in Guyana**
+## Data Sources
 
-</div>
+- Guyana Revenue Authority tax and vehicle guidance
+- Guyana Budget 2026 measures
+- Lender rate references used for comparison presets
+
+## Disclaimer
+
+This project is an independent calculator suite and is not affiliated with the Guyana Revenue Authority or any lender.
+
+## Credits
+
+Built by Kareem Schultz.
+
+GitHub: [kareemschultz](https://github.com/kareemschultz)
+
