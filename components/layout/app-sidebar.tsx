@@ -20,6 +20,9 @@ import {
   Banknote,
   Shield,
   CircleDollarSign,
+  Radar,
+  Sparkles,
+  Activity,
 } from "lucide-react"
 import {
   Sidebar,
@@ -71,6 +74,21 @@ const mainNav = [
     url: "/planner",
     icon: CalendarRange,
   },
+  {
+    title: "Insights",
+    url: "/insights",
+    icon: Radar,
+  },
+  {
+    title: "Intelligence",
+    url: "/intelligence",
+    icon: Sparkles,
+  },
+  {
+    title: "Analytics",
+    url: "/analytics",
+    icon: Activity,
+  },
 ]
 
 const updatesNav = [
@@ -114,6 +132,9 @@ const resourceSections: ResourceSection[] = [
       { title: "Loan Calculator", url: "/loan", icon: Landmark },
       { title: "Compare Scenarios", url: "/compare", icon: GitCompareArrows },
       { title: "Annual Planner", url: "/planner", icon: CalendarRange },
+      { title: "Insights", url: "/insights", icon: Radar },
+      { title: "Intelligence", url: "/intelligence", icon: Sparkles },
+      { title: "Analytics", url: "/analytics", icon: Activity },
       { title: "Policy Guide", url: "/tax-info", icon: BookOpen },
       { title: "Help / FAQ", url: "/faq", icon: HelpCircle },
       { title: "Release Notes", url: "/changelog", icon: ScrollText },
