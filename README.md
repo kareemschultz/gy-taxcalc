@@ -136,9 +136,7 @@ npm run build
 
 ## Deployment
 
-The repo is configured for GitHub Pages style static hosting. The current branch is:
-
-- `claude/nextjs-shadcn-refactor-nU58h`
+The repo is configured for GitHub Pages style static hosting. 
 
 ## Notes
 
