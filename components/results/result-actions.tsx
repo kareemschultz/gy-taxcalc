@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button"
 type PrintRow = {
   label: string
   value: string
+  positive?: boolean
+  negative?: boolean
+  total?: boolean
 }
 
 type PrintSection = {
@@ -93,6 +96,9 @@ export function ResultActions({ fileName, title, lines, subtitle, summary, secti
         rows: section.rows.map((row) => ({
           label: escapeHtml(row.label),
           value: escapeHtml(row.value),
+          positive: row.positive,
+          negative: row.negative,
+          total: row.total,
         })),
       })),
     [sections, lines]
@@ -190,8 +196,11 @@ function buildReportHtml(
   title: string,
   subtitle: string | undefined,
   safeSummary: Array<{ label: string; value: string }>,
-  safeSections: Array<{ title: string; note?: string; rows: Array<{ label: string; value: string }> }>
+  safeSections: Array<{ title: string; note?: string; rows: Array<{ label: string; value: string; positive?: boolean; negative?: boolean; total?: boolean }> }>
 ) {
+  const date = new Date().toLocaleDateString("en-GY", { year: "numeric", month: "long", day: "numeric" })
+  const accentColors = ["#16a34a", "#0284c7", "#7c3aed", "#d97706"]
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -199,274 +208,296 @@ function buildReportHtml(
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(title)}</title>
     <style>
-      :root {
-        color-scheme: light;
-        --bg: #f3f7fb;
-        --panel: #ffffff;
-        --panel-soft: #f8fafc;
-        --text: #0f172a;
-        --muted: #64748b;
-        --border: rgba(15, 23, 42, 0.1);
-        --shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
-        --emerald: #16a34a;
-        --sky: #0284c7;
-        --lime: #65a30d;
-        --amber: #d97706;
-        --accent-soft: rgba(22, 163, 74, 0.12);
-      }
-      * { box-sizing: border-box; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
       html, body { height: 100%; }
       body {
-        margin: 0;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        color: var(--text);
-        background:
-          radial-gradient(circle at top left, rgba(22, 163, 74, 0.14), transparent 28%),
-          radial-gradient(circle at top right, rgba(2, 132, 199, 0.12), transparent 28%),
-          linear-gradient(180deg, #f8fafc 0%, #eef4f9 100%);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: #f1f5f9;
+        background: #0f172a;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
-      @page {
-        size: A4 portrait;
-        margin: 12mm;
-      }
-      .page {
-        max-width: 1120px;
-        margin: 0 auto;
-        padding: 24px;
-      }
+      @page { size: A4 portrait; margin: 10mm 12mm; }
+
+      /* ── page wrapper ── */
+      .page { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+      /* ── hero card ── */
       .hero {
         position: relative;
         overflow: hidden;
-        border: 1px solid var(--border);
-        border-radius: 28px;
-        color: white;
+        border-radius: 20px;
         padding: 28px;
-        background:
-          radial-gradient(circle at top left, rgba(34, 197, 94, 0.25), transparent 30%),
-          radial-gradient(circle at top right, rgba(14, 165, 233, 0.22), transparent 30%),
-          linear-gradient(135deg, #0f172a 0%, #111827 48%, #0f172a 100%);
-        box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
-        page-break-inside: avoid;
+        background: linear-gradient(135deg, #0f172a 0%, #111827 50%, #0f1a2e 100%);
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 24px 56px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
         break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -80px; left: -80px;
+        width: 280px; height: 280px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(22,163,74,0.22), transparent 70%);
+        pointer-events: none;
       }
       .hero::after {
         content: "";
         position: absolute;
-        right: -6rem;
-        bottom: -7rem;
-        width: 18rem;
-        height: 18rem;
-        border-radius: 999px;
-        background: radial-gradient(circle, rgba(132, 204, 22, 0.26), transparent 68%);
-        filter: blur(18px);
+        bottom: -60px; right: -60px;
+        width: 220px; height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(2,132,199,0.18), transparent 70%);
         pointer-events: none;
       }
       .eyebrow {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 7px;
         border-radius: 999px;
-        padding: 6px 12px;
-        background: rgba(255, 255, 255, 0.12);
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 12px;
-        letter-spacing: 0.08em;
+        padding: 5px 12px;
+        background: rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.85);
+        font-size: 11px;
+        letter-spacing: 0.09em;
         text-transform: uppercase;
+        font-weight: 600;
+        border: 1px solid rgba(255,255,255,0.12);
       }
-      .eyebrow::before {
-        content: "";
-        width: 8px;
-        height: 8px;
-        border-radius: 999px;
-        background: var(--emerald);
-        box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.14);
+      .eyebrow-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34,197,94,0.25);
+        flex-shrink: 0;
+      }
+      .hero-date {
+        float: right;
+        font-size: 12px;
+        color: rgba(255,255,255,0.5);
+        margin-top: 2px;
       }
       h1 {
-        margin: 16px 0 8px;
-        font-size: 34px;
-        line-height: 1.05;
-        letter-spacing: -0.03em;
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        color: #fff;
+        margin: 14px 0 6px;
+        position: relative; z-index: 1;
       }
       .subtitle {
-        margin: 0;
-        max-width: 70ch;
-        color: rgba(255, 255, 255, 0.8);
-        line-height: 1.55;
-        font-size: 15px;
+        font-size: 14px;
+        color: rgba(255,255,255,0.65);
+        line-height: 1.5;
+        position: relative; z-index: 1;
+        margin-bottom: 20px;
       }
-      .summary {
+      .summary-grid {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 20px;
-        position: relative;
-        z-index: 1;
-      }
-      .summary-card,
-      .section-card {
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        background: var(--panel);
-        padding: 16px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        position: relative; z-index: 1;
       }
       .summary-card {
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.05)),
-          rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.16);
-        color: white;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.1);
+        backdrop-filter: blur(8px);
       }
-      .summary-card:nth-child(1) { border-top: 3px solid var(--emerald); }
-      .summary-card:nth-child(2) { border-top: 3px solid var(--sky); }
-      .summary-card:nth-child(3) { border-top: 3px solid var(--lime); }
-      .summary-card:nth-child(4) { border-top: 3px solid var(--amber); }
-      .summary-label,
-      .section-title {
-        font-size: 11px;
+      .summary-card:nth-child(1) { border-top: 2.5px solid #16a34a; }
+      .summary-card:nth-child(2) { border-top: 2.5px solid #0284c7; }
+      .summary-card:nth-child(3) { border-top: 2.5px solid #84cc16; }
+      .summary-card:nth-child(4) { border-top: 2.5px solid #d97706; }
+      .sc-label {
+        font-size: 10px;
+        font-weight: 600;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: var(--muted);
+        color: rgba(255,255,255,0.55);
+        margin-bottom: 6px;
       }
-      .summary-card .summary-label { color: rgba(255, 255, 255, 0.72); }
-      .summary-value {
-        margin-top: 8px;
-        font-size: 21px;
+      .sc-value {
+        font-size: 18px;
         font-weight: 800;
-        line-height: 1.12;
+        color: #fff;
+        line-height: 1.1;
         word-break: break-word;
       }
-      .sections {
-        display: grid;
-        gap: 14px;
-        margin-top: 18px;
-      }
+
+      /* ── sections ── */
+      .sections { margin-top: 14px; display: grid; gap: 12px; }
+
       .section-card {
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98)),
-          var(--panel);
-        box-shadow: var(--shadow);
-        page-break-inside: avoid;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #1e293b;
+        border: 1px solid rgba(255,255,255,0.07);
         break-inside: avoid;
+        page-break-inside: avoid;
       }
-      .section-grid {
-        display: grid;
+      .section-header {
+        display: flex;
+        align-items: center;
         gap: 10px;
-        margin-top: 10px;
+        padding: 13px 18px;
+        background: rgba(255,255,255,0.04);
+        border-bottom: 1px solid rgba(255,255,255,0.07);
       }
+      .section-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .section-title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.75);
+      }
+      .section-rows { padding: 6px 0; }
       .row {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         gap: 16px;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--border);
-        page-break-inside: avoid;
+        padding: 9px 18px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
         break-inside: avoid;
+        page-break-inside: avoid;
       }
-      .row:last-child {
-        border-bottom: 0;
-        padding-bottom: 0;
-      }
+      .row:last-child { border-bottom: none; }
       .row-label {
-        color: var(--muted);
-        font-size: 14px;
-        line-height: 1.45;
+        font-size: 13px;
+        color: rgba(255,255,255,0.6);
+        line-height: 1.4;
+        flex: 1;
       }
       .row-value {
+        font-size: 13px;
         font-weight: 600;
         text-align: right;
-        line-height: 1.45;
+        color: #e2e8f0;
+        flex-shrink: 0;
         word-break: break-word;
       }
+      .row-value.pos { color: #4ade80; }
+      .row-value.neg { color: #f87171; }
+      .row.total-row {
+        background: rgba(22,163,74,0.12);
+        border-top: 1px solid rgba(22,163,74,0.25);
+        border-bottom: 1px solid rgba(22,163,74,0.25);
+        margin: 4px 0;
+      }
+      .row.total-row .row-label {
+        font-weight: 700;
+        color: #bbf7d0;
+        font-size: 13.5px;
+      }
+      .row.total-row .row-value {
+        font-weight: 800;
+        color: #4ade80;
+        font-size: 14px;
+      }
       .note {
-        margin-top: 10px;
-        padding: 10px 12px;
-        border-radius: 12px;
-        background: var(--accent-soft);
-        color: #166534;
-        font-size: 13px;
-      }
-      .footer {
-        margin-top: 20px;
-        color: var(--muted);
+        margin: 6px 18px 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: rgba(22,163,74,0.1);
+        color: #86efac;
         font-size: 12px;
-        text-align: center;
+        border: 1px solid rgba(22,163,74,0.2);
       }
-      .page-break {
-        break-before: page;
-        page-break-before: always;
+
+      /* ── footer ── */
+      .footer {
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: rgba(255,255,255,0.35);
       }
+      .footer-logo { font-weight: 700; color: rgba(255,255,255,0.55); }
+
+      /* ── page break between sections ── */
+      .break-before { break-before: page; page-break-before: always; }
+
       @media print {
-        body {
-          background: white;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-        }
+        body { background: #0f172a !important; }
         .page { padding: 0; }
         .hero { box-shadow: none; }
-        .summary-card,
-        .section-card {
-          break-inside: avoid;
-          page-break-inside: avoid;
-        }
-      }
-      @media (max-width: 900px) {
-        .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       }
       @media (max-width: 640px) {
-        .page { padding: 0; }
-        .hero { padding: 22px; border-radius: 22px; }
-        h1 { font-size: 28px; }
-        .summary { grid-template-columns: 1fr; }
-        .row { flex-direction: column; gap: 6px; }
-        .row-value { text-align: left; }
+        .summary-grid { grid-template-columns: repeat(2, 1fr); }
+        h1 { font-size: 24px; }
+        .sc-value { font-size: 15px; }
       }
     </style>
   </head>
   <body>
     <div class="page">
+
+      <!-- ── Hero ── -->
       <section class="hero">
-        <span class="eyebrow">GY TaxCalc Report</span>
+        <div>
+          <span class="eyebrow"><span class="eyebrow-dot"></span>GY TaxCalc Report</span>
+          <span class="hero-date">${date}</span>
+        </div>
         <h1>${escapeHtml(title)}</h1>
         ${subtitle ? `<p class="subtitle">${escapeHtml(subtitle)}</p>` : ""}
-        <div class="summary">
+        <div class="summary-grid">
           ${safeSummary
             .map(
               (item) => `
-                <div class="summary-card">
-                  <div class="summary-label">${item.label}</div>
-                  <div class="summary-value">${item.value}</div>
-                </div>`
+              <div class="summary-card">
+                <div class="sc-label">${item.label}</div>
+                <div class="sc-value">${item.value}</div>
+              </div>`
             )
             .join("")}
         </div>
       </section>
 
-      <section class="sections page-break">
+      <!-- ── Sections ── -->
+      <div class="sections">
         ${safeSections
           .map(
-            (section) => `
-              <div class="section-card">
-                <div class="section-title">${section.title}</div>
-                <div class="section-grid">
-                  ${section.rows
-                    .map(
-                      (row) => `
-                        <div class="row">
-                          <div class="row-label">${row.label}</div>
-                          <div class="row-value">${row.value}</div>
-                        </div>`
-                    )
-                    .join("")}
-                </div>
-                ${section.note ? `<div class="note">${section.note}</div>` : ""}
-              </div>`
+            (section, i) => `
+            <div class="section-card${i > 0 ? " break-before" : ""}">
+              <div class="section-header">
+                <span class="section-dot" style="background:${accentColors[i % accentColors.length]}"></span>
+                <span class="section-title">${section.title}</span>
+              </div>
+              <div class="section-rows">
+                ${section.rows
+                  .map(
+                    (row) => `
+                  <div class="row${row.total ? " total-row" : ""}">
+                    <span class="row-label">${row.label}</span>
+                    <span class="row-value${row.positive ? " pos" : row.negative ? " neg" : ""}">${row.value}</span>
+                  </div>`
+                  )
+                  .join("")}
+              </div>
+              ${section.note ? `<div class="note">${section.note}</div>` : ""}
+            </div>`
           )
           .join("")}
-      </section>
+      </div>
 
-      <div class="footer">Generated by GY TaxCalc. Save this page as PDF from the print dialog.</div>
+      <!-- ── Footer ── -->
+      <div class="footer">
+        <span class="footer-logo">GY TaxCalc</span>
+        <span>kareemschultz.github.io/gy-taxcalc &bull; GRA 2026 formulas</span>
+      </div>
+
     </div>
   </body>
 </html>`
-  }
+}
