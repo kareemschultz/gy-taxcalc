@@ -23,7 +23,7 @@ const COLORS = [
 ]
 
 // Pop-out active shape — expands the hovered slice + adds a halo ring
-function ActiveSlice(props: Record<string, unknown>) {
+function ActiveSlice(props: unknown) {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } =
     props as {
       cx: number; cy: number; innerRadius: number; outerRadius: number
