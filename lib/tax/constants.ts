@@ -19,26 +19,37 @@ export const INSURANCE_PREMIUMS: Record<InsuranceType, number | string> = {
   custom: "custom",
 }
 
+// Per-period personalAllowance/taxThreshold/nisCeiling figures below are GRA's
+// own published values (Notice: "Revised Personal Allowance and Deductions for
+// Income Tax 2026," effective 2026-01-01), corroborated for the weekly NIS
+// ceiling by NIS's own site (nis.org.gy/information_on_contributions).
+// https://gra.gov.gy/notice-to-employers-employees-self-employed-persons-revised-personal-allowance-and-deductions-for-income-tax-2026/
+// (verified 2026-08-19). Previously these were derived from an internal
+// `factor` (an approximate month-fraction, e.g. weekly = monthly/4.33) that
+// does not match GRA's own calendar-based figures, producing a materially
+// wrong allowance for Daily (~40% too generous, using a 21.67-workday-month
+// divisor where GRA uses 365 calendar days) and smaller but real drift for
+// Weekly/Fortnightly. See gy-taxcalc-bugs.md finding #21.
 export const PAYMENT_FREQUENCIES: Record<PaymentFrequency, FrequencyConfig> = {
   daily: {
     label: "Daily",
     factor: 1 / 21.67,
-    personalAllowance: 6460,
-    taxThreshold: 12922,
+    personalAllowance: 4603,
+    taxThreshold: 9205,
     nisRate: 0.056,
-    nisCeiling: 12923,
-    childAllowance: 462,
-    overtimeMax: 2308,
-    secondJobMax: 2308,
-    insuranceMaxMonthly: 2308,
+    nisCeiling: 9205,
+    childAllowance: 329,
+    overtimeMax: 1644,
+    secondJobMax: 1644,
+    insuranceMaxMonthly: 1644,
     periodLabel: "per day",
     periodsPerYear: 260,
   },
   weekly: {
     label: "Weekly",
     factor: 1 / 4.33,
-    personalAllowance: 32333,
-    taxThreshold: 64665,
+    personalAllowance: 32308,
+    taxThreshold: 64615,
     nisRate: 0.056,
     nisCeiling: 64615,
     childAllowance: 2308,
@@ -51,8 +62,8 @@ export const PAYMENT_FREQUENCIES: Record<PaymentFrequency, FrequencyConfig> = {
   fortnightly: {
     label: "Fortnightly",
     factor: 1 / 2.17,
-    personalAllowance: 64516,
-    taxThreshold: 128986,
+    personalAllowance: 64615,
+    taxThreshold: 129231,
     nisRate: 0.056,
     nisCeiling: 129231,
     childAllowance: 4615,

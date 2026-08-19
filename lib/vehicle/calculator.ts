@@ -4,8 +4,8 @@ import {
   DIESEL_UNDER_4,
   GASOLINE_4PLUS,
   GASOLINE_UNDER_4,
-  MAX_IMPORTABLE_AGE,
   MOTORCYCLE_RATES,
+  REMIGRANT_EXCISE_BANDS,
   type Vehicle4PlusBracket,
   type VehicleBracket,
 } from "./constants"
@@ -104,16 +104,10 @@ export function getVehicleAgeInfo(modelYear: number, importYear = new Date().get
   const ageYears = importYear - modelYear
   const autoBracket: VehicleAge = ageYears < 4 ? "under4" : "4plus"
 
-  if (ageYears > MAX_IMPORTABLE_AGE) {
-    return {
-      modelYear,
-      ageYears,
-      warningType: "danger",
-      message: `Too old to import. Guyana's maximum importable vehicle age is ${MAX_IMPORTABLE_AGE} years.`,
-      autoBracket,
-    }
-  }
-
+  // Guyana removed the maximum-importable-age restriction (previously 8
+  // years) effective 2020-10-01 -- vehicles of any age may be imported,
+  // taxed at the same 4+ year rate regardless of how old they are. See
+  // https://gra.gov.gy/vehicles-8-years-old-used-tyres/ (verified 2026-08-19).
   if (ageYears >= 4) {
     return {
       modelYear,
@@ -133,20 +127,30 @@ export function getVehicleAgeInfo(modelYear: number, importYear = new Date().get
   }
 }
 
+function findRemigrantExciseRate(cc: number): number {
+  const clampedCc = Math.max(0, Math.round(cc))
+  for (const band of REMIGRANT_EXCISE_BANDS) {
+    if (clampedCc >= band.min && clampedCc <= band.max) return band.rate
+  }
+  return REMIGRANT_EXCISE_BANDS[REMIGRANT_EXCISE_BANDS.length - 1].rate
+}
+
 function applyRemigrantConcession(
   result: VehicleTaxResult,
   returningNational: boolean,
-  exciseTaxWithoutDuty?: number
+  engineCC: number
 ) {
   if (!returningNational) return result
 
   const rate = result.exchangeRate
-  // The waived duty must not remain baked into the excise base -- excise
-  // formulas that read `excise * (CIF + duty)` overstate the tax once duty
-  // is zeroed below. See gy-taxcalc-bugs.md finding #7.
-  if (exciseTaxWithoutDuty !== undefined) {
-    result.exciseTax = exciseTaxWithoutDuty
-  }
+  // GRA Table A-2-2 is a standalone excise-on-CIF schedule that REPLACES the
+  // vehicle's normal duty/excise/VAT calculation for a qualifying re-migrant,
+  // regardless of vehicle age or which formula (under-4, 4+ flat, or 4+
+  // formula) produced the excise above -- it is not a discount applied on
+  // top of that number. See gy-taxcalc-bugs.md finding #7.
+  const exciseRate = findRemigrantExciseRate(engineCC)
+  result.exciseTax = exciseRate * result.cifGYD
+  result.exciseTaxRate = `${(exciseRate * 100).toFixed(0)}%`
   result.importDuty = 0
   result.importDutyRate = 0
   result.vat = 0
@@ -157,9 +161,7 @@ function applyRemigrantConcession(
   result.totalLandedCostUSD = result.cifUSD + result.totalTaxUSD
   result.notes.unshift("Returning National concession applied: customs duty and VAT exempted.")
   result.notes.push(
-    exciseTaxWithoutDuty !== undefined
-      ? "Excise tax recalculated on CIF alone: the waived customs duty is no longer part of the excise base."
-      : "Excise tax on re-migrant vehicles is conservatively retained in this calculator."
+    `Excise recalculated per GRA Table A-2-2 (Excise Tax Regulations, applies regardless of vehicle age): ${(exciseRate * 100).toFixed(0)}% of CIF.`
   )
   result.notes.push(
     "Conditions: apply within 6 months of returning and keep the vehicle for the required holding period."
@@ -201,7 +203,7 @@ function calculateMotorcycleTax(
   }
   base.formulaUsed = `Motorcycle ${inputs.engineCC}cc`
   base.breakdown = buildBreakdown(base)
-  return applyRemigrantConcession(base, inputs.returningNational, bracket.excise * effectiveCif)
+  return applyRemigrantConcession(base, inputs.returningNational, inputs.engineCC)
 }
 
 function calculateStandardVehicleTax(
@@ -258,11 +260,7 @@ function calculateStandardVehicleTax(
 
     base.formulaUsed = `Under 4 years, ${inputs.fuelType}, ${inputs.engineCC}cc`
     base.breakdown = buildBreakdown(base)
-    return applyRemigrantConcession(
-      base,
-      inputs.returningNational,
-      bracket.excise * effectiveCif
-    )
+    return applyRemigrantConcession(base, inputs.returningNational, inputs.engineCC)
   }
 
   const bracket = findBracket(inputs.engineCC, fourPlusTable) as Vehicle4PlusBracket
@@ -282,7 +280,7 @@ function calculateStandardVehicleTax(
     base.notes.push("No duty, no VAT for 4+ year vehicles.")
     base.formulaUsed = `4+ years flat`
     base.breakdown = buildBreakdown(base)
-    return applyRemigrantConcession(base, inputs.returningNational)
+    return applyRemigrantConcession(base, inputs.returningNational, inputs.engineCC)
   }
 
   // GRA's 4+ year formula bands are denominated entirely in USD --
@@ -308,7 +306,7 @@ function calculateStandardVehicleTax(
   base.notes.push("No duty, no VAT for 4+ year vehicles.")
   base.formulaUsed = `4+ years formula`
   base.breakdown = buildBreakdown(base)
-  return applyRemigrantConcession(base, inputs.returningNational)
+  return applyRemigrantConcession(base, inputs.returningNational, inputs.engineCC)
 }
 
 export function calculateVehicleTax(inputs: VehicleInputs): VehicleTaxResult {

@@ -4,6 +4,24 @@ All notable changes to GY TaxCalc are documented here.
 
 ---
 
+## [2.6.0] — 2026-08-19
+
+### Fact-Checked Against Live GRA/NIS Sources
+
+Every rate, threshold and bracket in the calculator was cross-checked against
+the Guyana Revenue Authority's and National Insurance Scheme's own current
+published pages (not just re-derived from the prior audit document). This
+surfaced bugs the original audit's finding #21 and #7 had correctly diagnosed
+the *symptom* of but not the *statutorily correct target value* for, plus one
+entirely new finding.
+
+- **Finding #21 resolved (was previously only diagnosed, not fixed):** the Daily, Weekly and Fortnightly payment frequencies' `personalAllowance`/`taxThreshold`/`nisCeiling` were derived from an internal approximate month-fraction (`factor`, e.g. weekly = monthly ÷ 4.33) that does not match GRA's own published per-period figures. **Daily was the worst case** — using a 21.67-workday-per-month divisor overstated the daily tax-free allowance by ~40% against GRA's actual calendar-day-based figure (app: $6,460 / GRA: $4,603), meaning Daily-frequency users were being systematically under-taxed relative to what GRA actually withholds. All three frequencies now use GRA's exact published figures, corroborated independently by NIS's own site for the weekly NIS ceiling. Source: [GRA — Revised Personal Allowance and Deductions for Income Tax 2026](https://gra.gov.gy/notice-to-employers-employees-self-employed-persons-revised-personal-allowance-and-deductions-for-income-tax-2026/), [NIS — Information on Contributions](https://www.nis.org.gy/information_on_contributions).
+- **Finding #7 corrected (the 2026-08-19 fix landed on the wrong formula):** the earlier fix recomputed the vehicle's own standard bracket excise rate on CIF alone once duty was waived for the Returning National concession. GRA's Table A-2-2 (Excise Tax Regulations, amended into Customs Act s.23(1)(c)) is actually a **completely separate, flat excise-on-CIF schedule** — 5% (≤1,800cc), 10% (1,801–2,000cc), 20% (2,001–3,000cc), 30% (>3,000cc) — that "applies to all imported motor vehicles, regardless of their age," replacing the vehicle's normal duty/excise/VAT entirely, not discounting it. The earlier fix's numeric answer for the audit's own worked example (2,000cc, 10%) happened to coincidentally match Table A-2-2's rate for that specific band; for every other engine size the two schedules diverge sharply (e.g. a 2,500cc 4+ year vehicle: 70% under the vehicle's own formula vs. the correct 20% under Table A-2-2). Also fixed: the 4+ year vehicle paths (flat and formula brackets) previously didn't apply *any* re-migrant excise override at all. Source: [GRA — Tax Exemption Policy For Qualifying Re-Migrants, Settlers and Returning Students](https://gra.gov.gy/tax-exemption-policy-for-qualifying-re-migrants-settlers-and-returning-students-2/).
+- **New finding fixed:** the vehicle form warned "Too old to import. Guyana's maximum importable vehicle age is 8 years" for any vehicle over 8 years old. This restriction was **abolished 2020-10-01** — vehicles of any age may legally be imported into Guyana (taxed at the same 4+ year rate regardless of how old). The false "too old to import" warning and the now-meaningless `MAX_IMPORTABLE_AGE` constant have been removed. Source: [GRA — Vehicles 8 Years Old & Used Tyres](https://gra.gov.gy/vehicles-8-years-old-used-tyres/).
+- **Verified correct, no change needed:** the 4+ year gasoline/diesel excise formula bands (fixed 2026-08-19 earlier today for findings #1/#4) were independently corroborated against a live third-party GRA-sourced calculator during this pass — exact match on every band. The standard under-4-year duty/excise/VAT bands, the 14% VAT rate, and the Budget 2026 VAT exemptions (vehicles <1,500cc, hybrids <2,000cc, both under 4 years) were also verified correct as-is.
+- **Deliberately not resolved — genuine source conflict, not a guess to make:** finding #19 (whether a 2022-model vehicle counts as "under 4" or "4+" for a 2026 import, per Customs Regulation s.209's "48 months preceding January 1" language) was checked against a second independent source during this pass, which asserts the opposite classification from the audit's own GRA quote. Two credible readings genuinely disagree — this still needs a GRA/accountant confirmation, not a coin flip.
+- 9 new/updated tests (17 total now passing) directly citing the GRA/NIS source URL and verification date for every asserted figure.
+
 ## [2.5.0] — 2026-08-19
 
 ### Calculation Correctness — 2026-08-19 Audit Fixes
