@@ -146,6 +146,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
   const {
     regularMonthlyGrossIncome,
     monthlyNetSalary,
+    netSalaryForFrequency,
     nisContribution,
     incomeTax,
     personalAllowance,
@@ -210,7 +211,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
                   Net Take-Home ({freqLabel})
                 </p>
                 <p className="text-4xl font-bold mt-1.5 tabular-nums">
-                  {formatCurrency(monthlyNetSalary)}
+                  {formatCurrency(netSalaryForFrequency)}
                 </p>
               </div>
               <div className="rounded-xl bg-white/15 p-2.5 backdrop-blur-sm">
@@ -541,7 +542,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               <div className="flex items-baseline justify-between">
                 <span className="text-sm font-bold">Net Take-Home</span>
                 <span className="text-xl font-bold text-primary tabular-nums">
-                  <AnimatedCurrency value={monthlyNetSalary} />
+                  <AnimatedCurrency value={netSalaryForFrequency} />
                 </span>
               </div>
               <div className="flex items-center gap-2 mt-2">

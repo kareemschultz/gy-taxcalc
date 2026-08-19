@@ -4,6 +4,39 @@ All notable changes to GY TaxCalc are documented here.
 
 ---
 
+## [2.5.0] — 2026-08-19
+
+### Calculation Correctness — 2026-08-19 Audit Fixes
+
+Fixes from a full-app audit (`gy-taxcalc-bugs.md`, 41 findings). This release
+covers the P0 findings (wrong money shown) plus the highest-impact P1 items;
+remaining P1/P2/P3 findings are tracked for follow-up, and four items that
+depend on statutory interpretation (NIS treatment of allowances/back pay/the
+fortnightly ceiling, and the vehicle age boundary) are deferred pending
+accountant sign-off rather than guessed at.
+
+**Vehicle Import Calculator:**
+- **Finding #1 fixed:** 4+ year excise formula add-ons (`bracket.addon`) are GRA figures denominated in **US dollars**, but were being applied directly against a **GYD** CIF base — understating excise by ~4.2x on a worked example (GY$1,548,950 shown vs. the correct GY$6,529,100). The formula now runs entirely in USD before converting to GYD.
+- **Finding #4 fixed:** The 1501–2000cc gasoline 4+ year band was one merged bracket using a US$8,200 add-on found in no GRA table. Split back into GRA's actual two bands: 1501–1800cc @ US$6,000/30%, 1801–2000cc @ US$6,500/30%.
+- **Finding #3 fixed:** Selecting "Electric" as the vehicle type force-set Fuel Type to "electric" and hid the selector, but switching back to a non-electric vehicle type never released the latch — the calculator kept computing on the (hidden) electric fuel type. Fixed to fall back to gasoline when leaving Electric.
+- **Finding #6 fixed:** `findBracket` matched brackets on integer boundaries only; a non-integer or negative engine cc silently fell through to the top (most expensive) bracket instead of the correct one. cc is now rounded and clamped to zero before matching.
+- **Finding #7 fixed:** The Returning National / re-migrant concession zeroed customs duty but left it baked into the already-computed excise base (excise formulas read `rate × (CIF + duty)`), overstating excise by GY$98,100 on a worked example. Excise is now recomputed on CIF alone once duty is waived.
+
+**Salary/Tax Calculator:**
+- **Finding #2/#9/#18 fixed:** The "Net Take-Home ({frequency})" hero figure and the detailed breakdown card's Net Take-Home line both displayed the **monthly**-converted net salary under a **per-period** label — e.g. a weekly-paid user saw "Net Take-Home (per week): $218,938.87" against a $60,000 weekly gross. Both now show the actual per-period value (`netSalaryForFrequency`).
+- **Finding #28 fixed:** The insurance premium was deducted from taxable income (correctly lowering PAYE) but never actually subtracted from net take-home pay in any of the three calculation paths (base, salary-increase, retroactive) — the deduction disappeared rather than leaving the pocket. Fixed across all three paths.
+- **Finding #8 fixed:** `TaxBracketChart.tsx` hardcoded the 25%/35% tax bracket split at a flat 280,000 (the monthly threshold), rendering weekly/fortnightly incomes as entirely in the 25% band even when the 35% bracket applied. Now reads the per-frequency threshold from `results.frequencyConfig`.
+
+**Testing:**
+- Added `vitest` (project's first automated test coverage). 8 tests covering findings #1, #4, #6, #7, and #28.
+
+**Known follow-up (see `gy-taxcalc-bugs.md` for full detail):**
+- Deferred pending accountant sign-off: findings #19 (vehicle age boundary), #31/#32 (NIS on allowances/back pay), #33 (fortnightly NIS ceiling basis).
+- Not yet addressed: findings #5, #9 (remaining chart locations), #10–#17, #21–#27, #29–#30, #34–#41.
+- Separately flagged (not bundled into this release): Next.js 15.3.1 and several transitive dependencies carry critical CVEs predating this work; upgrading is a larger, separately-scoped change.
+
+---
+
 ## [2.4.0] — 2026-04-08
 
 ### Vehicle Import Calculator — 2026 Audit Fixes + New Features

@@ -40,7 +40,11 @@ export const DIESEL_UNDER_4: VehicleBracket[] = [
 export const GASOLINE_4PLUS: Vehicle4PlusBracket[] = [
   { min: 0, max: 1000, type: "flat_gyd", amount: 800000 },
   { min: 1001, max: 1500, type: "flat_gyd", amount: 800000 },
-  { min: 1501, max: 2000, type: "formula", addon: 8200, rate: 0.30 },
+  // GRA splits 1501-2000cc into two bands (US$6,000 / US$6,500); the merged
+  // 8,200 addon here was a figure in no GRA table -- see gy-taxcalc-bugs.md
+  // finding #4.
+  { min: 1501, max: 1800, type: "formula", addon: 6000, rate: 0.30 },
+  { min: 1801, max: 2000, type: "formula", addon: 6500, rate: 0.30 },
   { min: 2001, max: 3000, type: "formula", addon: 13500, rate: 0.70 },
   { min: 3001, max: Number.POSITIVE_INFINITY, type: "formula", addon: 14500, rate: 1.00 },
 ]
