@@ -105,9 +105,14 @@ export function performCalculations(inputs: CalculatorInputs): CalculationResult
       (taxableIncome - frequencyConfig.taxThreshold) * TAX_RATE_2
   }
 
-  // Net salary
+  // Net salary — insurance is a real cash deduction, not just a PAYE reduction
   const netSalaryForFrequency =
-    regularMonthlyGrossIncome - nisContribution - incomeTax - loanPayment - creditUnionDeduction
+    regularMonthlyGrossIncome -
+    nisContribution -
+    incomeTax -
+    loanPayment -
+    creditUnionDeduction -
+    actualInsuranceDeduction
 
   // Monthly equivalents
   const monthlyGrossIncome = convertToMonthly(regularMonthlyGrossIncome, paymentFrequency)
@@ -258,7 +263,8 @@ export function calculateSalaryIncrease(
     newResults.nisContribution -
     newResults.incomeTax -
     newResults.loanPayment -
-    newResults.creditUnionDeduction
+    newResults.creditUnionDeduction -
+    newActualInsuranceDeduction
   newResults.monthlyNetSalary = convertToMonthly(newNetSalaryForFrequency, baseResults.paymentFrequency)
   newResults.annualNetSalary = newNetSalaryForFrequency * freq.periodsPerYear
 
@@ -317,7 +323,8 @@ export function calculateSalaryIncrease(
       retroNisContribution -
       retroIncomeTax -
       newResults.loanPayment -
-      newResults.creditUnionDeduction
+      newResults.creditUnionDeduction -
+      retroActualInsuranceDeduction
   }
 
   // Gratuity month calculation

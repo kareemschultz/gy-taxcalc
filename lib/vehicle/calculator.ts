@@ -38,8 +38,12 @@ function toGyd(amountUsd: number, rate: number) {
 }
 
 function findBracket<T extends VehicleBracket | Vehicle4PlusBracket>(cc: number, table: T[]) {
+  // Bracket tables are defined on integer cc boundaries; a non-integer or
+  // negative cc previously matched nothing and silently fell through to the
+  // most expensive bracket. See gy-taxcalc-bugs.md finding #6.
+  const clampedCc = Math.max(0, Math.round(cc))
   for (const bracket of table) {
-    if (cc >= bracket.min && cc <= bracket.max) return bracket
+    if (clampedCc >= bracket.min && clampedCc <= bracket.max) return bracket
   }
   return table[table.length - 1]
 }
@@ -129,10 +133,20 @@ export function getVehicleAgeInfo(modelYear: number, importYear = new Date().get
   }
 }
 
-function applyRemigrantConcession(result: VehicleTaxResult, returningNational: boolean) {
+function applyRemigrantConcession(
+  result: VehicleTaxResult,
+  returningNational: boolean,
+  exciseTaxWithoutDuty?: number
+) {
   if (!returningNational) return result
 
   const rate = result.exchangeRate
+  // The waived duty must not remain baked into the excise base -- excise
+  // formulas that read `excise * (CIF + duty)` overstate the tax once duty
+  // is zeroed below. See gy-taxcalc-bugs.md finding #7.
+  if (exciseTaxWithoutDuty !== undefined) {
+    result.exciseTax = exciseTaxWithoutDuty
+  }
   result.importDuty = 0
   result.importDutyRate = 0
   result.vat = 0
@@ -143,7 +157,9 @@ function applyRemigrantConcession(result: VehicleTaxResult, returningNational: b
   result.totalLandedCostUSD = result.cifUSD + result.totalTaxUSD
   result.notes.unshift("Returning National concession applied: customs duty and VAT exempted.")
   result.notes.push(
-    "Excise tax on re-migrant vehicles is conservatively retained in this calculator."
+    exciseTaxWithoutDuty !== undefined
+      ? "Excise tax recalculated on CIF alone: the waived customs duty is no longer part of the excise base."
+      : "Excise tax on re-migrant vehicles is conservatively retained in this calculator."
   )
   result.notes.push(
     "Conditions: apply within 6 months of returning and keep the vehicle for the required holding period."
@@ -185,7 +201,7 @@ function calculateMotorcycleTax(
   }
   base.formulaUsed = `Motorcycle ${inputs.engineCC}cc`
   base.breakdown = buildBreakdown(base)
-  return applyRemigrantConcession(base, inputs.returningNational)
+  return applyRemigrantConcession(base, inputs.returningNational, bracket.excise * effectiveCif)
 }
 
 function calculateStandardVehicleTax(
@@ -242,7 +258,11 @@ function calculateStandardVehicleTax(
 
     base.formulaUsed = `Under 4 years, ${inputs.fuelType}, ${inputs.engineCC}cc`
     base.breakdown = buildBreakdown(base)
-    return applyRemigrantConcession(base, inputs.returningNational)
+    return applyRemigrantConcession(
+      base,
+      inputs.returningNational,
+      bracket.excise * effectiveCif
+    )
   }
 
   const bracket = findBracket(inputs.engineCC, fourPlusTable) as Vehicle4PlusBracket
@@ -265,8 +285,15 @@ function calculateStandardVehicleTax(
     return applyRemigrantConcession(base, inputs.returningNational)
   }
 
-  const addon = bracket.addon ?? 0
-  const exciseTax = ((base.cifGYD + addon) * (bracket.rate ?? 0)) + addon
+  // GRA's 4+ year formula bands are denominated entirely in USD --
+  // "(CIF + US$addon) x rate + US$addon" -- and must be computed in USD
+  // before converting to GYD. Applying the USD addon constant directly to
+  // a GYD CIF value understated every affected band by ~1/rate (previously
+  // GY$4.98M low on a US$10,000/2500cc gasoline example -- see
+  // gy-taxcalc-bugs.md finding #1).
+  const addonUsd = bracket.addon ?? 0
+  const exciseTaxUsd = (base.cifUSD + addonUsd) * (bracket.rate ?? 0) + addonUsd
+  const exciseTax = toGyd(exciseTaxUsd, rate)
   base.importDuty = 0
   base.importDutyRate = 0
   base.exciseTax = exciseTax

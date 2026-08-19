@@ -164,6 +164,13 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
 
       if (next.vehicleType === "electric") {
         next.fuelType = "electric"
+      } else if (prev.vehicleType === "electric" && next.fuelType === "electric") {
+        // Leaving Electric: fuelType was force-set above and the Fuel Type
+        // select stays hidden while it's "electric" (see hideFuel below), so
+        // without this reset a user can never see or undo it -- every
+        // subsequent calculation silently exempts them from all vehicle tax.
+        // See gy-taxcalc-bugs.md finding #3.
+        next.fuelType = "gasoline"
       }
 
       if (next.modelYear) {

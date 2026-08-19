@@ -29,8 +29,11 @@ export function TaxBracketChart({ results }: { results: CalculationResults }) {
   const allowance = Math.max(0, results.personalAllowance)
   const nonTaxable = Math.max(0, results.overtimeAllowance + results.secondJobAllowance)
   const chargeable = Math.max(0, results.taxableIncome)
-  const taxable25 = Math.min(chargeable, 280_000)
-  const taxable35 = Math.max(0, chargeable - 280_000)
+  // The 25%/35% split point is per-frequency, not a fixed 280,000 (that's
+  // only the monthly threshold). See gy-taxcalc-bugs.md finding #8.
+  const taxThreshold = results.frequencyConfig.taxThreshold
+  const taxable25 = Math.min(chargeable, taxThreshold)
+  const taxable35 = Math.max(0, chargeable - taxThreshold)
 
   const data = [
     { name: "Personal allowance", value: allowance, fill: "var(--color-chart-3)" },
