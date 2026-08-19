@@ -505,20 +505,10 @@ export function VehicleInputs({ onChange }: VehicleInputsProps) {
                 <AlertTriangle className="size-4 text-amber-500" />
                 <p className="text-sm">{ageInfo.message}</p>
                 <Badge
-                  variant={
-                    ageInfo.warningType === "danger"
-                      ? "destructive"
-                      : ageInfo.warningType === "warning"
-                        ? "warning"
-                        : "outline"
-                  }
+                  variant={ageInfo.warningType === "warning" ? "warning" : "outline"}
                   className="ml-auto"
                 >
-                  {ageInfo.warningType === "danger"
-                    ? "Over 8 years"
-                    : ageInfo.warningType === "warning"
-                      ? "4+ years"
-                      : "Under 4 years"}
+                  {ageInfo.warningType === "warning" ? "4+ years" : "Under 4 years"}
                 </Badge>
               </div>
             </div>

@@ -1,7 +1,6 @@
 import type { FuelType } from "./types"
 
 export const DEFAULT_EXCHANGE_RATE = 218
-export const MAX_IMPORTABLE_AGE = 8
 
 export interface VehicleBracket {
   min: number
@@ -60,6 +59,26 @@ export const DIESEL_4PLUS: Vehicle4PlusBracket[] = [
 export const MOTORCYCLE_RATES: VehicleBracket[] = [
   { min: 0, max: 175, duty: 0.20, excise: 0, vat: 0.14 },
   { min: 176, max: Number.POSITIVE_INFINITY, duty: 0.20, excise: 0.10, vat: 0.14 },
+]
+
+export interface RemigrantExciseBand {
+  min: number
+  max: number
+  rate: number
+}
+
+// GRA Table A-2-2 (Excise Tax Regulations), amended into Customs Act s.23(1)(c),
+// effective 2023-09-01: "applies to all imported motor vehicles, regardless of
+// their age." This is a standalone excise-on-CIF schedule -- it replaces the
+// vehicle's normal duty/excise/VAT calculation entirely for a qualifying
+// re-migrant/settler/returning student; it is not a discount on top of the
+// standard formula. Source: https://gra.gov.gy/tax-exemption-policy-for-qualifying-re-migrants-settlers-and-returning-students-2/
+// (verified 2026-08-19). See gy-taxcalc-bugs.md finding #7.
+export const REMIGRANT_EXCISE_BANDS: RemigrantExciseBand[] = [
+  { min: 0, max: 1800, rate: 0.05 },
+  { min: 1801, max: 2000, rate: 0.10 },
+  { min: 2001, max: 3000, rate: 0.20 },
+  { min: 3001, max: Number.POSITIVE_INFINITY, rate: 0.30 },
 ]
 
 export const FUEL_TYPE_TABLE: Record<Exclude<FuelType, "electric">, "gasoline" | "diesel" | "gasoline"> = {

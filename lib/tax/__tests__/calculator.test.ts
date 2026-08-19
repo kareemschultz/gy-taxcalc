@@ -115,3 +115,28 @@ describe("insurance premium is a real cash deduction (finding #28)", () => {
     expect(withRetro.actualInsuranceDeduction).toBe(4970)
   })
 })
+
+describe("per-frequency personal allowance / tax threshold / NIS ceiling match GRA's published table (finding #21)", () => {
+  // GRA "Revised Personal Allowance and Deductions for Income Tax 2026"
+  // (eff. 2026-01-01) publishes exact daily/weekly/fortnightly/monthly/yearly
+  // figures directly -- they are not all evenly derived from the monthly
+  // figure by a single conversion factor (daily in particular used a
+  // 21.67-workday-per-month approximation that overstated the allowance by
+  // ~40% against GRA's own 365-calendar-day figure). NIS's own site
+  // corroborates the weekly figure independently.
+  // https://gra.gov.gy/notice-to-employers-employees-self-employed-persons-revised-personal-allowance-and-deductions-for-income-tax-2026/
+  // https://www.nis.org.gy/information_on_contributions
+  // (both verified 2026-08-19).
+  it.each([
+    ["daily", 4603, 9205, 9205],
+    ["weekly", 32308, 64615, 64615],
+    ["fortnightly", 64615, 129231, 129231],
+    ["monthly", 140000, 280000, 280000],
+    ["yearly", 1680000, 3360000, 3360000],
+  ] as const)("%s: personalAllowance %i, taxThreshold %i, nisCeiling %i", (freq, pa, threshold, ceiling) => {
+    const config = PAYMENT_FREQUENCIES[freq]
+    expect(config.personalAllowance).toBe(pa)
+    expect(config.taxThreshold).toBe(threshold)
+    expect(config.nisCeiling).toBe(ceiling)
+  })
+})

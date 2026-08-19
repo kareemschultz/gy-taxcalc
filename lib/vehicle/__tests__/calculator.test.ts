@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { calculateVehicleTax } from "../calculator"
+import { calculateVehicleTax, getVehicleAgeInfo } from "../calculator"
 import type { VehicleInputs } from "../types"
 
 function baseInputs(overrides: Partial<VehicleInputs> = {}): VehicleInputs {
@@ -67,13 +67,55 @@ describe("findBracket clamps out-of-grid cc instead of falling through (finding 
   })
 })
 
-describe("returning-national concession recomputes excise off waived duty (finding #7)", () => {
-  it("matches the audit's worked example: 316,100 baked-in-duty excise becomes 218,000", () => {
-    // Gasoline under-4, 2000cc, CIF US$10,000 @ 218.
+describe("returning-national concession uses GRA Table A-2-2, not the vehicle's own bracket rate (finding #7)", () => {
+  // Source: GRA "Tax Exemption Policy For Qualifying Re-Migrants, Settlers
+  // and Returning Students" -- Table A-2-2 is a standalone excise-on-CIF
+  // schedule that "applies to all imported motor vehicles, regardless of
+  // their age," replacing the vehicle's normal duty/excise/VAT entirely:
+  // <=1800cc 5%, 1801-2000cc 10%, 2001-3000cc 20%, >3000cc 30%.
+  // https://gra.gov.gy/tax-exemption-policy-for-qualifying-re-migrants-settlers-and-returning-students-2/
+  // (verified 2026-08-19).
+  const cifGYD = 10000 * 218 // US$10,000 @ 218 = GY$2,180,000
+
+  it("1800cc and under: 5% of CIF regardless of age or fuel type", () => {
+    const result = calculateVehicleTax(
+      baseInputs({ engineCC: 1800, vehicleAge: "under4", returningNational: true })
+    )
+    expect(result.exciseTax).toBeCloseTo(cifGYD * 0.05, 0)
+    expect(result.importDuty).toBe(0)
+    expect(result.vat).toBe(0)
+  })
+
+  it("1801-2000cc: 10% of CIF (matches the audit's original 2000cc worked example by coincidence)", () => {
     const result = calculateVehicleTax(
       baseInputs({ engineCC: 2000, vehicleAge: "under4", returningNational: true })
     )
-    expect(result.exciseTax).toBeCloseTo(218_000, 0)
-    expect(result.importDuty).toBe(0)
+    expect(result.exciseTax).toBeCloseTo(cifGYD * 0.10, 0)
+  })
+
+  it("2001-3000cc, 4+ years: 20% of CIF -- NOT the vehicle's own 70% formula-band rate", () => {
+    // This is the case that exposes the old (incorrect) fix: applying the
+    // vehicle's own bracket excise rate here would give 70%, not 20%.
+    const result = calculateVehicleTax(
+      baseInputs({ engineCC: 2500, vehicleAge: "4plus", returningNational: true })
+    )
+    expect(result.exciseTax).toBeCloseTo(cifGYD * 0.20, 0)
+  })
+
+  it("over 3000cc: 30% of CIF", () => {
+    const result = calculateVehicleTax(
+      baseInputs({ engineCC: 3500, vehicleAge: "4plus", returningNational: true })
+    )
+    expect(result.exciseTax).toBeCloseTo(cifGYD * 0.30, 0)
+  })
+})
+
+describe("no maximum importable vehicle age (previously finding: false 8-year ban)", () => {
+  it("does not warn that a 15-year-old vehicle is too old to import", () => {
+    // Guyana removed the 8-year age restriction effective 2020-10-01.
+    // https://gra.gov.gy/vehicles-8-years-old-used-tyres/ (verified 2026-08-19).
+    const info = getVehicleAgeInfo(2011, 2026)
+    expect(info?.warningType).not.toBe("danger")
+    expect(info?.message.toLowerCase()).not.toContain("too old")
   })
 })
