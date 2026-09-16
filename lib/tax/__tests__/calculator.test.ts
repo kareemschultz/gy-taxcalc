@@ -34,7 +34,7 @@ function baseInputs(overrides: Partial<CalculatorInputs> = {}): CalculatorInputs
     loanPayment: 0,
     creditUnionDeduction: 0,
     insuranceType: "family",
-    insurancePremium: 4970,
+    insurancePremium: 5964,
     gratuityRate: 22.5,
     gratuityPeriod: 6,
     ...overrides,
@@ -45,7 +45,7 @@ describe("insurance premium is a real cash deduction (finding #28)", () => {
   it("is subtracted from net salary in the main calculation path", () => {
     const r = performCalculations(baseInputs())
 
-    expect(r.actualInsuranceDeduction).toBe(4970)
+    expect(r.actualInsuranceDeduction).toBe(5964)
     expect(r.netSalaryForFrequency).toBeCloseTo(
       r.regularMonthlyGrossIncome -
         r.nisContribution -
@@ -82,7 +82,7 @@ describe("insurance premium is a real cash deduction (finding #28)", () => {
       increased.paymentFrequency
     )
 
-    expect(increased.actualInsuranceDeduction).toBe(4970)
+    expect(increased.actualInsuranceDeduction).toBe(5964)
     expect(increased.monthlyNetSalary).toBeCloseTo(expectedMonthlyNet, 6)
   })
 
@@ -98,8 +98,8 @@ describe("insurance premium is a real cash deduction (finding #28)", () => {
     // netPayWithRetroactiveLumpSum only exists when retroactiveMonths > 0.
     expect(withRetro.netPayWithRetroactiveLumpSum).toBeGreaterThan(0)
 
-    // Before the fix, netPayWithRetroactiveLumpSum was 4,970 higher than
-    // this -- insurance was never subtracted here at all.
+    // Before the fix, netPayWithRetroactiveLumpSum was higher by the flat
+    // premium amount -- insurance was never subtracted here at all.
     const grossForRetroMonth = withRetro.regularMonthlyGrossIncome + withRetro.totalRetroactiveLumpSum
     const impliedInsuranceDeduction =
       grossForRetroMonth -
@@ -112,7 +112,7 @@ describe("insurance premium is a real cash deduction (finding #28)", () => {
     // The retro insurance deduction is capped the same way as the main path
     // (min of premium, 10% of gross, per-frequency max) -- at this income
     // level none of the caps bind, so it should equal the flat premium.
-    expect(withRetro.actualInsuranceDeduction).toBe(4970)
+    expect(withRetro.actualInsuranceDeduction).toBe(5964)
   })
 })
 

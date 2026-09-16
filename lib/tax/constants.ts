@@ -11,11 +11,17 @@ export const NIS_RATE = 0.056
 export const NIS_CEILING = 280000
 export const GRATUITY_RATE_DEFAULT = 22.5
 
+// Assuria Medical Insurance Plan monthly premiums, revised per NDMA's
+// "Assuria Medical Insurance Premium Adjustment" notice (effective
+// 2026-09-16): Individual $1,469 -> $1,763, Individual+1 $3,182 -> $3,818,
+// Family $4,970 -> $5,964. Previous rates are not preserved anywhere in this
+// codebase (no dated-schedule model for insurance, unlike PAYMENT_FREQUENCIES'
+// GRA-notice-dated allowances above) -- this is a flat current-value constant.
 export const INSURANCE_PREMIUMS: Record<InsuranceType, number | string> = {
   none: 0,
-  employee: 1469,
-  "employee-one": 3182,
-  family: 4970,
+  employee: 1763,
+  "employee-one": 3818,
+  family: 5964,
   custom: "custom",
 }
 

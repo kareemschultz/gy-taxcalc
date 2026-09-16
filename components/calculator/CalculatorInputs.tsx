@@ -695,9 +695,9 @@ export function CalculatorInputs({ onChange }: CalculatorInputsProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">None</SelectItem>
-                <SelectItem value="employee">Employee ($1,469/mo)</SelectItem>
-                <SelectItem value="employee-one">Employee + 1 ($3,182/mo)</SelectItem>
-                <SelectItem value="family">Family ($4,970/mo)</SelectItem>
+                <SelectItem value="employee">Employee ($1,763/mo)</SelectItem>
+                <SelectItem value="employee-one">Employee + 1 ($3,818/mo)</SelectItem>
+                <SelectItem value="family">Family ($5,964/mo)</SelectItem>
                 <SelectItem value="custom">Custom amount</SelectItem>
               </SelectContent>
             </Select>
