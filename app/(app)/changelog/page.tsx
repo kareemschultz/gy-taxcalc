@@ -1,11 +1,15 @@
+import { pageMetadata } from "@/lib/metadata"
 import { parseChangelog } from "@/lib/changelog"
 import { ChangelogTimeline } from "@/components/changelog/ChangelogTimeline"
 import { Badge } from "@/components/ui/badge"
+import { PRODUCT } from "@/lib/brand"
 
-export const metadata = {
-  title: "Changelog — GY TaxCalc",
-  description: "Release history and updates for GY TaxCalc.",
-}
+export const metadata = pageMetadata({
+  title: "What's New",
+  description:
+    "Release history and updates for GYCalc, formerly GY TaxCalc.",
+  path: "/changelog/",
+})
 
 export default function ChangelogPage() {
   const entries = parseChangelog()
@@ -20,7 +24,7 @@ export default function ChangelogPage() {
           </Badge>
           <h2 className="text-2xl font-semibold md:text-3xl lg:text-4xl">Changelog</h2>
           <p className="text-muted-foreground text-xl">
-            See what&apos;s new, changed, fixed, and improved in GY TaxCalc.
+            See what&apos;s new, changed, fixed, and improved in {PRODUCT.name}.
           </p>
         </div>
       </section>

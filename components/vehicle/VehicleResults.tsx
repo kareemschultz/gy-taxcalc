@@ -131,7 +131,7 @@ export function VehicleResults({
       </div>
 
       <ResultActions
-        fileName="vehicle-summary.txt"
+        fileName="gycalc-vehicle-summary.txt"
         title="Vehicle Summary"
         subtitle="A clean export of the import tax result and the key calculation notes."
         summary={[

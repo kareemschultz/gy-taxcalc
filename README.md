@@ -1,8 +1,10 @@
-# GY TaxCalc
+# GYCalc
+
+_Money tools for Guyana. Pronounced "Guy-calc". Formerly GY TaxCalc._
 
 <div align="center">
 
-![GY TaxCalc](https://img.shields.io/badge/GY%20TaxCalc-Guyana%27s%20Tax%20Toolkit-16a34a?style=for-the-badge)
+![GYCalc](https://img.shields.io/badge/GYCalc-Money%20tools%20for%20Guyana-2563eb?style=for-the-badge)
 ![Next.js](https://img.shields.io/badge/Next.js-15.3-black?style=for-the-badge&logo=nextdotjs)
 ![React](https://img.shields.io/badge/React-19-61dafb?style=for-the-badge&logo=react&logoColor=black)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-v4-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white)
@@ -16,12 +18,12 @@
 </div>
 
 <p align="center">
-  <img src="./public/readme-hero.svg" alt="GY TaxCalc preview" width="100%" />
+  <img src="./public/readme-hero.svg" alt="GYCalc preview" width="100%" />
 </p>
 
 ## Overview
 
-GY TaxCalc is a Guyana-focused tax toolkit built with Next.js 15, shadcn/ui, Tailwind CSS v4, Framer Motion, and Recharts.
+GYCalc (formerly GY TaxCalc) offers salary, tax, vehicle import and loan calculators built for Guyana. It is built with Next.js 15, shadcn/ui, Tailwind CSS v4, Framer Motion, and Recharts.
 
 It currently ships as a static-export friendly app with:
 

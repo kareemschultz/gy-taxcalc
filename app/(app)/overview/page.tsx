@@ -1,8 +1,17 @@
+import { pageMetadata } from "@/lib/metadata"
 import Link from "next/link"
 import { ArrowRight, BookOpen, Calculator, Car, GitCompareArrows, Landmark, ScrollText, CalendarRange, Radar, Activity } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { PRODUCT } from "@/lib/brand"
+
+export const metadata = pageMetadata({
+  title: "Guyana Salary, Tax, Vehicle & Loan Calculators",
+  description:
+    "Work out your Guyana take-home pay, PAYE and NIS, vehicle import taxes and loan payments with 2026 rules.",
+  path: "/overview/",
+})
 
 const quickLinks = [
   { title: "Tax Calculator", href: "/dashboard", icon: Calculator, description: "Calculate salary, PAYE, NIS, gratuity, and deductions." },
@@ -24,10 +33,11 @@ export default function OverviewPage() {
             <Badge variant="secondary" className="w-fit bg-white/15 text-primary-foreground">
               Start here
             </Badge>
-            <CardTitle className="text-3xl">GY TaxCalc Overview</CardTitle>
+            <CardTitle className="text-3xl">{PRODUCT.name}</CardTitle>
             <CardDescription className="text-primary-foreground/80">
-              A single place to calculate pay, imports, loans, compare options, and learn the 2026 rules.
+              {PRODUCT.description}
             </CardDescription>
+            <p className="text-xs text-primary-foreground/70">Formerly {PRODUCT.formerName}.</p>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             <Button asChild variant="secondary">

@@ -40,6 +40,7 @@ import {
 import { NavMain } from "@/components/layout/nav-main"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Badge } from "@/components/ui/badge"
+import { PRODUCT } from "@/lib/brand"
 
 const mainNav = [
   {
@@ -111,9 +112,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   GY
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">GY TaxCalc</span>
+                  <span className="truncate font-semibold">{PRODUCT.name}</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    Guyana&apos;s Tax Toolkit
+                    {PRODUCT.tagline}
                   </span>
                 </div>
               </Link>

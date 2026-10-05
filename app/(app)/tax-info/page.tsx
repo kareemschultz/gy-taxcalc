@@ -1,14 +1,18 @@
+import { pageMetadata } from "@/lib/metadata"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { BadgeAccordion } from "@/components/changelog/BadgeAccordion"
 import { TimelineItem } from "@/components/changelog/TimelineItem"
 import { Separator } from "@/components/ui/separator"
+import { PRODUCT } from "@/lib/brand"
 
-export const metadata = {
-  title: "Policy Guide 2026 — GY TaxCalc",
-  description: "Official-style 2026 policy guide and updates for GY TaxCalc.",
-}
+export const metadata = pageMetadata({
+  title: "Guyana Tax & NIS Guide 2026",
+  description:
+    "2026 Guyana PAYE rates, personal allowance, NIS contributions, allowances and vehicle import rules in one reference.",
+  path: "/tax-info/",
+})
 
 type TaxInfoEntry = {
   version: string
@@ -206,7 +210,7 @@ export default function TaxInfoPage() {
             Policy Guide 2026
           </h2>
           <p className="text-muted-foreground text-xl">
-            Official 2026 rates, allowances, and policy notes for GY TaxCalc.
+            Official 2026 rates, allowances, and policy notes for {PRODUCT.name}.
           </p>
         </div>
       </section>

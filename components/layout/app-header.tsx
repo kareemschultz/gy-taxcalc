@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
 import { ModeToggle } from "@/components/mode-toggle"
+import { PRODUCT } from "@/lib/brand"
 
 const breadcrumbMap: Record<string, { label: string; description: string }> = {
   "/overview": {
@@ -53,7 +54,7 @@ const breadcrumbMap: Record<string, { label: string; description: string }> = {
 
 export function AppHeader() {
   const pathname = usePathname()
-  const current = breadcrumbMap[pathname] ?? { label: "GY TaxCalc", description: "" }
+  const current = breadcrumbMap[pathname] ?? { label: PRODUCT.name, description: "" }
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur-sm lg:px-6">
@@ -80,7 +81,7 @@ export function AppHeader() {
         </span>
         <div className="text-center">
           <h1 className="text-sm font-semibold leading-none">{current.label}</h1>
-          <p className="text-[11px] text-muted-foreground">Guyana&apos;s Tax Toolkit</p>
+          <p className="text-[11px] text-muted-foreground">{PRODUCT.tagline}</p>
         </div>
       </div>
 
