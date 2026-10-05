@@ -133,3 +133,25 @@ describe("B6: one pay breakdown, all in the selected pay period", () => {
     })
   }
 })
+
+describe("review follow-ups", () => {
+  it("a December gratuity month includes the vacation allowance, matching month 12", () => {
+    const r = performCalculations(inputs({ gratuityPeriod: 12, vacationAllowance: 50000 }))
+    expect(r.gratuityPayoutMonths).toEqual([12])
+    expect(r.gratuityMonthTotal).toBeCloseTo(r.monthTwelveTotal, 6)
+  })
+
+  it("salary-increase results keep take-home and monthly gross consistent with the new gross", () => {
+    const base = performCalculations(inputs({ paymentFrequency: "weekly", basicSalary: 60000 }))
+    const r = calculateSalaryIncrease(base, {
+      increasePercentage: 10,
+      isTaxable: true,
+      retroactiveMonths: 0,
+      isGratuityMonth: false,
+    })
+    const b = buildPayBreakdown(r)
+    expect(b.gross - b.nis - b.paye - b.otherDeductions).toBeCloseTo(b.net, 6)
+    expect(r.netSalaryForFrequency).toBeGreaterThan(base.netSalaryForFrequency)
+    expect(r.monthlyGrossIncome).toBeGreaterThan(base.monthlyGrossIncome)
+  })
+})

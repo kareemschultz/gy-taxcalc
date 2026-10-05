@@ -181,6 +181,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
   const decemberGratuity = gratuityPayoutMonths.includes(12) ? gratuityPayout : 0
   const firstPayoutMonth = MONTH_NAMES[(gratuityPayoutMonths[0] ?? gratuityPeriodMonths) - 1] ?? ""
   const gratuityLabel = `Gratuity (every ${gratuityPeriodMonths} months)`
+  const gratuityInDecemberOnly = (gratuityPayoutMonths[0] ?? gratuityPeriodMonths) === 12
   const resolvedMonthTwelveTotal = monthlyNetSalary + decemberGratuity + resolvedVacationAllowance
   const pay = buildPayBreakdown(results)
   const resolvedAnnualTotal = annualNetSalary + annualGratuityTotal + resolvedVacationAllowance
@@ -339,6 +340,9 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           breakdown={[
             { label: "Net pay", value: formatCurrency(monthlyNetSalary) },
             { label: gratuityLabel, value: formatCurrency(gratuityPayout), highlight: true },
+            ...(gratuityInDecemberOnly && resolvedVacationAllowance > 0
+              ? [{ label: "Vacation", value: formatCurrency(resolvedVacationAllowance) }]
+              : []),
           ]}
         />
         <SummaryCard
@@ -585,6 +589,9 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               <CardContent className="pt-0">
                 <StatRow label="Monthly Net Salary" value={monthlyNetSalary} />
                 <StatRow label={gratuityLabel} value={gratuityPayout} />
+                {gratuityInDecemberOnly && resolvedVacationAllowance > 0 && (
+                  <StatRow label="Vacation Allowance" value={resolvedVacationAllowance} />
+                )}
                 <Separator className="my-2" />
                 <div className="flex items-baseline justify-between">
                   <span className="text-sm font-bold">Total {firstPayoutMonth}</span>

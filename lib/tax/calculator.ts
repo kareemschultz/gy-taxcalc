@@ -27,6 +27,8 @@ function gratuitySchedule(monthlyAccrual: number, periodMonths: number) {
     payout,
     payoutMonths,
     decemberPayout: payoutMonths.includes(12) ? payout : 0,
+    /** True when the first payout of the year is in December (an annual gratuity). */
+    firstPayoutInDecember: (payoutMonths[0] ?? period) === 12,
     annualAccrual: monthlyAccrual * 12,
   }
 }
@@ -139,7 +141,9 @@ export function performCalculations(inputs: CalculatorInputs): CalculationResult
   const monthlyNetSalary = convertToMonthly(netSalaryForFrequency, paymentFrequency)
 
   // Special months (always monthly). December gets a payout only when one falls due then.
-  const gratuityMonthTotal = monthlyNetSalary + gratuity.payout
+  // An annual gratuity is paid in December, alongside the vacation allowance.
+  const gratuityMonthTotal =
+    monthlyNetSalary + gratuity.payout + (gratuity.firstPayoutInDecember ? vacationAllowance : 0)
   const monthTwelveTotal = monthlyNetSalary + gratuity.decemberPayout + vacationAllowance
 
   // Annual
@@ -288,6 +292,8 @@ export function calculateSalaryIncrease(
     newResults.loanPayment -
     newResults.creditUnionDeduction -
     newActualInsuranceDeduction
+  newResults.netSalaryForFrequency = newNetSalaryForFrequency
+  newResults.monthlyGrossIncome = convertToMonthly(newResults.regularMonthlyGrossIncome, baseResults.paymentFrequency)
   newResults.monthlyNetSalary = convertToMonthly(newNetSalaryForFrequency, baseResults.paymentFrequency)
   newResults.annualNetSalary = newNetSalaryForFrequency * freq.periodsPerYear
 
@@ -386,7 +392,10 @@ export function calculateSalaryIncrease(
     newResults.annualTotal += netEffectOfBackpay + retroGratuityDifferential
   }
 
-  newResults.gratuityMonthTotal = newResults.monthlyNetSalary + newResults.gratuityPayout
+  newResults.gratuityMonthTotal =
+    newResults.monthlyNetSalary +
+    newResults.gratuityPayout +
+    (gratuity.firstPayoutInDecember ? newResults.vacationAllowance || 0 : 0)
   newResults.monthTwelveTotal =
     newResults.monthlyNetSalary +
     gratuity.decemberPayout +
