@@ -4,6 +4,16 @@ All notable changes to GYCalc (formerly GY TaxCalc) are documented here.
 
 ---
 
+## [2.8.1] — 2026-10-05
+
+### Under the Hood
+
+- Upgraded to Next.js 16.3 and React 19.3. The site is still a static export on GitHub Pages at the same address.
+- Every pull request and every deploy now runs lint, a type check and the calculation tests. Before this, deploys only built the site.
+- Builds use Node.js 22 (Node 20 is end-of-life). ESLint moved to the flat config that Next.js 16 requires.
+- Fixed a few React patterns the stricter checks flagged: resetting state inside effects and a random value computed during render. Nothing visible changes.
+- No calculation, rate or page content changed.
+
 ## [2.8.0] — 2026-10-05
 
 ### Calculation Fixes — 2026-10-05 Repo Sweep

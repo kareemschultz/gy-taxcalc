@@ -115,10 +115,12 @@ export function LoanResults({
 }) {
   const [view, setView] = React.useState<"monthly" | "yearly">("monthly")
   const [page, setPage] = React.useState(0)
-
-  React.useEffect(() => {
+  // Back to the first page whenever the schedule or its view changes.
+  const [pagedFor, setPagedFor] = React.useState({ view, result })
+  if (pagedFor.view !== view || pagedFor.result !== result) {
+    setPagedFor({ view, result })
     setPage(0)
-  }, [view, result])
+  }
 
   if (!result || !inputs || (inputs.principalGYD <= 0 && !inputs.purchasePrice)) {
     return <EmptyState />
