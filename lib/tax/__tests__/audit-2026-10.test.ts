@@ -155,3 +155,16 @@ describe("review follow-ups", () => {
     expect(r.monthlyGrossIncome).toBeGreaterThan(base.monthlyGrossIncome)
   })
 })
+
+describe("review follow-ups (2)", () => {
+  it("the raise simulator's gratuity-month total matches the panel's December total for an annual gratuity", () => {
+    const base = performCalculations(inputs({ gratuityPeriod: 12, vacationAllowance: 50000 }))
+    const r = calculateSalaryIncrease(base, {
+      increasePercentage: 0,
+      isTaxable: true,
+      retroactiveMonths: 0,
+      isGratuityMonth: true,
+    })
+    expect(r.gratuityMonthTotalPay).toBeCloseTo(base.gratuityMonthTotal, 6)
+  })
+})

@@ -368,6 +368,7 @@ export function calculateSalaryIncrease(
   if (isGratuityMonth) {
     let calculatedTotal = newResults.monthlyNetSalary
     calculatedTotal += newResults.gratuityPayout
+    if (gratuity.firstPayoutInDecember) calculatedTotal += newResults.vacationAllowance || 0
 
     if (retroactiveMonths > 0) {
       calculatedTotal += netEffectOfBackpay

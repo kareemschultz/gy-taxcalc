@@ -68,12 +68,15 @@ export function AnnualCashflowChart({ results }: { results: CalculationResults }
     }
   })
   const gratuityMonthNames = results.gratuityPayoutMonths.map((m) => data[m - 1]?.month).filter(Boolean)
-  const spikeReason =
+  const reasons = [
     results.gratuityPayout > 0 && gratuityMonthNames.length > 0
       ? `Gratuity in ${listMonths(gratuityMonthNames as string[])}`
-      : results.vacationAllowance
-        ? "Vacation allowance in December"
-        : "No gratuity or vacation payments set"
+      : null,
+    results.vacationAllowance ? "vacation allowance in Dec" : null,
+  ].filter(Boolean) as string[]
+  const spikeReason = reasons.length
+    ? reasons.join(", plus ").replace(/^v/, "V")
+    : "No gratuity or vacation payments set"
   const peakMonth = data.reduce((best, item) => {
     const total = item.salary + item.bonus
     return total > best.total ? { month: item.month, total } : best
