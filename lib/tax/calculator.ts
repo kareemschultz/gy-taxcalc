@@ -301,7 +301,7 @@ export function calculateSalaryIncrease(
   let retroactiveMonthlyIncrease = 0
   let totalRetroactiveLumpSum = 0
   let retroGratuityDifferential = 0
-  let retroVacationAllowance = 0
+  const retroVacationAllowance = 0
   let totalRetroGross = 0
   let netPayWithRetroactiveLumpSum = 0
   let netEffectOfBackpay = 0

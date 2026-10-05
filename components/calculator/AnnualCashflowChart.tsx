@@ -56,7 +56,7 @@ export function AnnualCashflowChart({ results }: { results: CalculationResults }
     const isGratuityMonth = results.gratuityPayoutMonths.includes(month)
     const isYearEnd = month === 12
 
-    let total = results.monthlyNetSalary
+    const total = results.monthlyNetSalary
     let extra = 0
     if (isGratuityMonth) extra += results.gratuityPayout
     if (isYearEnd && results.vacationAllowance) extra += results.vacationAllowance

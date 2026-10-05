@@ -5,7 +5,7 @@ _Money tools for Guyana. Pronounced "Guy-calc". Formerly GY TaxCalc._
 <div align="center">
 
 ![GYCalc](https://img.shields.io/badge/GYCalc-Money%20tools%20for%20Guyana-2563eb?style=for-the-badge)
-![Next.js](https://img.shields.io/badge/Next.js-15.3-black?style=for-the-badge&logo=nextdotjs)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=nextdotjs)
 ![React](https://img.shields.io/badge/React-19-61dafb?style=for-the-badge&logo=react&logoColor=black)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-v4-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![shadcn/ui](https://img.shields.io/badge/shadcn/ui-components-111827?style=for-the-badge)
@@ -23,7 +23,7 @@ _Money tools for Guyana. Pronounced "Guy-calc". Formerly GY TaxCalc._
 
 ## Overview
 
-GYCalc (formerly GY TaxCalc) offers salary, tax, vehicle import and loan calculators built for Guyana. It is built with Next.js 15, shadcn/ui, Tailwind CSS v4, Framer Motion, and Recharts.
+GYCalc (formerly GY TaxCalc) offers salary, tax, vehicle import and loan calculators built for Guyana. It is built with Next.js 16, shadcn/ui, Tailwind CSS v4, Framer Motion, and Recharts.
 
 It currently ships as a static-export friendly app with:
 
@@ -130,10 +130,22 @@ npm install
 npm run dev
 ```
 
+Requires Node.js 22 or newer (see `.nvmrc`).
+
+## Checks
+
+```bash
+npm run lint       # ESLint (flat config)
+npm run typecheck  # tsc --noEmit
+npm test           # Vitest calculation tests
+```
+
+CI runs all three on every pull request and before each deploy.
+
 ## Build
 
 ```bash
-npm run build
+npm run build      # static export to out/
 ```
 
 ## Deployment

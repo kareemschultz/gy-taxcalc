@@ -191,9 +191,19 @@ export function LoanIntelligence({
   )
   const [selectedLumpSum, setSelectedLumpSum] = React.useState<number | null>(summary.selectedScenario?.lumpSum ?? null)
 
-  React.useEffect(() => {
+  // Reset the selection to the recommended scenario whenever the loan changes.
+  const selectionKey = [
+    summary.selectedScenario?.lumpSum,
+    inputs.loanType,
+    inputs.termMonths,
+    inputs.annualRatePct,
+    inputs.principalGYD,
+  ].join("|")
+  const [selectionFor, setSelectionFor] = React.useState(selectionKey)
+  if (selectionFor !== selectionKey) {
+    setSelectionFor(selectionKey)
     setSelectedLumpSum(summary.selectedScenario?.lumpSum ?? null)
-  }, [summary.selectedScenario?.lumpSum, inputs.loanType, inputs.termMonths, inputs.annualRatePct, inputs.principalGYD])
+  }
 
   const activeScenario =
     summary.scenarios.find((scenario) => scenario.lumpSum === selectedLumpSum) ??
