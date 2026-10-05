@@ -1,5 +1,10 @@
 # GYCalc
 
+> **This repository is no longer updated.** GYCalc's source moved to a private repository on
+> 2026-10-05: it now uses licensed UI components that may not be published publicly. The live app
+> is unchanged at https://kareemschultz.github.io/gy-taxcalc/ and is published to this
+> repository's `gh-pages` branch. The code on `main` is kept as it was at that date.
+
 _Money tools for Guyana. Pronounced "Guy-calc". Formerly GY TaxCalc._
 
 <div align="center">
