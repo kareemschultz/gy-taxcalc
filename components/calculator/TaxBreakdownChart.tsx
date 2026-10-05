@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/utils"
 import type { CalculationResults } from "@/lib/tax/types"
+import { buildPayBreakdown } from "@/lib/tax/breakdown"
 
 const COLORS = [
   "var(--color-chart-1)",
@@ -100,20 +101,18 @@ function LegendRow({
 export function TaxBreakdownChart({ results }: { results: CalculationResults }) {
   const [activeIndex, setActiveIndex] = React.useState<number | undefined>(undefined)
 
+  const pay = buildPayBreakdown(results)
   const raw = [
-    { name: "Net Take-Home", value: Math.max(0, results.monthlyNetSalary) },
-    { name: "Income Tax (PAYE)", value: results.incomeTax },
-    { name: "NIS", value: results.nisContribution },
-    ...(results.loanPayment + results.creditUnionDeduction > 0
-      ? [{ name: "Deductions", value: results.loanPayment + results.creditUnionDeduction }]
-      : []),
+    { name: "Net Take-Home", value: Math.max(0, pay.net) },
+    { name: "Income Tax (PAYE)", value: pay.paye },
+    { name: "NIS", value: pay.nis },
+    ...(pay.otherDeductions > 0 ? [{ name: "Other deductions", value: pay.otherDeductions }] : []),
   ].filter((d) => d.value > 0)
 
   const total = raw.reduce((s, d) => s + d.value, 0)
   const data = raw.map((d) => ({ ...d, pct: total > 0 ? (d.value / total) * 100 : 0 }))
 
-  const grossMonthly = Math.max(0, results.annualGrossIncome / 12)
-  const takeHomeRate = grossMonthly > 0 ? (results.monthlyNetSalary / grossMonthly) * 100 : 0
+  const takeHomeRate = pay.gross > 0 ? (pay.net / pay.gross) * 100 : 0
   const largestDeduction = [...data]
     .filter((d) => d.name !== "Net Take-Home")
     .sort((a, b) => b.value - a.value)[0]

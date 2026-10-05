@@ -7,6 +7,7 @@ import { performCalculations } from "@/lib/tax/calculator"
 import type { CalculatorInputs as TCalcInputs, CalculationResults } from "@/lib/tax/types"
 import { DotPattern } from "@/components/dot-pattern"
 import { StickyResultsBar } from "@/components/calculator/StickyResultsBar"
+import { formatCurrency } from "@/lib/utils"
 
 export default function DashboardPage() {
   const [inputs, setInputs] = React.useState<TCalcInputs | null>(null)
@@ -40,9 +41,9 @@ export default function DashboardPage() {
       {results && inputs ? (
         <StickyResultsBar
           items={[
-            { label: "Take-Home", value: results.monthlyNetSalary.toLocaleString("en-US") },
-            { label: "Gross", value: results.regularMonthlyGrossIncome.toLocaleString("en-US") },
-            { label: "PAYE", value: results.incomeTax.toLocaleString("en-US") },
+            { label: "Take-Home", value: formatCurrency(results.netSalaryForFrequency) },
+            { label: "Gross", value: formatCurrency(results.regularMonthlyGrossIncome) },
+            { label: "PAYE", value: formatCurrency(results.incomeTax) },
           ]}
           onDetails={() =>
             document.getElementById("salary-results")?.scrollIntoView({ behavior: "smooth", block: "start" })

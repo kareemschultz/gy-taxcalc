@@ -33,6 +33,9 @@ import { SalaryIncreaseSection } from "./SalaryIncreaseSection"
 import { ResultActions } from "@/components/results/result-actions"
 import { InfoCard } from "./InfoCard"
 import { SummaryCard } from "./SummaryCard"
+import { buildPayBreakdown } from "@/lib/tax/breakdown"
+
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
 /* ── animated number ──────────────────────────────────── */
 function AnimatedCurrency({ value }: { value: number }) {
@@ -156,8 +159,10 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
     loanPayment,
     creditUnionDeduction,
     monthlyGratuityAccrual,
-    sixMonthGratuity,
-    monthSixTotal,
+    gratuityPayout,
+    gratuityPeriodMonths,
+    gratuityPayoutMonths,
+    gratuityMonthTotal,
     vacationAllowance,
     annualGrossIncome,
     annualTaxPayable,
@@ -173,7 +178,11 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
 
   const freqLabel = PAYMENT_FREQUENCIES[paymentFrequency].periodLabel
   const resolvedVacationAllowance = baseInputs?.vacationAllowance ?? vacationAllowance
-  const resolvedMonthTwelveTotal = monthlyNetSalary + sixMonthGratuity + resolvedVacationAllowance
+  const decemberGratuity = gratuityPayoutMonths.includes(12) ? gratuityPayout : 0
+  const firstPayoutMonth = MONTH_NAMES[(gratuityPayoutMonths[0] ?? gratuityPeriodMonths) - 1] ?? ""
+  const gratuityLabel = `Gratuity (every ${gratuityPeriodMonths} months)`
+  const resolvedMonthTwelveTotal = monthlyNetSalary + decemberGratuity + resolvedVacationAllowance
+  const pay = buildPayBreakdown(results)
   const resolvedAnnualTotal = annualNetSalary + annualGratuityTotal + resolvedVacationAllowance
   const effectiveTaxRate = annualGrossIncome > 0
     ? (annualTaxPayable / annualGrossIncome) * 100
@@ -266,14 +275,14 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
         title="Salary Summary"
         subtitle="A clean export of the current salary, deductions, and package estimate."
         summary={[
-          { label: "Monthly Net", value: formatCurrency(monthlyNetSalary) },
-          { label: "Gross Income", value: formatCurrency(regularMonthlyGrossIncome) },
-          { label: "PAYE", value: formatCurrency(incomeTax) },
+          { label: `Take-home ${freqLabel}`, value: formatCurrency(pay.net) },
+          { label: `Gross ${freqLabel}`, value: formatCurrency(pay.gross) },
+          { label: `PAYE ${freqLabel}`, value: formatCurrency(pay.paye) },
           { label: "Annual Package", value: formatCurrency(resolvedAnnualTotal) },
         ]}
         sections={[
           {
-            title: "Breakdown",
+            title: `Breakdown (${freqLabel})`,
             rows: [
               { label: "Basic Salary", value: formatCurrency(results.basicSalary) },
               { label: "Taxable Allowances", value: formatCurrency(results.taxableAllowances) },
@@ -283,7 +292,10 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               { label: "NIS", value: formatCurrency(-nisContribution) },
               { label: "Child Allowance", value: formatCurrency(-childAllowance) },
               { label: "Income Tax (PAYE)", value: formatCurrency(-incomeTax) },
-              { label: "Monthly Net", value: formatCurrency(monthlyNetSalary) },
+              { label: "Insurance", value: formatCurrency(-pay.insurance) },
+              { label: "Loan & credit union", value: formatCurrency(-(pay.loan + pay.creditUnion)) },
+              { label: `Take-home ${freqLabel}`, value: formatCurrency(pay.net) },
+              { label: "Take-home per month", value: formatCurrency(monthlyNetSalary) },
             ],
           },
           {
@@ -298,11 +310,11 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           },
         ]}
         lines={[
-              `Net take-home: ${formatCurrency(monthlyNetSalary)}`,
-              `Gross income: ${formatCurrency(regularMonthlyGrossIncome)}`,
+              `Take-home ${freqLabel}: ${formatCurrency(pay.net)}`,
+              `Gross income ${freqLabel}: ${formatCurrency(pay.gross)}`,
               `Qualification allowance: ${formatCurrency(qualificationAllowance)}`,
               `Child allowance: ${formatCurrency(-childAllowance)}`,
-              `PAYE: ${formatCurrency(incomeTax)}`,
+              `PAYE ${freqLabel}: ${formatCurrency(pay.paye)}`,
               `Annual package: ${formatCurrency(resolvedAnnualTotal)}`,
         ]}
       />
@@ -320,13 +332,13 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           ]}
         />
         <SummaryCard
-          label="Month 6 Total"
-          value={formatCurrency(monthSixTotal)}
+          label={`${firstPayoutMonth} total (gratuity month)`}
+          value={formatCurrency(gratuityMonthTotal)}
           icon={<Coins className="size-3.5" />}
           variant="teal"
           breakdown={[
             { label: "Net pay", value: formatCurrency(monthlyNetSalary) },
-            { label: "Gratuity", value: formatCurrency(sixMonthGratuity), highlight: true },
+            { label: gratuityLabel, value: formatCurrency(gratuityPayout), highlight: true },
           ]}
         />
         <SummaryCard
@@ -336,7 +348,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           variant="violet"
           breakdown={[
             { label: "Net pay", value: formatCurrency(monthlyNetSalary) },
-            { label: "Gratuity", value: formatCurrency(sixMonthGratuity) },
+            { label: "Gratuity", value: decemberGratuity > 0 ? formatCurrency(decemberGratuity) : "—" },
             { label: "Vacation", value: resolvedVacationAllowance > 0 ? formatCurrency(resolvedVacationAllowance) : "—", highlight: resolvedVacationAllowance > 0 },
           ]}
         />
@@ -347,7 +359,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
           variant="amber"
           breakdown={[
             { label: "Rate", value: `${results.gratuityRate}%` },
-            { label: "Annual total", value: formatCurrency(annualGratuityTotal) },
+            { label: "Per year", value: formatCurrency(annualGratuityTotal) },
           ]}
         />
       </div>
@@ -566,18 +578,18 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Calendar className="size-4 text-primary" />
-                  Month 6 — Gratuity Payment
+                  {firstPayoutMonth} — Gratuity Payment
                 </CardTitle>
-                <CardDescription>Semi-annual gratuity disbursement</CardDescription>
+                <CardDescription>Gratuity paid every {gratuityPeriodMonths} months</CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
                 <StatRow label="Monthly Net Salary" value={monthlyNetSalary} />
-                <StatRow label="6-Month Gratuity" value={sixMonthGratuity} />
+                <StatRow label={gratuityLabel} value={gratuityPayout} />
                 <Separator className="my-2" />
                 <div className="flex items-baseline justify-between">
-                  <span className="text-sm font-bold">Total Month 6</span>
+                  <span className="text-sm font-bold">Total {firstPayoutMonth}</span>
                   <span className="text-lg font-bold text-primary tabular-nums">
-                    <AnimatedCurrency value={monthSixTotal} />
+                    <AnimatedCurrency value={gratuityMonthTotal} />
                   </span>
                 </div>
               </CardContent>
@@ -590,12 +602,12 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
                   Month 12 — Year-End Package
                 </CardTitle>
                 <CardDescription>
-                  Gratuity + vacation allowance disbursement
+                  {decemberGratuity > 0 ? "Gratuity + vacation allowance disbursement" : "Vacation allowance disbursement"}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
                 <StatRow label="Monthly Net Salary" value={monthlyNetSalary} />
-                <StatRow label="6-Month Gratuity" value={sixMonthGratuity} />
+                {decemberGratuity > 0 && <StatRow label={gratuityLabel} value={decemberGratuity} />}
                 {resolvedVacationAllowance > 0 ? (
                   <StatRow label="Vacation Allowance" value={resolvedVacationAllowance} />
                 ) : (
@@ -630,7 +642,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
               <StatRow label="Annual Income Tax" value={-annualTaxPayable} variant="deduction" />
               <StatRow label="Annual Net Salary" value={annualNetSalary} variant="total" />
               {annualGratuityTotal > 0 && (
-                <StatRow label="Annual Gratuity (×2)" value={annualGratuityTotal} />
+                <StatRow label="Gratuity per year" value={annualGratuityTotal} />
               )}
               {resolvedVacationAllowance > 0 && (
                 <StatRow label="Vacation Allowance" value={resolvedVacationAllowance} />

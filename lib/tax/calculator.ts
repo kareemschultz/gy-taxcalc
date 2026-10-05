@@ -12,6 +12,25 @@ import type {
   SalaryIncreaseResults,
 } from "./types"
 
+/**
+ * Gratuity accrues every month and is paid out every `periodMonths` months,
+ * with the cycle counted from January. A period that does not divide 12
+ * (e.g. 9) has no payout in some calendar years; the annual figure is the
+ * 12 months accrued.
+ */
+function gratuitySchedule(monthlyAccrual: number, periodMonths: number) {
+  const period = periodMonths > 0 ? periodMonths : 6
+  const payout = monthlyAccrual * period
+  const payoutMonths = Array.from({ length: 12 }, (_, i) => i + 1).filter((m) => m % period === 0)
+  return {
+    periodMonths: period,
+    payout,
+    payoutMonths,
+    decemberPayout: payoutMonths.includes(12) ? payout : 0,
+    annualAccrual: monthlyAccrual * 12,
+  }
+}
+
 export function performCalculations(inputs: CalculatorInputs): CalculationResults {
   const {
     paymentFrequency,
@@ -29,6 +48,7 @@ export function performCalculations(inputs: CalculatorInputs): CalculationResult
     insuranceType,
     insurancePremium,
     gratuityRate,
+    gratuityPeriod,
   } = inputs
 
   const frequencyConfig = inputs.frequencyConfig
@@ -38,7 +58,7 @@ export function performCalculations(inputs: CalculatorInputs): CalculationResult
 
   // Gratuity accrual
   const monthlyGratuityAccrual = monthlyBasicSalary * (gratuityRate / 100)
-  const sixMonthGratuity = monthlyGratuityAccrual * 6
+  const gratuity = gratuitySchedule(monthlyGratuityAccrual, gratuityPeriod)
 
   // Gross income at selected frequency
   const regularMonthlyGrossIncome =
@@ -118,16 +138,16 @@ export function performCalculations(inputs: CalculatorInputs): CalculationResult
   const monthlyGrossIncome = convertToMonthly(regularMonthlyGrossIncome, paymentFrequency)
   const monthlyNetSalary = convertToMonthly(netSalaryForFrequency, paymentFrequency)
 
-  // Special months (always monthly)
-  const monthSixTotal = monthlyNetSalary + sixMonthGratuity
-  const monthTwelveTotal = monthlyNetSalary + sixMonthGratuity + vacationAllowance
+  // Special months (always monthly). December gets a payout only when one falls due then.
+  const gratuityMonthTotal = monthlyNetSalary + gratuity.payout
+  const monthTwelveTotal = monthlyNetSalary + gratuity.decemberPayout + vacationAllowance
 
   // Annual
   const annualGrossIncome = regularMonthlyGrossIncome * frequencyConfig.periodsPerYear
   const annualNisContribution = nisContribution * frequencyConfig.periodsPerYear
   const annualTaxPayable = incomeTax * frequencyConfig.periodsPerYear
   const annualNetSalary = netSalaryForFrequency * frequencyConfig.periodsPerYear
-  const annualGratuityTotal = sixMonthGratuity * 2
+  const annualGratuityTotal = gratuity.annualAccrual
   const annualTotal = annualNetSalary + annualGratuityTotal + vacationAllowance
 
   return {
@@ -161,8 +181,10 @@ export function performCalculations(inputs: CalculatorInputs): CalculationResult
     monthlyGrossIncome,
     monthlyNetSalary,
     monthlyGratuityAccrual,
-    sixMonthGratuity,
-    monthSixTotal,
+    gratuityPeriodMonths: gratuity.periodMonths,
+    gratuityPayout: gratuity.payout,
+    gratuityPayoutMonths: gratuity.payoutMonths,
+    gratuityMonthTotal,
     monthTwelveTotal,
     annualGrossIncome,
     annualNisContribution,
@@ -198,7 +220,8 @@ export function calculateSalaryIncrease(
   // Recalculate gratuity
   newResults.monthlyBasicSalary = convertToMonthly(newResults.basicSalary, baseResults.paymentFrequency)
   newResults.monthlyGratuityAccrual = newResults.monthlyBasicSalary * (newResults.gratuityRate / 100)
-  newResults.sixMonthGratuity = newResults.monthlyGratuityAccrual * 6
+  const gratuity = gratuitySchedule(newResults.monthlyGratuityAccrual, baseResults.gratuityPeriodMonths)
+  newResults.gratuityPayout = gratuity.payout
 
   // New gross
   newResults.regularMonthlyGrossIncome =
@@ -275,6 +298,7 @@ export function calculateSalaryIncrease(
   let retroVacationAllowance = 0
   let totalRetroGross = 0
   let netPayWithRetroactiveLumpSum = 0
+  let netEffectOfBackpay = 0
 
   if (retroactiveMonths > 0) {
     retroactiveMonthlyIncrease = monthlyBasicIncreaseAmount
@@ -325,6 +349,10 @@ export function calculateSalaryIncrease(
       newResults.loanPayment -
       newResults.creditUnionDeduction -
       retroActualInsuranceDeduction
+
+    // The back pay is paid in one pay period, so its net effect is that period's
+    // net minus a normal period's net -- both at the selected frequency.
+    netEffectOfBackpay = netPayWithRetroactiveLumpSum - newNetSalaryForFrequency
   }
 
   // Gratuity month calculation
@@ -333,10 +361,9 @@ export function calculateSalaryIncrease(
 
   if (isGratuityMonth) {
     let calculatedTotal = newResults.monthlyNetSalary
-    calculatedTotal += newResults.sixMonthGratuity
+    calculatedTotal += newResults.gratuityPayout
 
     if (retroactiveMonths > 0) {
-      const netEffectOfBackpay = netPayWithRetroactiveLumpSum - newResults.monthlyNetSalary
       calculatedTotal += netEffectOfBackpay
       calculatedTotal += retroGratuityDifferential
     }
@@ -349,21 +376,20 @@ export function calculateSalaryIncrease(
   newResults.annualGrossIncome = newResults.regularMonthlyGrossIncome * freq.periodsPerYear
   newResults.annualNisContribution = newResults.nisContribution * freq.periodsPerYear
   newResults.annualTaxPayable = newResults.incomeTax * freq.periodsPerYear
-  newResults.annualGratuityTotal = newResults.sixMonthGratuity * 2
+  newResults.annualGratuityTotal = gratuity.annualAccrual
   newResults.annualTotal =
     newResults.annualNetSalary +
     newResults.annualGratuityTotal +
     (newResults.vacationAllowance || 0)
 
   if (retroactiveMonths > 0) {
-    const annualNetBackpayEffect = netPayWithRetroactiveLumpSum - newResults.monthlyNetSalary
-    newResults.annualTotal += annualNetBackpayEffect + retroGratuityDifferential
+    newResults.annualTotal += netEffectOfBackpay + retroGratuityDifferential
   }
 
-  newResults.monthSixTotal = newResults.monthlyNetSalary + newResults.sixMonthGratuity
+  newResults.gratuityMonthTotal = newResults.monthlyNetSalary + newResults.gratuityPayout
   newResults.monthTwelveTotal =
     newResults.monthlyNetSalary +
-    newResults.sixMonthGratuity +
+    gratuity.decemberPayout +
     (newResults.vacationAllowance || 0)
 
   return {

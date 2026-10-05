@@ -32,7 +32,7 @@ function EmptyState() {
           <CircleDollarSign className="size-6 text-muted-foreground" />
         </div>
         <div>
-          <p className="text-sm font-medium">Enter a principal amount to see loan results</p>
+          <p className="text-sm font-medium">Enter a loan amount and a term (in months) to see your payment</p>
           <p className="mt-1 text-xs text-muted-foreground">
             Monthly payment, payoff date, and charts update live.
           </p>
@@ -170,7 +170,8 @@ export function LoanResults({
           </div>
         </div>
         <div className="mt-4 flex flex-wrap gap-4 border-t pt-3 text-sm text-muted-foreground">
-          <span>Rate {result.effectiveRate.toFixed(2)}%</span>
+          <span>Rate {result.annualRatePct.toFixed(2)}% a year</span>
+          <span>Interest cost {result.interestCostPct.toFixed(1)}% of the loan</span>
           <span>Term {result.termMonths} months</span>
           <span>Upfront fee {result.processingFee > 0 ? formatCurrency(result.processingFee) : "None"}</span>
         </div>
@@ -181,7 +182,7 @@ export function LoanResults({
         title="Loan Summary"
         subtitle="A clean export of the current loan scenario with payment and payoff details."
         summary={[
-          { label: "Monthly Payment", value: formatCurrency(result.monthlyPayment) },
+          { label: paymentLabel, value: formatCurrency(displayPayment) },
           { label: "Total Interest", value: formatCurrency(result.totalInterest) },
           { label: "Total Paid", value: formatCurrency(result.totalPaid) },
           { label: "Payoff Date", value: result.payoffDate },
@@ -191,7 +192,8 @@ export function LoanResults({
             title: "Loan Overview",
             rows: [
               { label: "Principal", value: formatCurrency(principal) },
-              { label: "Interest Rate", value: `${result.effectiveRate.toFixed(2)}% effective` },
+              { label: "Interest Rate", value: `${result.annualRatePct.toFixed(2)}% a year` },
+              { label: "Interest Cost", value: `${result.interestCostPct.toFixed(1)}% of the loan` },
               { label: "Loan Term", value: `${result.termMonths} months` },
               { label: "Upfront Fee", value: result.processingFee > 0 ? formatCurrency(result.processingFee) : "None" },
             ],
@@ -206,7 +208,7 @@ export function LoanResults({
           },
         ]}
         lines={[
-          `Monthly payment: ${formatCurrency(result.monthlyPayment)}`,
+          `${paymentLabel}: ${formatCurrency(displayPayment)}`,
           `Total interest: ${formatCurrency(result.totalInterest)}`,
           `Total paid: ${formatCurrency(result.totalPaid)}`,
           `Payoff date: ${result.payoffDate}`,
@@ -278,9 +280,7 @@ export function LoanResults({
                     label="New Payment"
                     value={
                       <span className="tabular-nums">
-                        {result.extraSchedule?.length
-                          ? formatCurrency(result.extraSchedule[0]?.payment || result.monthlyPayment)
-                          : formatCurrency(displayPayment)}
+                        {formatCurrency(result.paymentWithExtras)}
                       </span>
                     }
                   />

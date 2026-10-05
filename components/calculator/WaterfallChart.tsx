@@ -6,6 +6,7 @@ import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, ResponsiveContainer,
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { formatCurrencyCompact } from "@/lib/utils"
 import type { CalculationResults } from "@/lib/tax/types"
+import { buildPayBreakdown } from "@/lib/tax/breakdown"
 
 function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null
@@ -26,12 +27,13 @@ function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) 
 }
 
 export function WaterfallChart({ results }: { results: CalculationResults }) {
+  const pay = buildPayBreakdown(results)
   const data = [
-    { name: "Gross", value: Math.max(0, results.regularMonthlyGrossIncome), color: "var(--color-chart-1)" },
-    { name: "NIS", value: -Math.max(0, results.nisContribution), color: "var(--color-chart-4)" },
-    { name: "PAYE", value: -Math.max(0, results.incomeTax), color: "var(--color-chart-5)" },
-    { name: "Other deductions", value: -(Math.max(0, results.loanPayment) + Math.max(0, results.creditUnionDeduction)), color: "var(--color-chart-3)" },
-    { name: "Net", value: Math.max(0, results.monthlyNetSalary), color: "var(--color-chart-2)" },
+    { name: "Gross", value: Math.max(0, pay.gross), color: "var(--color-chart-1)" },
+    { name: "NIS", value: -Math.max(0, pay.nis), color: "var(--color-chart-4)" },
+    { name: "PAYE", value: -Math.max(0, pay.paye), color: "var(--color-chart-5)" },
+    { name: "Other deductions", value: -Math.max(0, pay.otherDeductions), color: "var(--color-chart-3)" },
+    { name: "Net", value: Math.max(0, pay.net), color: "var(--color-chart-2)" },
   ]
 
   const bridge = data.map((item, index) => {
@@ -80,15 +82,15 @@ export function WaterfallChart({ results }: { results: CalculationResults }) {
           <div className="mt-3 grid gap-2 sm:grid-cols-3">
             <div className="rounded-lg border bg-background/60 p-3 transition-colors hover:bg-background/80">
               <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Gross income</p>
-              <p className="mt-1 text-sm font-semibold">{formatCurrencyCompact(results.regularMonthlyGrossIncome)}</p>
+              <p className="mt-1 text-sm font-semibold">{formatCurrencyCompact(pay.gross)}</p>
             </div>
             <div className="rounded-lg border bg-background/60 p-3 transition-colors hover:bg-background/80">
               <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Total deductions</p>
-              <p className="mt-1 text-sm font-semibold">{formatCurrencyCompact(results.nisContribution + results.incomeTax + results.loanPayment + results.creditUnionDeduction)}</p>
+              <p className="mt-1 text-sm font-semibold">{formatCurrencyCompact(pay.totalDeductions)}</p>
             </div>
             <div className="rounded-lg border bg-background/60 p-3 transition-colors hover:bg-background/80">
               <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Net pay</p>
-              <p className="mt-1 text-sm font-semibold text-primary">{formatCurrencyCompact(results.monthlyNetSalary)}</p>
+              <p className="mt-1 text-sm font-semibold text-primary">{formatCurrencyCompact(pay.net)}</p>
             </div>
           </div>
         </CardContent>

@@ -86,8 +86,14 @@ export interface CalculationResults {
   monthlyGratuityAccrual: number
 
   // Special months
-  sixMonthGratuity: number
-  monthSixTotal: number
+  /** Months between gratuity payouts (the user's chosen gratuity period). */
+  gratuityPeriodMonths: number
+  /** One gratuity payout: monthly accrual x gratuity period. */
+  gratuityPayout: number
+  /** Calendar months (1-12) a payout falls due, counting the cycle from January. */
+  gratuityPayoutMonths: number[]
+  /** Monthly take-home plus one gratuity payout. */
+  gratuityMonthTotal: number
   monthTwelveTotal: number
 
   // Annual

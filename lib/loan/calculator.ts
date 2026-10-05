@@ -9,12 +9,19 @@ import type {
   YearlyRow,
 } from "./types"
 
+/**
+ * Level payment for `periods` payments at `ratePerPeriod`. Written as
+ * P*r / (1 - (1+r)^-n) so very high rates tend to interest-only instead of
+ * overflowing to Infinity/Infinity = NaN.
+ */
+function annuityPayment(principal: number, ratePerPeriod: number, periods: number) {
+  if (periods <= 0 || principal <= 0) return 0
+  if (ratePerPeriod === 0) return principal / periods
+  return (principal * ratePerPeriod) / (1 - Math.pow(1 + ratePerPeriod, -periods))
+}
+
 export function calculateMonthlyPayment(principal: number, annualRate: number, termMonths: number) {
-  if (termMonths <= 0) return 0
-  if (annualRate === 0) return principal / termMonths
-  const r = annualRate / 100 / 12
-  const n = termMonths
-  return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)
+  return annuityPayment(principal, annualRate / 100 / 12, termMonths)
 }
 
 export function buildAmortizationSchedule(
@@ -67,11 +74,11 @@ export function buildAmortizationSchedule(
   return schedule
 }
 
-export function aggregateYearly(schedule: AmortizationRow[]): YearlyRow[] {
+export function aggregateYearly(schedule: AmortizationRow[], periodsPerYear = 12): YearlyRow[] {
   const years: Record<number, YearlyRow> = {}
 
   schedule.forEach((row) => {
-    const year = Math.ceil(row.period / 12)
+    const year = Math.ceil(row.period / periodsPerYear)
     if (!years[year]) {
       years[year] = {
         year,
@@ -143,11 +150,8 @@ function buildBiweeklyPaymentSummary(
   }
 ): BiweeklyResult {
   const ratePerPeriod = annualRate / 100 / 26
-  const periods = Math.round((termMonths * 26) / 12)
-  const payment =
-    annualRate === 0
-      ? principal / periods
-      : principal * (ratePerPeriod * Math.pow(1 + ratePerPeriod, periods)) / (Math.pow(1 + ratePerPeriod, periods) - 1)
+  const periods = Math.max(0, Math.round((termMonths * 26) / 12))
+  const payment = annuityPayment(principal, ratePerPeriod, periods)
 
   const schedule: AmortizationRow[] = []
   let balance = principal
@@ -261,9 +265,19 @@ export function calculateLoan(inputs: LoanInputs): LoanResults {
   const activeSchedule = activeSummary.schedule
   const totalPaid = activeSummary.totalPaid
   const totalInterest = activeSummary.totalInterest
-  const effectiveRate = principal > 0 ? (totalInterest / principal) * 100 : 0
+  const interestCostPct = principal > 0 ? (totalInterest / principal) * 100 : 0
   const processingFee = principal * (inputs.processingFeePct / 100)
   const payoffMonths = activeSummary.months
+  const isBiweekly = inputs.paymentFrequency === "biweekly"
+  const periodsPerYear = isBiweekly ? 26 : 12
+  const regularPayment = isBiweekly
+    ? biweeklyBase.payment
+    : calculateMonthlyPayment(principal, annualRate, inputs.termMonths)
+  const additionalPerPeriod = extraConfig
+    ? isBiweekly
+      ? convertMonthlyToBiweekly(inputs.additionalMonthly)
+      : inputs.additionalMonthly
+    : 0
 
   const result: LoanResults = {
     monthlyPayment: calculateMonthlyPayment(principal, annualRate, inputs.termMonths),
@@ -273,30 +287,32 @@ export function calculateLoan(inputs: LoanInputs): LoanResults {
     payoffDate: calculatePayoffDate(startDate, payoffMonths),
     processingFee,
     termMonths: inputs.termMonths,
-    effectiveRate,
+    annualRatePct: annualRate,
+    interestCostPct,
+    periodsPerYear,
+    payoffMonths,
+    paymentWithExtras: regularPayment + additionalPerPeriod,
     amortizationSchedule: activeSchedule,
-    yearlySchedule: aggregateYearly(activeSchedule),
+    yearlySchedule: aggregateYearly(activeSchedule, periodsPerYear),
     baseSchedule: monthlyBaseSchedule,
   }
 
   if (extraConfig) {
-    const baseline = inputs.paymentFrequency === "biweekly" ? biweeklyBase : {
-      schedule: monthlyBaseSchedule,
-      totalInterest: monthlyBaseInterest,
-    }
+    // Compare like with like: months against months, in the selected frequency.
+    const baseline = isBiweekly
+      ? biweeklyBase
+      : { months: monthlyBaseSchedule.length, totalInterest: monthlyBaseInterest }
 
     result.extraSchedule = activeSchedule
-    result.monthsSaved = Math.max(0, baseline.schedule.length - activeSchedule.length)
+    result.monthsSaved = Math.max(0, baseline.months - payoffMonths)
     result.interestSaved = Math.max(0, baseline.totalInterest - totalInterest)
-    result.newPayoffDate = calculatePayoffDate(startDate, activeSchedule.length)
+    result.newPayoffDate = calculatePayoffDate(startDate, payoffMonths)
   }
 
-  if (inputs.paymentFrequency === "biweekly") {
-    result.biweeklyMonthsSaved = Math.max(0, monthlyBaseSchedule.length - activeSchedule.length)
+  if (isBiweekly) {
+    result.biweeklyMonthsSaved = Math.max(0, monthlyBaseSchedule.length - payoffMonths)
     result.biweeklyInterestSaved = Math.max(0, monthlyBaseInterest - totalInterest)
   }
-
-  result.yearlySchedule = aggregateYearly(activeSchedule)
 
   return result
 }

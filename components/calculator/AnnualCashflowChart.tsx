@@ -48,12 +48,12 @@ function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) 
 export function AnnualCashflowChart({ results }: { results: CalculationResults }) {
   const data = Array.from({ length: 12 }, (_, i) => {
     const month = i + 1
-    const isGratuityMonth = month === 6 || month === 12
+    const isGratuityMonth = results.gratuityPayoutMonths.includes(month)
     const isYearEnd = month === 12
 
     let total = results.monthlyNetSalary
     let extra = 0
-    if (isGratuityMonth) extra += results.sixMonthGratuity
+    if (isGratuityMonth) extra += results.gratuityPayout
     if (isYearEnd && results.vacationAllowance) extra += results.vacationAllowance
 
     return {

@@ -4,6 +4,29 @@ All notable changes to GYCalc (formerly GY TaxCalc) are documented here.
 
 ---
 
+## [2.8.0] — 2026-10-05
+
+### Calculation Fixes — 2026-10-05 Repo Sweep
+
+A full sweep of the calculator found several figures that were wrong. Each fix below has a test that failed before the fix. No tax rate, threshold, bracket or bank rate changed.
+
+- **Back pay on a raise, weekly/fortnightly/daily/yearly pay:** the extra take-home from back pay was worked out by subtracting a *monthly* take-home from a *per-pay-period* one. For a weekly worker, GY$124,700 of back pay could show as roughly −GY$84,000. Back pay is now compared within the same pay period. Monthly pay was not affected.
+- **Gratuity period:** choosing "Every 3 months", "Every 9 months" or "Annual" had no effect — gratuity was always paid every 6 months. Each payout is now your monthly gratuity × the period you choose. December includes a payout only when one falls due then. The yearly gratuity total (12 months accrued) is unchanged.
+- **Pay shown in one unit:** for non-monthly pay, the mobile summary bar, the Save/Share/Print summary, the "Monthly Mix" chart and the gross-to-net chart showed monthly take-home next to per-period gross, PAYE and NIS. For weekly pay that made take-home look about 4.3 times too big. They now all use the pay period you selected. Those two charts now also count insurance, so their parts add up to your take-home.
+- **Loan "Rate":** showed total interest as a percentage of the loan (a 9% loan showed "Rate 24.5%"). It now shows the yearly rate, with "Interest cost: X% of the loan" shown separately.
+- **Bi-weekly loans:** the yearly schedule grouped every 12 bi-weekly payments as a "year". "Months saved" compared payments with months, so it always showed 0. The new payoff date with extra payments was about twice too far out. All three now use bi-weekly periods and months correctly.
+- **"New Payment" with extra payments:** included one-off lump sums, which inflated the regular payment. It now shows your regular payment plus any extra monthly amount.
+- **Loan with no term:** clearing the term showed a "$Infinity" payment. It now shows the "enter a loan amount and a term" message. Very high interest rates no longer turn into an invalid number.
+- **Tests:** 27 new tests, including the first tests for the loan calculator (44 in total).
+
+**Found in the same sweep but deliberately not changed. Each needs a decision first:**
+- On a non-taxable raise, the back-pay lump sum is still taxed.
+- Annual tax for daily pay multiplies a 365-day allowance by 260 paid days. Whether that is right depends on how the statute is read.
+- The loan payoff date can be one month late, and a first-payment date can shift by one day in Guyana's time zone.
+- The "lump sum strategy" ignores a custom interval and uses fixed GYD amounts.
+- A double-cab vehicle's breakdown shows a "0%" excise rate.
+- Engine sizes with decimal places are handled inconsistently at the 1,500cc VAT boundary.
+
 ## [2.7.0] — 2026-10-05
 
 ### Renamed GY TaxCalc to GYCalc

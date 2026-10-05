@@ -232,7 +232,7 @@ export function ScenarioCompare() {
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Take-home gap</p>
-              <p className="mt-1 text-lg font-semibold">{formatPercent((salaryResultB.monthlyNetSalary / Math.max(1, salaryResultB.regularMonthlyGrossIncome)) * 100 - (salaryResultA.monthlyNetSalary / Math.max(1, salaryResultA.regularMonthlyGrossIncome)) * 100)}</p>
+              <p className="mt-1 text-lg font-semibold">{formatPercent((salaryResultB.netSalaryForFrequency / Math.max(1, salaryResultB.regularMonthlyGrossIncome)) * 100 - (salaryResultA.netSalaryForFrequency / Math.max(1, salaryResultA.regularMonthlyGrossIncome)) * 100)}</p>
             </div>
           </CardContent>
         </Card>

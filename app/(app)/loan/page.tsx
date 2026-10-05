@@ -14,6 +14,8 @@ export default function LoanPage() {
   const result = React.useMemo<TLoanResults | null>(() => {
     if (!inputs) return null
     if (inputs.principalGYD <= 0 && !inputs.purchasePrice) return null
+    // A loan needs a term; without one there is no payment to show.
+    if (!(inputs.termMonths > 0)) return null
     return calculateLoan(inputs)
   }, [inputs])
 
