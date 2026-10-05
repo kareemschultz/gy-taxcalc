@@ -45,15 +45,20 @@ function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) 
   )
 }
 
+function listMonths(months: string[]) {
+  if (months.length <= 1) return months.join("")
+  return `${months.slice(0, -1).join(", ")} and ${months[months.length - 1]}`
+}
+
 export function AnnualCashflowChart({ results }: { results: CalculationResults }) {
   const data = Array.from({ length: 12 }, (_, i) => {
     const month = i + 1
-    const isGratuityMonth = month === 6 || month === 12
+    const isGratuityMonth = results.gratuityPayoutMonths.includes(month)
     const isYearEnd = month === 12
 
     let total = results.monthlyNetSalary
     let extra = 0
-    if (isGratuityMonth) extra += results.sixMonthGratuity
+    if (isGratuityMonth) extra += results.gratuityPayout
     if (isYearEnd && results.vacationAllowance) extra += results.vacationAllowance
 
     return {
@@ -62,6 +67,16 @@ export function AnnualCashflowChart({ results }: { results: CalculationResults }
       bonus: Math.round(extra),
     }
   })
+  const gratuityMonthNames = results.gratuityPayoutMonths.map((m) => data[m - 1]?.month).filter(Boolean)
+  const reasons = [
+    results.gratuityPayout > 0 && gratuityMonthNames.length > 0
+      ? `Gratuity in ${listMonths(gratuityMonthNames as string[])}`
+      : null,
+    results.vacationAllowance ? "vacation allowance in Dec" : null,
+  ].filter(Boolean) as string[]
+  const spikeReason = reasons.length
+    ? reasons.join(", plus ").replace(/^v/, "V")
+    : "No gratuity or vacation payments set"
   const peakMonth = data.reduce((best, item) => {
     const total = item.salary + item.bonus
     return total > best.total ? { month: item.month, total } : best
@@ -129,7 +144,7 @@ export function AnnualCashflowChart({ results }: { results: CalculationResults }
             </div>
             <div className="rounded-lg border bg-background/60 p-3 transition-colors hover:bg-background/80">
               <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Why it spikes</p>
-              <p className="mt-1 text-sm font-semibold">Gratuity in June and December</p>
+              <p className="mt-1 text-sm font-semibold">{spikeReason}</p>
             </div>
           </div>
         </CardContent>

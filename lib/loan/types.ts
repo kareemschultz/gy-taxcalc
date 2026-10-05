@@ -50,7 +50,16 @@ export interface LoanResults {
   payoffDate: string
   processingFee: number
   termMonths: number
-  effectiveRate: number
+  /** The annual interest rate the user entered. */
+  annualRatePct: number
+  /** Total interest as a percentage of the amount borrowed (not a rate). */
+  interestCostPct: number
+  /** 12 for monthly, 26 for bi-weekly; the unit of `amortizationSchedule` periods. */
+  periodsPerYear: number
+  /** Months from first payment to payoff for the active schedule. */
+  payoffMonths: number
+  /** The regular payment including any additional-per-period extra; excludes one-off lump sums. */
+  paymentWithExtras: number
   amortizationSchedule: AmortizationRow[]
   yearlySchedule: YearlyRow[]
   baseSchedule: AmortizationRow[]

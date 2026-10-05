@@ -17,7 +17,7 @@ const quarters = [
   },
   {
     title: "Q2: Prepare for gratuity",
-    items: ["Track month 6 package timing.", "Review loan prepayment options if you plan to reduce interest.", "Check vehicle import timing against the current rules."],
+    items: ["Check when your next gratuity payout falls due.", "Review loan prepayment options if you plan to reduce interest.", "Check vehicle import timing against the current rules."],
   },
   {
     title: "Q3: Reassess allowances",

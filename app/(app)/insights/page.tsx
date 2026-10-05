@@ -56,7 +56,7 @@ const faqItems = [
   },
   {
     q: "How does gratuity work?",
-    a: "The calculator accrues gratuity monthly from the basic salary using the selected gratuity rate, then shows the 6-month and 12-month package effects.",
+    a: "The calculator accrues gratuity monthly from the basic salary using the selected gratuity rate, then shows each payout for the gratuity period you choose (every 3, 6, 9 or 12 months) and the year-end package.",
   },
   {
     q: "Why does the vehicle tool ask for engine size, age, and plate type?",
