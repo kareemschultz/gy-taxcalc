@@ -1,6 +1,14 @@
+import { pageMetadata } from "@/lib/metadata"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+
+export const metadata = pageMetadata({
+  title: "Guyana Annual Salary Planner",
+  description:
+    "Plan your year in Guyana: gratuity months, allowances, loan reviews and year-end pay checkpoints.",
+  path: "/planner/",
+})
 
 const quarters = [
   {

@@ -1,8 +1,16 @@
+import { pageMetadata } from "@/lib/metadata"
 import Link from "next/link"
 import { Activity, ArrowRight, BarChart3, PieChart } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+
+export const metadata = pageMetadata({
+  title: "Guyana Salary & Loan Charts",
+  description:
+    "Charts and visual summaries for Guyana salary, loan and vehicle import calculations.",
+  path: "/analytics/",
+})
 
 export default function AnalyticsPage() {
   return (

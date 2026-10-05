@@ -1,9 +1,17 @@
+import { pageMetadata } from "@/lib/metadata"
 import Link from "next/link"
 import { ArrowRight, BookOpen, Car, Landmark, Radar, ScrollText, ShieldCheck, Wallet } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+
+export const metadata = pageMetadata({
+  title: "Guyana Pay, Vehicle & Loan Insights",
+  description:
+    "Plain-language takeaways from the Guyana salary, vehicle import and loan calculators.",
+  path: "/insights/",
+})
 
 const insightCards = [
   {

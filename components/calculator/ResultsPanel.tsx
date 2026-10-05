@@ -262,7 +262,7 @@ export function ResultsPanel({ results, baseInputs }: ResultsPanelProps) {
       </motion.div>
 
       <ResultActions
-        fileName="salary-summary.txt"
+        fileName="gycalc-salary-summary.txt"
         title="Salary Summary"
         subtitle="A clean export of the current salary, deductions, and package estimate."
         summary={[

@@ -177,7 +177,7 @@ export function LoanResults({
       </div>
 
       <ResultActions
-        fileName="loan-summary.txt"
+        fileName="gycalc-loan-summary.txt"
         title="Loan Summary"
         subtitle="A clean export of the current loan scenario with payment and payoff details."
         summary={[

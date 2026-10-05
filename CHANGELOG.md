@@ -1,8 +1,22 @@
 # Changelog
 
-All notable changes to GY TaxCalc are documented here.
+All notable changes to GYCalc (formerly GY TaxCalc) are documented here.
 
 ---
+
+## [2.7.0] — 2026-10-05
+
+### Renamed GY TaxCalc to GYCalc
+
+- The app is now called **GYCalc** (pronounced "Guy-calc"): *Money tools for Guyana.* The name reflects that it covers salary, tax, vehicle import and loan calculators, not only tax.
+- The site address stays the same: https://kareemschultz.github.io/gy-taxcalc/. Existing links and bookmarks keep working.
+- Page titles and descriptions now say what each page does (for example "Guyana PAYE & Salary Calculator 2026 | GYCalc"), with share-preview (Open Graph/Twitter) tags and canonical links.
+- Saved, shared and printed summaries now carry the GYCalc name, and saved files are named `gycalc-…-summary.txt`.
+- No calculation, rate or threshold changed in this release.
+
+### Medical Insurance Premiums
+
+- Assuria Medical Insurance premiums updated to the revised 2026-09-16 rates (monthly GYD): Employee 1,763, Employee + 1 3,818, Family 5,964. (Shipped 2026-09-16; recorded here.)
 
 ## [2.6.0] — 2026-08-19
 
