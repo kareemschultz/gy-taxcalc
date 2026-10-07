@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,56761,t=>{"use strict";let e=new t.U(t.r(28504));t.s(["default",0,e])},28504,t=>{t.q("/gy-taxcalc/_next/static/media/takumi_pdf_wasm_bg.0jpos0eibpt7a.wasm")}]);
